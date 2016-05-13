@@ -34,6 +34,8 @@ class GameScene: SKScene {
             SKAction.waitForDuration(1.0)
             ])
         ))
+        
+        print("trying")
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
