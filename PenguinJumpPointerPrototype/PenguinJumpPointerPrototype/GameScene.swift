@@ -70,9 +70,7 @@ class GameScene: SKScene {
         let chargePercentage = chargeAmount / chargeDistance!
         
         let jumpDistance = chargePercentage * maxJumpDistance
-        let jumpDirection = pointer.zRotation * 180 / CGFloat( M_PI )
-//        print(jumpDistance)
-//        print(jumpDirection)
+        let jumpDirection = -pointer.zRotation * 180 / CGFloat( M_PI )
         
         // Reset pointer
         pointer.hidden = true
@@ -80,7 +78,7 @@ class GameScene: SKScene {
         // Return pointerBar to 0
         pointerBar!.position.y = -chargeDistance! / 2
         
-        jump(distance: jumpDistance, direction: -jumpDirection)
+        jump(distance: jumpDistance, direction: jumpDirection)
 
     }
    
@@ -174,10 +172,6 @@ class GameScene: SKScene {
                 berg.position = self.convertPoint(CGPoint(x: penguin.position.x, y: penguin.position.y), toNode: stage!)
             }
             
-            //            let bergBody = SKPhysicsBody(rectangleOfSize: berg.frame.size)
-            //            bergBody.dynamic = true
-            //            berg.physicsBody = bergBody
-            
             stage?.addChild(berg)
         }
     }
@@ -191,6 +185,7 @@ class GameScene: SKScene {
         
         for berg in stage!.children {
             let moveAction = SKAction.moveBy(CGVector(dx: -xDistance, dy: -yDistance), duration: 1)
+            moveAction.timingMode = .EaseInEaseOut
             berg.runAction(moveAction)
         }
     }
