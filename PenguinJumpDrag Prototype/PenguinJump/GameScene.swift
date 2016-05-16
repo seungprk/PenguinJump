@@ -23,7 +23,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var score: CGFloat = 0.0
     var yPosition: CGFloat = 0.0
     var scoreLabel: SKLabelNode?
-    
+    var playerTouched = false
     // Transfer Vars
     var touchBegPos : CGPoint?
     
@@ -35,64 +35,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        for touch: AnyObject in touches {
+        for touch in touches {
             let positionInScene = touch.locationInNode(self)
-            let touchedNode = self.nodeAtPoint(positionInScene)
-            
-            if let name = touchedNode.name
-            {
-                if name == "restartButton"
+            let touchedNodes = self.nodesAtPoint(positionInScene)
+            for touchedNode in touchedNodes {
+                if let name = touchedNode.name
                 {
-                    view!.paused = false
-                    restart()
+                    if name == "restartButton" {
+                        view!.paused = false
+                        restart()
+                    }
+                    if name == "penguin" {
+                        lockMovement = false
+                        playerTouched = true
+                    }
+                } else {
+                    lockMovement = false
                 }
-            } else {
-                lockMovement = false
-                touchBegPos = touch.locationInNode(self)
             }
         }
     }
     
-//    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        if !lockMovement {
-//            for touch: AnyObject in touches {
-//                let positionInScene = touch.locationInNode(self)
-//                let previousPosition = touch.previousLocationInNode(self)
-//                
-//                if inverseControl {
-//                    let translation = CGPoint(x: -(positionInScene.x - previousPosition.x) * 2, y: -(positionInScene.y - previousPosition.y) * 2)
-//                    
-//                    trackScore(translation.y)
-//                    
-//                    for berg in stage!.children {
-//                        berg.position = CGPoint(x: berg.position.x + translation.x, y: berg.position.y + translation.y)
-//                    }
-//                } else {
-//                    let translation = CGPoint(x: positionInScene.x - previousPosition.x, y: positionInScene.y - previousPosition.y)
-//                    
-//                    trackScore(translation.y)
-//                    
-//                    for berg in stage!.children {
-//                        berg.position = CGPoint(x: berg.position.x + translation.x, y: berg.position.y + translation.y)
-//                    }
-//                }
-//                
-//                
-//            }
-//        }
-//    }
-    
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        for touch: AnyObject in touches {
-            let positionInScene = touch.locationInNode(self)
-            let touchedNode = self.nodeAtPoint(positionInScene)
-                
-            //if let name = touchedNode.name {
-                //if name == "penguin" {
-                    let touchEndPos = touch.locationInNode(self)
-                    jump(touchEndPos)
-                //}
-            //}
+        if playerTouched == true {
+            for touch: AnyObject in touches {
+                let touchEndPos = touch.locationInNode(self)
+                jump(touchEndPos)
+            }
+            playerTouched = false
         }
     }
     
@@ -111,6 +81,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Create penguin
         penguin.position = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
+        penguin.name = "penguin"
 //        let playerBody = SKPhysicsBody(rectangleOfSize: penguin.frame.size)
 //        playerBody.mass = 0
 //        playerBody.dynamic = true
@@ -169,7 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            let bergBody = SKPhysicsBody(rectangleOfSize: berg.frame.size)
 //            bergBody.dynamic = true
 //            berg.physicsBody = bergBody
-            
+            berg.name = "berg"
             stage?.addChild(berg)
         }
     }
@@ -195,7 +166,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let moveAction = SKAction.moveBy(CGVector(dx: destination.x - touchBegPos!.x, dy: (destination.y - touchBegPos!.y) * 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        let moveAction = SKAction.moveBy(CGVector(dx: destination.x - penguin.position.x, dy: (destination.y - penguin.position.y) * 2), duration: NSTimeInterval(jumpDuration * 0.5))
 
         let jumpSequence = SKAction.sequence([jumpAction, fallAction])
         let counterSequence = SKAction.sequence([fallAction, jumpAction])
