@@ -13,7 +13,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let inverseControl = false
     let enableScreenShake = false
     
-    let penguin = SKSpriteNode(imageNamed: "player")
+    let penguin = SKSpriteNode(imageNamed: "penguintemp")
+    let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
+    let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
+    let targetDot2 = SKSpriteNode(imageNamed: "targetdot")
+    let targetDot3 = SKSpriteNode(imageNamed: "targetdot")
     var penguinShadow: SKShapeNode?
     var stage : SKSpriteNode?
     var yIncrement : CGFloat?
@@ -35,34 +39,82 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        for touch in touches {
-            let positionInScene = touch.locationInNode(self)
-            let touchedNodes = self.nodesAtPoint(positionInScene)
-            for touchedNode in touchedNodes {
-                if let name = touchedNode.name
-                {
-                    if name == "restartButton" {
-                        view!.paused = false
-                        restart()
+        if !lockMovement {
+            for touch in touches {
+                let positionInScene = touch.locationInNode(self)
+                let touchedNodes = self.nodesAtPoint(positionInScene)
+                print(touchedNodes)
+                for touchedNode in touchedNodes {
+                    if let name = touchedNode.name
+                    {
+                        if name == "restartButton" {
+                            view!.paused = false
+                            restart()
+                        }
+                        if name == "penguin" {
+                            lockMovement = false
+                            playerTouched = true
+                            targetReticle.position = positionInScene
+                            targetDot1.position = positionInScene
+                            targetDot2.position = positionInScene
+                            targetDot3.position = positionInScene
+                            addChild(targetReticle)
+                            addChild(targetDot1)
+                            addChild(targetDot2)
+                            addChild(targetDot3)
+                        }
                     }
-                    if name == "penguin" {
-                        lockMovement = false
-                        playerTouched = true
-                    }
-                } else {
-                    lockMovement = false
                 }
+            }
+        }
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if !lockMovement {
+            for touch: AnyObject in touches {
+                let positionInScene = touch.locationInNode(self)
+
+                targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.x - (positionInScene.y - penguin.position.y) * 2)
+                targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 )/2)
+                targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 )/4)
+                targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 ) * 3/4)
+                
+//                let moveAction = SKAction.moveBy(CGVector(dx: destination.x - penguin.position.x, dy: (destination.y - penguin.position.y) * 2), duration: NSTimeInterval(jumpDuration * 0.5))
+//
+//                if inverseControl {
+//                    let translation = CGPoint(x: -(positionInScene.x - previousPosition.x) * 2, y: -(positionInScene.y - previousPosition.y) * 2)
+//                    
+//                    trackScore(translation.y)
+//                    
+//                    for berg in stage!.children {
+//                        berg.position = CGPoint(x: berg.position.x + translation.x, y: berg.position.y + translation.y)
+//                    }
+//                } else {
+//                    let translation = CGPoint(x: positionInScene.x - previousPosition.x, y: positionInScene.y - previousPosition.y)
+//                    
+//                    trackScore(translation.y)
+//                    
+//                    for berg in stage!.children {
+//                        berg.position = CGPoint(x: berg.position.x + translation.x, y: berg.position.y + translation.y)
+//                    }
+//                }
             }
         }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if playerTouched == true {
+            lockMovement = true
             for touch: AnyObject in touches {
                 let touchEndPos = touch.locationInNode(self)
                 jump(touchEndPos)
             }
             playerTouched = false
+            lockMovement = false
+            targetReticle.removeFromParent()
+            targetDot1.removeFromParent()
+            targetDot2.removeFromParent()
+            targetDot3.removeFromParent()
         }
     }
     
@@ -97,6 +149,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        shadowBody.dynamic = true
 //        penguinShadow!.physicsBody = shadowBody
         penguin.addChild(penguinShadow!)
+        
+        // Set Aim Sprites
+        targetReticle.xScale = 0.5
+        targetReticle.yScale = 0.5
+        targetDot1.xScale = 0.5
+        targetDot1.yScale = 0.5
+        targetDot2.xScale = 0.5
+        targetDot2.yScale = 0.5
+        targetDot3.xScale = 0.5
+        targetDot3.yScale = 0.5
         
         // Create stage
         let stageNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width: size.width, height: size.height))
@@ -173,8 +235,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         shakeScreen()
         penguin.runAction(jumpSequence, completion: { () -> Void in
-            self.lockMovement = true
-            
             self.shakeScreen()
             
             if !self.onIceberg() {
@@ -185,6 +245,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for berg in stage!.children{
             berg.runAction(moveAction)
         }
+        
+        trackScore((destination.y - penguin.position.y) * 2)
     }
     
     func onIceberg() -> Bool {
