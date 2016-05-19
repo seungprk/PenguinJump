@@ -228,7 +228,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let moveAction = SKAction.moveBy(CGVector(dx: destination.x - penguin.position.x, dy: (destination.y - penguin.position.y) * 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        let moveAction = SKAction.moveBy(CGVector(dx: destination.x - penguin.position.x, dy: (destination.y - penguin.position.y) * 2), duration: NSTimeInterval(jumpDuration))
 
         let jumpSequence = SKAction.sequence([jumpAction, fallAction])
         let counterSequence = SKAction.sequence([fallAction, jumpAction])
