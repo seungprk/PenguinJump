@@ -11,7 +11,7 @@ import SpriteKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let inverseControl = false
-    let enableScreenShake = false
+    let enableScreenShake = true
     
     let penguin = SKSpriteNode(imageNamed: "penguintemp")
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
@@ -43,7 +43,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             for touch in touches {
                 let positionInScene = touch.locationInNode(self)
                 let touchedNodes = self.nodesAtPoint(positionInScene)
-                print(touchedNodes)
                 for touchedNode in touchedNodes {
                     if let name = touchedNode.name
                     {
@@ -78,26 +77,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 )/2)
                 targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 )/4)
                 targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 ) * 3/4)
-                
-//                let moveAction = SKAction.moveBy(CGVector(dx: destination.x - penguin.position.x, dy: (destination.y - penguin.position.y) * 2), duration: NSTimeInterval(jumpDuration * 0.5))
-//
-//                if inverseControl {
-//                    let translation = CGPoint(x: -(positionInScene.x - previousPosition.x) * 2, y: -(positionInScene.y - previousPosition.y) * 2)
-//                    
-//                    trackScore(translation.y)
-//                    
-//                    for berg in stage!.children {
-//                        berg.position = CGPoint(x: berg.position.x + translation.x, y: berg.position.y + translation.y)
-//                    }
-//                } else {
-//                    let translation = CGPoint(x: positionInScene.x - previousPosition.x, y: positionInScene.y - previousPosition.y)
-//                    
-//                    trackScore(translation.y)
-//                    
-//                    for berg in stage!.children {
-//                        berg.position = CGPoint(x: berg.position.x + translation.x, y: berg.position.y + translation.y)
-//                    }
-//                }
             }
         }
     }
@@ -119,7 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createSceneContent() {
-        backgroundColor = SKColor.whiteColor()
+        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         
         scoreLabel = SKLabelNode(text: "Score: " + String(Int(score)) + "   Distance: " + String(Int(yPosition)))
         scoreLabel!.fontName = "Avenir"
@@ -134,21 +113,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Create penguin
         penguin.position = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
         penguin.name = "penguin"
-//        let playerBody = SKPhysicsBody(rectangleOfSize: penguin.frame.size)
-//        playerBody.mass = 0
-//        playerBody.dynamic = true
-//        penguin.physicsBody = playerBody
+        penguin.zPosition = 100
         addChild(penguin)
         
         // Create penguin's shadow
         penguinShadow = SKShapeNode(rectOfSize: CGSize(width: penguin.frame.width, height: penguin.frame.width), cornerRadius: penguin.frame.width / 2)
         penguinShadow!.fillColor = SKColor.blackColor()
         penguinShadow!.alpha = 0.2
-        penguinShadow!.position = CGPoint(x: 0, y: -penguinShadow!.frame.height/4)
-//        let shadowBody = SKPhysicsBody(circleOfRadius: penguinShadow!.frame.size.height * 0.5)
-//        shadowBody.dynamic = true
-//        penguinShadow!.physicsBody = shadowBody
-        penguin.addChild(penguinShadow!)
+        penguinShadow!.position = CGPoint(x: penguin.position.x, y: penguin.position.y - 10)
+        penguinShadow!.zPosition = 99
+        addChild(penguinShadow!)
         
         // Set Aim Sprites
         targetReticle.xScale = 0.5
@@ -181,8 +155,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // While the topmost iceberg is below the view's frame, generate an iceberg.
         while (topmostBerg < view!.frame.height) {
-            let berg = SKShapeNode(rectOfSize: CGSize(width: penguin.frame.height * 3, height: penguin.frame.height * 3))
-            berg.fillColor = SKColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+            
+            let berg = SKShapeNode(rectOfSize: CGSize(width: 150, height: 150), cornerRadius: 5.0)
+            berg.fillColor = SKColor(red: 211/255, green: 237/255, blue: 255/255, alpha: 1.0)
+            berg.lineWidth = 0.0
             
             let randomY = CGFloat(random()) % 150 + 110
             let randomX = CGFloat(random()) % view!.frame.width
@@ -198,12 +174,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // If there are no previous icebergs, generate the initial iceberg under the penguin.
                 berg.position = self.convertPoint(CGPoint(x: penguin.position.x, y: penguin.position.y), toNode: stage!)
             }
-
-//            let bergBody = SKPhysicsBody(rectangleOfSize: berg.frame.size)
-//            bergBody.dynamic = true
-//            berg.physicsBody = bergBody
-            berg.name = "berg"
-            stage?.addChild(berg)
+            
+            let bergShadow = SKShapeNode(rectOfSize: CGSize(width: 150, height: 150), cornerRadius: 5.0)
+            bergShadow.fillColor = SKColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.1)
+            bergShadow.position = CGPoint(x: berg.position.x, y: berg.position.y-10)
+            bergShadow.lineWidth = 0.0
+            stage!.addChild(bergShadow)
+            stage!.addChild(berg)
         }
     }
     
@@ -225,15 +202,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func jump(destination: CGPoint) {
         let jumpHeight = yIncrement! * 0.5
         let jumpDuration = 1.0
+        let xPlatformTravel = destination.x - penguin.position.x
+        let yPlatformTravel = (destination.y - penguin.position.y) * 2
         
         let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let moveAction = SKAction.moveBy(CGVector(dx: destination.x - penguin.position.x, dy: (destination.y - penguin.position.y) * 2), duration: NSTimeInterval(jumpDuration))
-
+        let enlargeAction = SKAction.scaleBy(2.0, duration: jumpDuration * 0.5)
+        let reduceAction = SKAction.scaleBy(0.5, duration: jumpDuration * 0.5)
+        let movePlatformAction = SKAction.moveBy(CGVector(dx: xPlatformTravel, dy: yPlatformTravel), duration: NSTimeInterval(jumpDuration))
+        jumpAction.timingMode = SKActionTimingMode.EaseOut
+        fallAction.timingMode = SKActionTimingMode.EaseIn
+        enlargeAction.timingMode = SKActionTimingMode.EaseOut
+        reduceAction.timingMode = SKActionTimingMode.EaseIn
         let jumpSequence = SKAction.sequence([jumpAction, fallAction])
-        let counterSequence = SKAction.sequence([fallAction, jumpAction])
+        let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
         
-        shakeScreen()
+        penguin.runAction(enlargeSequence)
+        penguinShadow!.runAction(enlargeSequence)
+        
         penguin.runAction(jumpSequence, completion: { () -> Void in
             self.shakeScreen()
             
@@ -241,9 +227,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.gameOver = true
             }
         })
-        penguinShadow?.runAction(counterSequence)
+        
         for berg in stage!.children{
-            berg.runAction(moveAction)
+            berg.runAction(movePlatformAction)
         }
         
         trackScore((destination.y - penguin.position.y) * 2)
@@ -292,17 +278,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func shakeScreen() {
         if enableScreenShake {
             let shakeAnimation = CAKeyframeAnimation(keyPath: "transform")
-            let randomIntensityOne = CGFloat(random() % 3 + 1)
-            let randomIntensityTwo = CGFloat(random() % 3 + 1)
+            let randomIntensityOne = CGFloat(random() % 4 + 1)
+            let randomIntensityTwo = CGFloat(random() % 4 + 1)
             shakeAnimation.values = [
                 NSValue( CATransform3D:CATransform3DMakeTranslation(-randomIntensityOne, 0, 0 ) ),
                 NSValue( CATransform3D:CATransform3DMakeTranslation( randomIntensityOne, 0, 0 ) ),
                 NSValue( CATransform3D:CATransform3DMakeTranslation( 0, -randomIntensityTwo, 0 ) ),
                 NSValue( CATransform3D:CATransform3DMakeTranslation( 0, randomIntensityTwo, 0 ) ),
             ]
-            shakeAnimation.autoreverses = true
-            shakeAnimation.repeatCount = 2
-            shakeAnimation.duration = 5/100
+            shakeAnimation.repeatCount = 1
+            shakeAnimation.duration = 10/100
             
             view!.layer.addAnimation(shakeAnimation, forKey: nil)
         }

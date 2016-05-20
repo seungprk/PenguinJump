@@ -59,8 +59,8 @@
 				7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */,
 				7F7FB3811CE5B80C0067FC9B /* GameScene.swift */,
 				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
-				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
 				7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */,
+				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
 				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
 				7F7FB38D1CE5B80C0067FC9B /* Info.plist */,
 			);
