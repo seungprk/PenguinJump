@@ -51,12 +51,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             restart()
                         }
                         if name == "penguin" {
-                            lockMovement = false
                             playerTouched = true
-                            targetReticle.position = positionInScene
-                            targetDot1.position = positionInScene
-                            targetDot2.position = positionInScene
-                            targetDot3.position = positionInScene
+                            targetReticle.position = penguin.position
+                            targetDot1.position = penguin.position
+                            targetDot2.position = penguin.position
+                            targetDot3.position = penguin.position
                             addChild(targetReticle)
                             addChild(targetDot1)
                             addChild(targetDot2)
@@ -72,35 +71,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if !lockMovement {
             for touch: AnyObject in touches {
                 let positionInScene = touch.locationInNode(self)
-
-                targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.x - (positionInScene.y - penguin.position.y) * 2)
-                targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 )/2)
-                targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 )/4)
-                targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.x - ( (positionInScene.y - penguin.position.y) * 2 ) * 3/4)
+                if positionInScene.y < penguin.position.y {
+                    targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.y - (positionInScene.y - penguin.position.y) * 2)
+                    targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 )/2)
+                    targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 )/4)
+                    targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 ) * 3/4)
+                } else {
+                    targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.y)
+                    targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.y)
+                    targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.y)
+                    targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.y)
+                }
             }
         }
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if playerTouched == true {
-            lockMovement = true
+        if !lockMovement {
             for touch: AnyObject in touches {
-                let touchEndPos = touch.locationInNode(self)
-                jump(touchEndPos)
+                let positionInScene = touch.locationInNode(self)
+                if playerTouched == true {
+                    lockMovement = true
+                    if positionInScene.y < penguin.position.y {
+                        for touch: AnyObject in touches {
+                            let touchEndPos = touch.locationInNode(self)
+                            jump(touchEndPos)
+                        }
+                    } else {
+                        for touch: AnyObject in touches {
+                            let touchEndPos = touch.locationInNode(self)
+                            jump(CGPoint(x: touchEndPos.x, y: penguin.position.y))
+                        }
+                    }
+                    playerTouched = false
+                    lockMovement = false
+                    targetReticle.removeFromParent()
+                    targetDot1.removeFromParent()
+                    targetDot2.removeFromParent()
+                    targetDot3.removeFromParent()
+                }
             }
-            playerTouched = false
-            lockMovement = false
-            targetReticle.removeFromParent()
-            targetDot1.removeFromParent()
-            targetDot2.removeFromParent()
-            targetDot3.removeFromParent()
         }
     }
     
     func createSceneContent() {
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         
-        scoreLabel = SKLabelNode(text: "Score: " + String(Int(score)) + "   Distance: " + String(Int(yPosition)))
+        scoreLabel = SKLabelNode(text: "Score: " + String(Int(score)))
         scoreLabel!.fontName = "Avenir"
         scoreLabel!.fontSize = 16
         scoreLabel!.fontColor = SKColor.blackColor()
@@ -125,14 +142,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(penguinShadow!)
         
         // Set Aim Sprites
-        targetReticle.xScale = 0.5
-        targetReticle.yScale = 0.5
-        targetDot1.xScale = 0.5
-        targetDot1.yScale = 0.5
-        targetDot2.xScale = 0.5
-        targetDot2.yScale = 0.5
-        targetDot3.xScale = 0.5
-        targetDot3.yScale = 0.5
+        targetReticle.xScale = 0.3
+        targetReticle.yScale = 0.3
+        targetDot1.xScale = 0.3
+        targetDot1.yScale = 0.3
+        targetDot2.xScale = 0.3
+        targetDot2.yScale = 0.3
+        targetDot3.xScale = 0.3
+        targetDot3.yScale = 0.3
         
         // Create stage
         let stageNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width: size.width, height: size.height))
@@ -192,7 +209,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(currentTime: NSTimeInterval) {
-        scoreLabel!.text = "Score: " + String(Int(score)) + "   Distance: " + String(Int(yPosition))
+        scoreLabel!.text = "Score: " + String(Int(score))
         
         generateBergs()
         
