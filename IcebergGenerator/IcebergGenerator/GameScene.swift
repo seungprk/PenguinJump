@@ -27,6 +27,9 @@ class GameScene: SKScene {
     var shadow:SKShapeNode?
     var underwater:SKShapeNode?
     
+    var shadowCrop:SKCropNode?
+    var shadowMask:SKShapeNode?
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         backgroundColor = SKColor(red: 0.6, green: 0.9, blue: 1, alpha: 1)
@@ -103,7 +106,7 @@ class GameScene: SKScene {
         shadow!.lineWidth = 1
         shadow!.zPosition = -10
         
-        addChild(shadow!)
+//        addChild(shadow!)
         
         
         
@@ -130,6 +133,23 @@ class GameScene: SKScene {
         underwater!.zPosition = -20
         
         addChild(underwater!)
+        
+        
+        
+        shadowCrop = SKCropNode()
+        shadowMask = SKShapeNode(path: underwaterPath)
+        shadowMask!.fillColor = SKColor.blackColor()
+        shadowMask!.position = CGPointZero
+        shadowMask!.name = "shadowMask"
+        
+        shadow!.position = CGPointZero
+        shadowCrop!.addChild(shadow!)
+        
+        shadowCrop!.maskNode = shadowMask
+        shadowCrop!.position = view.center
+        shadowCrop!.zPosition = -10
+        
+        addChild(shadowCrop!)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -146,40 +166,19 @@ class GameScene: SKScene {
             
             berg!.runAction(sinkSequence)
             underwater!.runAction(sinkSequence)
+            shadowMask!.runAction(sinkSequence)
             
-            berg!.runAction(sink)
-            underwater!.runAction(sink)
-            berg!.fillColor = SKColor(red: 0.8, green: 0.95, blue: 1, alpha: 1)
-            berg!.runAction(wait)
-            underwater!.runAction(wait)
-            berg!.fillColor = SKColor.whiteColor()
-            berg!.runAction(rise)
-            underwater!.runAction(rise)
+//            berg!.runAction(sink)
+//            underwater!.runAction(sink)
+//            berg!.fillColor = SKColor(red: 0.8, green: 0.95, blue: 1, alpha: 1)
+//            
+//            berg!.runAction(wait)
+//            underwater!.runAction(wait)
+//            
+//            berg!.fillColor = SKColor.whiteColor()
+//            berg!.runAction(rise)
+//            underwater!.runAction(rise)
             
-//            removeAllChildren()
-//            
-//            let bergbergVertices:[CGPoint] = generateRandomPoints(CGPoint(x: 0, y: 0)) // <- 0, 0 here refers to the berg's center point
-//            
-//            let bergPath = CGPathCreateMutable()
-//            CGPathMoveToPoint(bergPath, nil, bergbergVertices[0].x, bergbergVertices[0].y)
-//            for point in 1..<bergbergVertices.count {
-//                CGPathAddLineToPoint(bergPath, nil, bergbergVertices[point].x, bergbergVertices[point].y)
-//            }
-//            //        CGPathCloseSubpath(bergPath)
-//            
-//            let berg = SKShapeNode(path: bergPath)
-//            berg.position = view!.center
-//            berg.fillColor = SKColor.whiteColor()
-//            berg.strokeColor = SKColor.redColor()
-//            
-//            addChild(berg)
-//            
-//            if showDots {
-//                addDot(self, point: view!.center)
-//                for point in 0..<bergbergVertices.count {
-//                    addDot(berg, point: bergbergVertices[point])
-//                }
-//            }
         }
         
     }
