@@ -10,6 +10,8 @@ import SpriteKit
 
 class Iceberg: SKSpriteNode {
     
+    let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
+    let underwaterColor = SKColor(red: 0.8, green: 0.9, blue: 0.93, alpha: 1)
     let debug = false
     
     var shadowHeight:CGFloat = 10.0
@@ -20,19 +22,14 @@ class Iceberg: SKSpriteNode {
     var berg:SKShapeNode?
     var shadow:SKShapeNode?
     var underwater:SKShapeNode?
-    
     var shadowMask:SKShapeNode?
-    
-    let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
-    let underwaterColor = SKColor(red: 0.8, green: 0.9, blue: 0.93, alpha: 1)
-    
+        
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
         
         bergVertices = generateRandomPoints(aroundPoint: CGPointZero)
         
         createBergShapes()
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -132,6 +129,15 @@ class Iceberg: SKSpriteNode {
         }
     }
     
+    func beginMovingBerg() {
+        let forth = SKAction.moveBy(CGVector(dx: 50, dy: 0), duration: 2.0)
+        let back = SKAction.moveBy(CGVector(dx: -50, dy: 0), duration: 2.0)
+        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forth, back]))
+        
+        position.x -= 25
+        runAction(backAndForth)
+    }
+    
     func runSinkAction() {
         let sinkDepth = shadowHeight
         let sinkDuration = 1.0
@@ -163,8 +169,7 @@ class Iceberg: SKSpriteNode {
         let radius = Double(size.width / 2)
         
         var randomPoints = [CGPoint]()
-        
-        for count in 0..<8 {
+        for count in 0...7 {
             let section = M_PI / 4 * Double(count)
             let randomAngleInSection = section + Double(arc4random_uniform(628)) / 100 / 8
             
@@ -177,7 +182,6 @@ class Iceberg: SKSpriteNode {
             let point = CGPoint(x: pointX, y: pointY)
             randomPoints.append(point)
         }
-        
         return randomPoints
     }
 
