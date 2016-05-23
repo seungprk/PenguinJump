@@ -13,6 +13,7 @@
 		7F1FAA421CF2CC8700EEABB3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F1FAA401CF2CC8700EEABB3 /* Main.storyboard */; };
 		7F1FAA441CF2CC8700EEABB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F1FAA431CF2CC8700EEABB3 /* Assets.xcassets */; };
 		7F1FAA471CF2CC8700EEABB3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F1FAA451CF2CC8700EEABB3 /* LaunchScreen.storyboard */; };
+		7F1FAA711CF3838F00EEABB3 /* Iceberg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1FAA701CF3838F00EEABB3 /* Iceberg.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		7F1FAA431CF2CC8700EEABB3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7F1FAA461CF2CC8700EEABB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7F1FAA481CF2CC8700EEABB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7F1FAA701CF3838F00EEABB3 /* Iceberg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Iceberg.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			children = (
 				7F1FAA381CF2CC8700EEABB3 /* AppDelegate.swift */,
 				7F1FAA3C1CF2CC8700EEABB3 /* GameScene.swift */,
+				7F1FAA701CF3838F00EEABB3 /* Iceberg.swift */,
 				7F1FAA3E1CF2CC8700EEABB3 /* GameViewController.swift */,
 				7F1FAA401CF2CC8700EEABB3 /* Main.storyboard */,
 				7F1FAA431CF2CC8700EEABB3 /* Assets.xcassets */,
@@ -139,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F1FAA3D1CF2CC8700EEABB3 /* GameScene.swift in Sources */,
+				7F1FAA711CF3838F00EEABB3 /* Iceberg.swift in Sources */,
 				7F1FAA3F1CF2CC8700EEABB3 /* GameViewController.swift in Sources */,
 				7F1FAA391CF2CC8700EEABB3 /* AppDelegate.swift in Sources */,
 			);
@@ -290,6 +294,7 @@
 				7F1FAA4D1CF2CC8700EEABB3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
