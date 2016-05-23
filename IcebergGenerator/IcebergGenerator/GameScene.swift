@@ -27,7 +27,7 @@ class GameScene: SKScene {
     var shadow:SKShapeNode?
     var underwater:SKShapeNode?
     
-    var shadowCrop:SKCropNode?
+//    var shadowCrop:SKCropNode?
     var shadowMask:SKShapeNode?
     
     override func didMoveToView(view: SKView) {
@@ -136,20 +136,20 @@ class GameScene: SKScene {
         
         
         
-        shadowCrop = SKCropNode()
+        let shadowCrop = SKCropNode()
         shadowMask = SKShapeNode(path: underwaterPath)
         shadowMask!.fillColor = SKColor.blackColor()
         shadowMask!.position = CGPointZero
         shadowMask!.name = "shadowMask"
         
         shadow!.position = CGPointZero
-        shadowCrop!.addChild(shadow!)
+        shadowCrop.addChild(shadow!)
         
-        shadowCrop!.maskNode = shadowMask
-        shadowCrop!.position = view.center
-        shadowCrop!.zPosition = -10
+        shadowCrop.maskNode = shadowMask
+        shadowCrop.position = view.center
+        shadowCrop.zPosition = -10
         
-        addChild(shadowCrop!)
+        addChild(shadowCrop)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -164,21 +164,21 @@ class GameScene: SKScene {
             
             let sinkSequence = SKAction.sequence([sink, wait, rise])
             
-            berg!.runAction(sinkSequence)
             underwater!.runAction(sinkSequence)
             shadowMask!.runAction(sinkSequence)
             
-//            berg!.runAction(sink)
-//            underwater!.runAction(sink)
-//            berg!.fillColor = SKColor(red: 0.8, green: 0.95, blue: 1, alpha: 1)
-//            
-//            berg!.runAction(wait)
-//            underwater!.runAction(wait)
-//            
-//            berg!.fillColor = SKColor.whiteColor()
-//            berg!.runAction(rise)
-//            underwater!.runAction(rise)
-            
+            berg!.runAction(sink, completion: {
+                let underwaterColor = SKColor(red: 0.8, green: 0.95, blue: 1, alpha: 1)
+                self.berg!.fillColor = underwaterColor
+                self.berg!.strokeColor = underwaterColor
+                
+                self.berg!.runAction(wait, completion: {
+                    self.berg!.fillColor = SKColor.whiteColor()
+                    self.berg!.strokeColor = SKColor.whiteColor()
+                    
+                    self.berg!.runAction(rise)
+                })
+            })
         }
         
     }
