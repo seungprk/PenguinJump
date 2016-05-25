@@ -10,12 +10,16 @@ import SpriteKit
 
 class Iceberg: SKSpriteNode {
     
+    var stormMode = false
+    
     let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
-    let underwaterColor = SKColor(red: 0.8, green: 0.9, blue: 0.93, alpha: 1)
+    var underwaterColor = SKColor(red: 0.5, green: 0.8, blue: 0.89, alpha: 0.5)
+//    var underwaterColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
+
     let debug = false
     
-    var shadowHeight:CGFloat = 10.0
-    var underwaterHeight:CGFloat = 6.0
+    var shadowHeight:CGFloat = 20.0
+    var underwaterHeight:CGFloat = 20.0
     
     var bergVertices:[CGPoint]?
     
@@ -26,6 +30,9 @@ class Iceberg: SKSpriteNode {
         
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
+        if stormMode {
+            underwaterColor = SKColor(red: 0.25, green: 0.4, blue: 0.5, alpha: 1)
+        }
         
         bergVertices = generateRandomPoints(aroundPoint: CGPointZero)
         
@@ -56,13 +63,15 @@ class Iceberg: SKSpriteNode {
                 //        berg!.strokeColor = SKColor.redColor()
                 berg.strokeColor = SKColor.whiteColor()
                 berg.lineWidth = 1
-                berg.zPosition = 10
+                berg.zPosition = 100
                 addChild(berg)
             }
             
             // Set startPoint and endPoint of shadows based on which point is further out
             let startPoint = vertices[1].x > vertices[2].x ? 1 : 2
             let endPoint = vertices[6].x < vertices[5].x ? 6 : 5
+            
+            
             
             // Create underwater shape
             underwater = SKShapeNode()
@@ -83,10 +92,12 @@ class Iceberg: SKSpriteNode {
                 underwater.fillColor = underwaterColor
                 underwater.strokeColor = underwaterColor
                 underwater.lineWidth = 1
-                underwater.zPosition = -20
+                underwater.zPosition = -100
                 
                 addChild(underwater)
             }
+            
+            
             
             // Create shadow shape cropped to underwater path
             let croppedShadow = SKCropNode()
@@ -101,7 +112,7 @@ class Iceberg: SKSpriteNode {
             
             croppedShadow.maskNode = shadowMask
             croppedShadow.position = CGPointZero
-            croppedShadow.zPosition = -10
+            croppedShadow.zPosition = 50
             addChild(croppedShadow)
 
             let shadowPath = CGPathCreateMutable()
@@ -121,7 +132,7 @@ class Iceberg: SKSpriteNode {
                 shadow.fillColor = shadowColor
                 shadow.strokeColor = shadowColor
                 shadow.lineWidth = 1
-                shadow.zPosition = -10
+                shadow.zPosition = 50
                 
                 croppedShadow.addChild(shadow)
             }
@@ -184,5 +195,38 @@ class Iceberg: SKSpriteNode {
         }
         return randomPoints
     }
+    
+    func bob() {
+        // Need to implement berg position reset with each new bob call.
+        
+        let bobDepth = stormMode ? 5.0 : 2.0
+        let bobDuration = stormMode ? 0.8 : 2.0
+        
+        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+        let wait = SKAction.waitForDuration(bobDuration / 2)
+        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+        
+        let bobSequence = SKAction.sequence([down, wait, up, wait])
+        let bob = SKAction.repeatActionForever(bobSequence)
+        
+        shadow!.removeAllActions()
+        shadow!.runAction(bob)
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
