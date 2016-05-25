@@ -30,6 +30,8 @@ class Iceberg: SKSpriteNode {
         
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
+        name = "iceberg"
+        
         if stormMode {
             underwaterColor = SKColor(red: 0.25, green: 0.4, blue: 0.5, alpha: 1)
         }
@@ -37,6 +39,7 @@ class Iceberg: SKSpriteNode {
         bergVertices = generateRandomPoints(aroundPoint: CGPointZero)
         
         createBergShapes()
+        bob()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -149,7 +152,7 @@ class Iceberg: SKSpriteNode {
         runAction(backAndForth)
     }
     
-    func runSinkAction() {
+    func testSink() {
         let sinkDepth = shadowHeight
         let sinkDuration = 1.0
         
@@ -174,6 +177,52 @@ class Iceberg: SKSpriteNode {
                 self.berg!.runAction(rise)
             })
         })
+    }
+    
+    func sink() {
+        sink(7.0, completion: {})
+    }
+    
+    func sink(duration: Double, completion block: () -> Void) {
+        let sinkDepth = shadowHeight
+        
+        let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -sinkDepth), duration: duration)
+        
+        underwater!.runAction(sink)
+        shadowMask!.runAction(sink)
+        
+        berg!.runAction(sink, completion: {
+            let underwaterColor = SKColor(red: 0.83, green: 0.94, blue: 0.97, alpha: 1)
+            self.berg!.fillColor = underwaterColor
+            self.berg!.strokeColor = underwaterColor
+            
+            let flattenedTexture = self.scene?.view?.textureFromNode(self)
+            
+            self.removeAllChildren()
+            
+            self.texture = flattenedTexture
+            self.size = flattenedTexture!.size()
+            self.position.y -= self.shadowHeight * 1.5
+            
+            let fade = SKAction.fadeOutWithDuration(0.5)
+            fade.timingMode = .EaseIn
+            self.runAction(fade, completion: {
+                block()
+            })
+        })
+        
+    }
+    
+    func bump() {
+        let enlarge = SKAction.scaleTo(1.1, duration: 0.1)
+        let reduce = SKAction.scaleTo(1.0, duration: 0.1)
+        
+        enlarge.timingMode = .EaseOut
+        reduce.timingMode = .EaseIn
+        
+        let bumpSequence = SKAction.sequence([enlarge, reduce])
+        
+        runAction(bumpSequence)
     }
     
     func generateRandomPoints(aroundPoint center: CGPoint) -> [CGPoint] {
@@ -203,8 +252,11 @@ class Iceberg: SKSpriteNode {
         let bobDuration = stormMode ? 0.8 : 2.0
         
         let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        let wait = SKAction.waitForDuration(bobDuration / 2)
+        let wait = SKAction.waitForDuration(bobDuration / 4)
         let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+        
+        down.timingMode = .EaseInEaseOut
+        up.timingMode = .EaseInEaseOut
         
         let bobSequence = SKAction.sequence([down, wait, up, wait])
         let bob = SKAction.repeatActionForever(bobSequence)
@@ -214,19 +266,3 @@ class Iceberg: SKSpriteNode {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

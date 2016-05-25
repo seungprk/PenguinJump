@@ -82,7 +82,6 @@ class GameScene: SKScene {
         }
         
         bob(waves!)
-
     }
     
     func bob(node: SKSpriteNode) {
@@ -111,7 +110,7 @@ class GameScene: SKScene {
                     if name == "sinkButton" {
                         for berg in stage!.children {
                             let berg = berg as! Iceberg
-                            berg.runSinkAction()
+                            berg.testSink()
                         }
                     }
                     if name == "stopButton" {

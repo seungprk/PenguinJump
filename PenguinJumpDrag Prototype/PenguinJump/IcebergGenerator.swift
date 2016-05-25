@@ -65,7 +65,6 @@ class IcebergGenerator: SKSpriteNode {
     }
     
     func update() {
-        
         clearBerg()
         generateBerg()
     }
@@ -92,7 +91,6 @@ class IcebergGenerator: SKSpriteNode {
     }
     func updateCurrentBerg(berg: Iceberg) {
         currentBerg = berg
-        print(currentBerg)
         if berg.name == "leftBerg" {
             highestBerg = highestLeftBerg
         } else if berg.name == "rightBerg" {
@@ -101,8 +99,6 @@ class IcebergGenerator: SKSpriteNode {
     }
     func generateBerg() {
         if mode == .forking {
-            print("In forking mode")
-            
             firstBergOfFork = highestBerg
             
             highestLeftBerg = firstBergOfFork
@@ -155,16 +151,17 @@ class IcebergGenerator: SKSpriteNode {
                 let yPosition = highestBerg!.position.y + gapDistance
                 
                 berg.position = CGPoint(x: xPosition, y: yPosition)
+                print(highestBerg?.position.y)
+                print(berg.position.y)
+                print("")
                 
                 highestBerg = berg
                 
                 if let currentBerg = currentBerg {
                     if currentBerg.name == "leftBerg" {
-                        print("created a berg on left side")
                         highestLeftBerg = berg
                         highestBerg = highestLeftBerg
                     } else if currentBerg.name == "rightBerg" {
-                        print("created a berg on right side")
                         highestRightBerg = berg
                         highestBerg = highestRightBerg
                     }

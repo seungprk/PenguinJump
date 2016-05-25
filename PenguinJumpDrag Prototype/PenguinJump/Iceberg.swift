@@ -128,7 +128,6 @@ class Iceberg: SKSpriteNode {
             if let shadow = shadow{
                 shadow.path = shadowPath
                 shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
-                //                let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
                 shadow.fillColor = shadowColor
                 shadow.strokeColor = shadowColor
                 shadow.lineWidth = 1
@@ -188,10 +187,7 @@ class Iceberg: SKSpriteNode {
         let sinkDepth = shadowHeight
         
         let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -sinkDepth), duration: duration)
-        let fade = SKAction.fadeOutWithDuration(2.0)
-//        let shadowFade = SKAction.fadeAlphaTo(1.0, duration: <#T##NSTimeInterval#>)
-        
-//        let sinkSequence = SKAction.sequence([sink, fade])
+
         
         underwater!.runAction(sink)
         shadowMask!.runAction(sink)
@@ -200,11 +196,6 @@ class Iceberg: SKSpriteNode {
             let underwaterColor = SKColor(red: 0.83, green: 0.94, blue: 0.97, alpha: 1)
             self.berg!.fillColor = underwaterColor
             self.berg!.strokeColor = underwaterColor
-            
-//            self.shadow!.alpha = 0.0
-//            self.shadowMask!.alpha = 0.0
-
-//            self.fade()
             
             
             let flattenedTexture = self.scene?.view?.textureFromNode(self)
@@ -272,21 +263,16 @@ class Iceberg: SKSpriteNode {
         shadow!.removeAllActions()
         shadow!.runAction(bob)
     }
-
+    
+    func bump() {
+        let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
+        let reduce = SKAction.scaleTo(1.0, duration: 0.06)
+        
+        enlarge.timingMode = .EaseOut
+        reduce.timingMode = .EaseIn
+        
+        let bumpSequence = SKAction.sequence([enlarge, reduce])
+        
+        runAction(bumpSequence)
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
