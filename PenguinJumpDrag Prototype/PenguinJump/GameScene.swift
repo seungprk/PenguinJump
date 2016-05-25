@@ -10,6 +10,8 @@ import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    
+    // Control options
     let inverseControl = false
     let enableScreenShake = true
     
@@ -31,7 +33,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Transfer Vars
     var touchBegPos : CGPoint?
     
+    // Path forking variables
+    var forking = false
+    var topmostOfLeft: Iceberg?
+    var topmostOfRight: Iceberg?
+    var pathing = ""
+    
+    // Path logic variables
+    var forkingCount = 0
+    
+    
+    // Iceberg generation
+    var bergSize: CGFloat = 150.0
+    var gapDistance: CGFloat = 250.0
+    
+    // Gameplay variables
+    var difficulty = 1.0
+    
     override func didMoveToView(view: SKView) {
+        let forkButton = SKLabelNode(text: "Fork")
+        forkButton.name = "forkButton"
+        forkButton.fontName = "Helvetica Neue Condensed Black"
+        forkButton.fontSize = 24
+        forkButton.fontColor = SKColor.blackColor()
+        forkButton.position = CGPoint(x: 30, y: view.frame.height - 90)
+        addChild(forkButton)
+        
         createSceneContent()
         
         physicsWorld.gravity = CGVectorMake(0, 0)
@@ -49,6 +76,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         if name == "restartButton" {
                             view!.paused = false
                             restart()
+                        } else if name == "forkButton" {
+                            forking = true
                         }
                         if name == "penguin" {
                             playerTouched = true
@@ -122,6 +151,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel!.fontSize = 16
         scoreLabel!.fontColor = SKColor.blackColor()
         scoreLabel!.position = CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.95)
+        scoreLabel!.zPosition = 3000
         addChild(scoreLabel!)
         
         // Set constants based on scene size
@@ -130,7 +160,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Create penguin
         penguin.position = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
         penguin.name = "penguin"
-        penguin.zPosition = 100
+        penguin.zPosition = 2100
         addChild(penguin)
         
         // Create penguin's shadow
@@ -138,18 +168,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         penguinShadow!.fillColor = SKColor.blackColor()
         penguinShadow!.alpha = 0.2
         penguinShadow!.position = CGPoint(x: penguin.position.x, y: penguin.position.y - 10)
-        penguinShadow!.zPosition = 99
+        penguinShadow!.zPosition = 2000
         addChild(penguinShadow!)
         
         // Set Aim Sprites
         targetReticle.xScale = 0.3
         targetReticle.yScale = 0.3
+        targetReticle.zPosition = 1500
         targetDot1.xScale = 0.3
         targetDot1.yScale = 0.3
+        targetDot1.zPosition = 1500
         targetDot2.xScale = 0.3
         targetDot2.yScale = 0.3
+        targetDot2.zPosition = 1500
         targetDot3.xScale = 0.3
         targetDot3.yScale = 0.3
+        targetDot3.zPosition = 1500
         
         // Create stage
         let stageNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width: size.width, height: size.height))
@@ -157,49 +191,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         stage!.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
         addChild(stage!)
         
-        generateBergs()
+        generateBerg()
     }
     
-    func generateBergs() {
-        // Check to see if the topmost iceberg is below the view's frame.
-        var topmostBerg: CGFloat = 0.0
-        for berg in stage!.children {
-            if berg.position.y > topmostBerg {
-                let bergPositionInScene = self.convertPoint(berg.position, fromNode: stage!)
-                topmostBerg = bergPositionInScene.y
-            }
-        }
-        
-        // While the topmost iceberg is below the view's frame, generate an iceberg.
-        while (topmostBerg < view!.frame.height) {
-            
-            let berg = SKShapeNode(rectOfSize: CGSize(width: 150, height: 150), cornerRadius: 5.0)
-            berg.fillColor = SKColor(red: 211/255, green: 237/255, blue: 255/255, alpha: 1.0)
-            berg.lineWidth = 0.0
-            
-            let randomY = CGFloat(random()) % 150 + 110
-            let randomX = CGFloat(random()) % view!.frame.width
-            
-            let previousBerg = stage!.children.last
-            if previousBerg != nil {
-                let previousBergPositionInScene = self.convertPoint(previousBerg!.position, fromNode: stage!)
-                let bergPositionInSceneY = previousBergPositionInScene.y + randomY
-                berg.position = self.convertPoint(CGPoint(x: randomX, y: bergPositionInSceneY), toNode: stage!)
-                
-                topmostBerg = bergPositionInSceneY
-            } else {
-                // If there are no previous icebergs, generate the initial iceberg under the penguin.
-                berg.position = self.convertPoint(CGPoint(x: penguin.position.x, y: penguin.position.y), toNode: stage!)
-            }
-            
-            let bergShadow = SKShapeNode(rectOfSize: CGSize(width: 150, height: 150), cornerRadius: 5.0)
-            bergShadow.fillColor = SKColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.1)
-            bergShadow.position = CGPoint(x: berg.position.x, y: berg.position.y-10)
-            bergShadow.lineWidth = 0.0
-            stage!.addChild(bergShadow)
-            stage!.addChild(berg)
-        }
-    }
+    
     
     func trackScore(translationY: CGFloat) {
         yPosition += -translationY
@@ -211,7 +206,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(currentTime: NSTimeInterval) {
         scoreLabel!.text = "Score: " + String(Int(score))
         
-        generateBergs()
+        generateBerg()
         
         checkGameOver()
     }
@@ -242,6 +237,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if !self.onIceberg() {
                 self.gameOver = true
+            } else {
+                self.sinkIceberg()
+                self.checkPathing()
             }
         })
         
@@ -262,6 +260,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return onBerg
     }
     
+    func checkOnIceberg() {
+        let check = onIceberg() ? "On an iceberg" : "Not on an iceberg"
+        print(check)
+    }
+    
+    func checkPathing() {
+        if forking {
+            for berg in stage!.children {
+                if penguinShadow!.intersectsNode(berg) {
+                    pathing = berg.name == "left" ? "left" : "right"
+                }
+            }
+        }
+    }
+    
+    func sinkIceberg() {
+        for berg in stage!.children {
+            if penguinShadow!.intersectsNode(berg) {
+                let currentBerg = berg as! Iceberg
+                currentBerg.sink(7.0, completion: {
+                    currentBerg.removeFromParent()
+                    self.checkOnIceberg()
+                })
+            }
+        }
+    }
+    
     func checkGameOver() {
         if gameOver {
             view?.paused = true
@@ -275,6 +300,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             restartButton.fontSize = 24
             restartButton.fontColor = SKColor.whiteColor()
             restartButton.position = CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
+            restartButton.zPosition = 3000
             addChild(restartButton)
         }
     }
@@ -307,6 +333,276 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             shakeAnimation.duration = 10/100
             
             view!.layer.addAnimation(shakeAnimation, forKey: nil)
+        }
+    }
+    
+//    func generateBergs() {
+//        // Check to see if the topmost iceberg is below the view's frame.
+//        var topmostBerg: CGFloat = 0.0
+//        for berg in stage!.children {
+//            if berg.position.y > topmostBerg {
+//                let bergPositionInScene = self.convertPoint(berg.position, fromNode: stage!)
+//                topmostBerg = bergPositionInScene.y
+//            }
+//        }
+//        
+//        // While the topmost iceberg is below the view's frame, generate an iceberg.
+//        while (topmostBerg < view!.frame.height) {
+//            
+//            let berg = SKShapeNode(rectOfSize: CGSize(width: 150, height: 150), cornerRadius: 5.0)
+//            berg.fillColor = SKColor(red: 211/255, green: 237/255, blue: 255/255, alpha: 1.0)
+//            berg.lineWidth = 0.0
+//            
+//            let randomY = CGFloat(random()) % 150 + 110
+//            let randomX = CGFloat(random()) % view!.frame.width
+//            
+//            let previousBerg = stage!.children.last
+//            if previousBerg != nil {
+//                let previousBergPositionInScene = self.convertPoint(previousBerg!.position, fromNode: stage!)
+//                let bergPositionInSceneY = previousBergPositionInScene.y + randomY
+//                berg.position = self.convertPoint(CGPoint(x: randomX, y: bergPositionInSceneY), toNode: stage!)
+//                
+//                topmostBerg = bergPositionInSceneY
+//            } else {
+//                // If there are no previous icebergs, generate the initial iceberg under the penguin.
+//                berg.position = self.convertPoint(CGPoint(x: penguin.position.x, y: penguin.position.y), toNode: stage!)
+//            }
+//            
+//            let bergShadow = SKShapeNode(rectOfSize: CGSize(width: 150, height: 150), cornerRadius: 5.0)
+//            bergShadow.fillColor = SKColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.1)
+//            bergShadow.position = CGPoint(x: berg.position.x, y: berg.position.y-10)
+//            bergShadow.lineWidth = 0.0
+//            stage!.addChild(bergShadow)
+//            stage!.addChild(berg)
+//        }
+//    }
+//    func generateBerg() {
+//        // Check to see if the topmost iceberg is below the view's frame.
+//        var topmostBergY: CGFloat = 0.0
+//        for berg in stage!.children {
+//            if berg.position.y > topmostBergY{
+//                let bergPositionInScene = self.convertPoint(berg.position, fromNode: stage!)
+//                topmostBergY = bergPositionInScene.y
+//            }
+//        }
+//        
+//        // While the topmost iceberg is below the view's frame, generate an iceberg.
+//        while (topmostBergY < view!.frame.height) {
+//            if forking {
+//                switch (pathing) {
+//                case "":
+//                    let bergLeft = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                    let bergRight = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                    
+//                    bergLeft.name = "left"
+//                    bergRight.name = "right"
+//                    
+//                    if let previousBerg = stage?.children.first {
+//                        // Get position of previous berg in scene
+//                        let previousBergPositionInScene = self.convertPoint(previousBerg.position, fromNode: stage!)
+//                        
+//                        //                            var leftX: CGFloat
+//                        //                            repeat {
+//                        //                                leftX = CGFloat(random()) % (view!.frame.width * 0.4)// + (view!.frame.width * 0.1)
+//                        //                            } while (previousBergPositionInScene.x - leftX > view!.frame.width * 0.4)
+//                        //
+//                        //                            var rightX:CGFloat
+//                        //                            repeat {
+//                        //                                rightX = CGFloat(random()) % (view!.frame.width * 0.4) + (view!.frame.width * 0.6)
+//                        //                            } while (previousBergPositionInScene.x - rightX > view!.frame.width * 0.4)
+//                        
+//                        // Calculate the x position relative to view frame width.
+//                        let leftX = CGFloat(random()) % (view!.frame.width * 0.4)
+//                        let rightX = CGFloat(random()) % (view!.frame.width * 0.4) + (view!.frame.width * 0.6)
+//                        
+//                        // Calculate the y position relative to the previous berg location
+//                        let bergPositionInSceneY = previousBergPositionInScene.y + gapDistance // + randomY
+//                        
+//                        // Set the topmostBergY Position to new yPosition
+//                        topmostBergY = bergPositionInSceneY
+//                        
+//                        // Set Values
+//                        bergLeft.position = self.convertPoint(CGPoint(x: leftX, y: bergPositionInSceneY), toNode: stage!)
+//                        bergRight.position = self.convertPoint(CGPoint(x: rightX, y: bergPositionInSceneY), toNode: stage!)
+//                    }
+//                    stage!.insertChild(bergLeft, atIndex: 0)
+//                    stage!.insertChild(bergRight, atIndex: 0)
+//                    
+//                    topmostOfLeft = bergLeft
+//                    topmostOfRight = bergRight
+//                    
+//                    pathing = "undecided"
+//                    
+//                case "undecided":
+//                    let bergLeft = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                    let bergRight = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                    
+//                    bergLeft.name = "left"
+//                    bergRight.name = "right"
+//                    
+//                    if let previousLeft = topmostOfLeft {
+//                        //                            var leftXDifference: CGFloat
+//                        //                            repeat {
+//                        //                                leftXDifference = CGFloat(random()) % (view!.frame.width * 0.3)// + (view!.frame.width * 0.1)
+//                        //                            } while (leftXDifference > view!.frame.width * 0.4)
+//                        let previousBergLeftPositionInScene = self.convertPoint(previousLeft.position, fromNode: stage!)
+//                        
+//                        let leftXDifference = CGFloat(random()) % (view!.frame.width * 0.3)
+//                        let leftY = previousBergLeftPositionInScene.y + gapDistance
+//                        
+//                        bergLeft.position = self.convertPoint(CGPoint(x: previousBergLeftPositionInScene.x - leftXDifference, y: leftY), toNode: stage!)
+//                        
+//                        if leftY > topmostBergY {
+//                            topmostBergY = leftY
+//                        }
+//                    }
+//                    
+//                    if let previousRight = topmostOfRight {
+//                        //                            var rightX:CGFloat
+//                        //                            repeat {
+//                        //                                rightX = CGFloat(random()) % (view!.frame.width * 0.4) + (view!.frame.width * 0.6)
+//                        //                            } while (previousRight.position.x - rightX > view!.frame.width * 0.4)
+//                        let previousBergRightPositionInScene = self.convertPoint(previousRight.position, fromNode: stage!)
+//                        
+//                        
+//                        let rightXDifference = CGFloat(random()) % (view!.frame.width * 0.3)
+//                        let rightY = previousBergRightPositionInScene.y + gapDistance
+//                        
+//                        bergRight.position = self.convertPoint(CGPoint(x: previousBergRightPositionInScene.x + rightXDifference, y: rightY), toNode: stage!)
+//                        
+//                        if rightY > topmostBergY {
+//                            topmostBergY = rightY
+//                        }
+//                    }
+//                    
+//                    stage!.insertChild(bergLeft, atIndex: 0)
+//                    stage!.insertChild(bergRight, atIndex: 0)
+//                    
+//                    topmostOfLeft = bergLeft
+//                    topmostOfRight = bergRight
+//                    
+//                case "left":
+//                    print("making left berg")
+//                    let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                    
+//                    if let previousBerg = topmostOfLeft {
+//                        let previousBergPositionInScene = self.convertPoint(previousBerg.position, fromNode: stage!)
+//                        
+//                        var randomX: CGFloat
+//                        repeat {
+//                            randomX = CGFloat(random()) % (view!.frame.width * 0.8) + (view!.frame.width * 0.1)
+//                        } while (previousBergPositionInScene.x - randomX > view!.frame.width * 0.4)
+//                        
+//                        let bergPositionInSceneY = previousBergPositionInScene.y + gapDistance // + randomY
+//                        berg.position = self.convertPoint(CGPoint(x: randomX, y: bergPositionInSceneY), toNode: stage!)
+//                        
+//                        topmostBergY = berg.position.y
+//                    }
+//                    
+//                    stage!.insertChild(berg, atIndex: 0)
+//                    
+//                    topmostOfLeft = berg
+//                    
+//                    forking = false
+//                    pathing = ""
+//                    
+//                case "right":
+//                    let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                    
+//                    if let previousBerg = topmostOfRight {
+//                        let previousBergPositionInScene = self.convertPoint(previousBerg.position, fromNode: stage!)
+//                        
+//                        var randomX: CGFloat
+//                        repeat {
+//                            randomX = CGFloat(random()) % (view!.frame.width * 0.8) + (view!.frame.width * 0.1)
+//                        } while (previousBergPositionInScene.x - randomX > view!.frame.width * 0.4)
+//                        
+//                        let bergPositionInSceneY = previousBergPositionInScene.y + gapDistance // + randomY
+//                        berg.position = self.convertPoint(CGPoint(x: randomX, y: bergPositionInSceneY), toNode: stage!)
+//                        
+//                        topmostBergY = berg.position.y
+//                        
+//                    }
+//                    
+//                    stage!.insertChild(berg, atIndex: 0)
+//                    
+//                    topmostOfRight = berg
+//                    
+//                    forking = false
+//                    pathing = ""
+//                    
+//                default:
+//                    forking = false
+//                    pathing = ""
+//                }
+//                
+//                
+//                
+//            } else {
+//                print("creating berg")
+//                topmostOfLeft = nil
+//                topmostOfRight = nil
+//                
+//                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+//                
+//                if let previousBerg = stage!.children.first {
+//                    let previousBergPositionInScene = self.convertPoint(previousBerg.position, fromNode: stage!)
+//                    
+//                    let randomX = CGFloat(random()) % (view!.frame.width * 0.4) - (view!.frame.width * 0.2)
+//                    
+//                    let bergPositionInSceneY = previousBergPositionInScene.y + gapDistance // + randomY
+//                    
+//                    berg.position = self.convertPoint(CGPoint(x: previousBergPositionInScene.x + randomX, y: bergPositionInSceneY), toNode: stage!)
+//                    
+//                    topmostBergY = berg.position.y
+//                    
+////                    topmostBergY = bergPositionInSceneY
+//                    
+//                } else {
+//                    // If there are no previous icebergs, generate the initial iceberg under the penguin.
+//                    berg.position = self.convertPoint(CGPoint(x: penguin.position.x, y: penguin.position.y), toNode: stage!)
+//                }
+//                berg.bob()
+//                stage!.insertChild(berg, atIndex: 0)
+//            }
+//
+//        }
+//    }
+    
+    func generateBerg() {
+        var topmostBergY: CGFloat = 0.0
+        for berg in stage!.children {
+            if berg.position.y > topmostBergY{
+                let bergPositionInScene = self.convertPoint(berg.position, fromNode: stage!)
+                topmostBergY = bergPositionInScene.y
+            }
+        }
+        while (topmostBergY < view!.frame.height) {
+            
+            let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+            
+            if let previousBerg = stage!.children.first {
+                let previousBergPositionInScene = self.convertPoint(previousBerg.position, fromNode: stage!)
+                
+                let randomX = CGFloat(random()) % (view!.frame.width * 0.4) - (view!.frame.width * 0.2)
+                
+                let bergPositionInSceneY = previousBergPositionInScene.y + gapDistance // + randomY
+                
+                berg.position = self.convertPoint(CGPoint(x: previousBergPositionInScene.x + randomX, y: bergPositionInSceneY), toNode: stage!)
+                
+                topmostBergY = berg.position.y
+                
+                print(previousBergPositionInScene.y)
+                print(bergPositionInSceneY)
+                
+                //                    topmostBergY = bergPositionInSceneY
+                
+            } else {
+                // If there are no previous icebergs, generate the initial iceberg under the penguin.
+                berg.position = self.convertPoint(CGPoint(x: penguin.position.x, y: penguin.position.y), toNode: stage!)
+            }
+            berg.bob()
+            stage!.insertChild(berg, atIndex: 0)
         }
     }
 }
