@@ -27,6 +27,8 @@ class Iceberg: SKSpriteNode {
     var shadow:SKShapeNode?
     var underwater:SKShapeNode?
     var shadowMask:SKShapeNode?
+    
+    var landed = false
         
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
@@ -268,16 +270,19 @@ class Iceberg: SKSpriteNode {
     }
     
     func land() {
-        self.removeAllActions()
-        
-        let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
-        let reduce = SKAction.scaleTo(1.0, duration: 0.06)
-        
-        enlarge.timingMode = .EaseOut
-        reduce.timingMode = .EaseIn
-        
-        let bumpSequence = SKAction.sequence([enlarge, reduce])
-        
-        runAction(bumpSequence)
+        if !landed {
+            landed = true
+            self.removeAllActions()
+            
+            let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
+            let reduce = SKAction.scaleTo(1.0, duration: 0.06)
+            
+            enlarge.timingMode = .EaseOut
+            reduce.timingMode = .EaseIn
+            
+            let bumpSequence = SKAction.sequence([enlarge, reduce])
+            
+            runAction(bumpSequence)
+        }
     }
 }

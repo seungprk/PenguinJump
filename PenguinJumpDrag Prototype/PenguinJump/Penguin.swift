@@ -8,10 +8,17 @@
 
 import SpriteKit
 
+//// Overload minus operator to use on CGPoint
+//func -(first: CGPoint, second: CGPoint) -> CGPoint {
+//    let deltaX = first.x - second.x
+//    let deltaY = first.y - second.y
+//    return CGPoint(x: deltaX, y: deltaY)
+//}
+
 class Penguin: SKSpriteNode {
     
-    let penguin = SKSpriteNode(imageNamed: "penguintemp")
-    var penguinShadow: SKShapeNode!
+    let body = SKSpriteNode(imageNamed: "penguintemp")
+    var shadow: SKShapeNode!
     
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
@@ -20,5 +27,220 @@ class Penguin: SKSpriteNode {
 
     var targeting = false
     var playerTouched = false
+    
+    var jumping = false
+    var doubleJumped = false
+    var inAir = false
+    var onLand = true
+    
+    init() {
+        super.init(texture: nil, color: UIColor.clearColor(), size: body.size)
+        
+        // Create penguin
+        let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
+        
+//        penguin.position = penguinPositionInScene
+        name = "penguin"
+//        zPosition = 2100
+        
+        body.position = CGPointZero
+        body.zPosition = 21000
+        addChild(body)
+        
+        // Create penguin's shadow
+        shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width, height: body.frame.width), cornerRadius: body.frame.width / 2)
+        shadow.fillColor = SKColor.blackColor()
+        shadow.alpha = 0.2
+        shadow.position =  CGPoint(x: 0, y: -body.frame.height / 2 + body.frame.height / 2)
+        shadow.zPosition = 2000
+        addChild(shadow)
+        
+        
+        // Set Aim Sprites
+        let xScale: CGFloat = 0.3
+        let yScale: CGFloat = 0.3
+        let zPosition: CGFloat = 1500
+        
+        targetReticle.xScale = xScale
+        targetReticle.yScale = yScale
+        targetReticle.zPosition = zPosition
+        
+        targetDot1.xScale = xScale
+        targetDot1.yScale = yScale
+        targetDot1.zPosition = zPosition
+        
+        targetDot2.xScale = xScale
+        targetDot2.yScale = yScale
+        targetDot2.zPosition = zPosition
+        
+        targetDot3.xScale = xScale
+        targetDot3.yScale = yScale
+        targetDot3.zPosition = zPosition
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//        print("touches began!")
+        
+        playerTouched = true
+        
+        
+        targetReticle.position = CGPointZero
+        targetDot1.position = CGPointZero
+        targetDot2.position = CGPointZero
+        targetDot3.position = CGPointZero
+        addChild(targetReticle)
+        addChild(targetDot1)
+        addChild(targetDot2)
+        addChild(targetDot3)
+        
+//            for touch in touches{
+//                let positionInSelf = touch.locationInNode(self)
+//                let touchedNodes = self.nodesAtPoint(positionInSelf)
+//                for touchedNode in touchedNodes {
+//                    if let name = touchedNode.name
+//                    {
+//                        if name == "penguin" {
+//                            print("touched penguin")
+//                            playerTouched = true
+//                            targetReticle.position = CGPointZero
+//                            targetDot1.position = CGPointZero
+//                            targetDot2.position = CGPointZero
+//                            targetDot3.position = CGPointZero
+//                            addChild(targetReticle)
+//                            addChild(targetDot1)
+//                            addChild(targetDot2)
+//                            addChild(targetDot3)
+//                        }
+//                    }
+//                }
+//            }
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch: AnyObject in touches {
+            let touchPosition = touch.locationInNode(self)
+            
+            if touchPosition.y < 0 {
+                let targetX = -touchPosition.x
+                let targetY = -touchPosition.y
+                
+                targetReticle.position = CGPoint(x: targetX, y: targetY * 2)
+                targetDot1.position = CGPoint(x: targetX / 2, y: targetY * 2 / 2)
+                targetDot2.position = CGPoint(x: targetX / 4, y: targetY * 2 / 4)
+                targetDot3.position = CGPoint(x: targetX * 3/4, y: targetY * 2 * 3/4)
+            } else {
+                let targetX = -touchPosition.x
+                
+                targetReticle.position = CGPoint(x: targetX, y: 0)
+                targetDot1.position = CGPoint(x: targetX / 2, y: 0)
+                targetDot2.position = CGPoint(x: targetX / 4, y: 0)
+                targetDot3.position = CGPoint(x: targetX * 3/4, y: 0)
+            }
+        }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//        if !lockMovement {
+            for touch: AnyObject in touches {
+                let touchPosition = touch.locationInNode(self)
+                
+                if playerTouched {
 
+                    
+                    if touchPosition.y < 0 {
+                        for touch: AnyObject in touches {
+                            let touchEndPos = touch.locationInNode(self)
+                            
+                            let direction = CGVector(dx: -touchEndPos.x, dy: -touchEndPos.y)
+                            
+                            jump(direction)
+                        }
+                    } else {
+                        for touch: AnyObject in touches {
+                            let touchEndPos = touch.locationInNode(self)
+                            
+                            let direction = CGVector(dx: -touchEndPos.x, dy: 0)
+                            
+                            jump(direction)
+                        }
+                    }
+                    playerTouched = false
+                    
+                    targetReticle.removeFromParent()
+                    targetDot1.removeFromParent()
+                    targetDot2.removeFromParent()
+                    targetDot3.removeFromParent()
+                }
+            }
+//        }
+    }
+    
+    
+    func jump(direction: CGVector) {
+        removeAllActions()
+        
+        inAir = true
+        
+        let jumpHeight = frame.height * 2
+        
+        let jumpRate: CGFloat = 150
+        let distance = sqrt(direction.dx * direction.dx + direction.dy * direction.dy)
+        
+        let jumpDuration = Double(distance / jumpRate)
+
+        
+        let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
+        let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
+        let enlargeAction = SKAction.scaleBy(2.0, duration: jumpDuration * 0.5)
+        let reduceAction = SKAction.scaleBy(0.5, duration: jumpDuration * 0.5)
+        jumpAction.timingMode = SKActionTimingMode.EaseOut
+        fallAction.timingMode = SKActionTimingMode.EaseIn
+        enlargeAction.timingMode = SKActionTimingMode.EaseOut
+        reduceAction.timingMode = SKActionTimingMode.EaseIn
+        let jumpSequence = SKAction.sequence([jumpAction, fallAction])
+        let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
+        
+        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        jumpCounter.timingMode = SKActionTimingMode.EaseOut
+        fallCounter.timingMode = SKActionTimingMode.EaseIn
+        
+        let shadowEnlarge = SKAction.scaleTo(0.6, duration: jumpDuration * 0.5)
+        let shadowReduce = SKAction.scaleTo(1.0, duration: jumpDuration * 0.5)
+        shadowEnlarge.timingMode = .EaseOut
+        shadowReduce.timingMode = .EaseIn
+        let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
+        
+        let counterSequence = SKAction.sequence([jumpCounter, fallCounter])
+        
+        let move = SKAction.moveBy(CGVector(dx: direction.dx, dy: direction.dy * 2), duration: jumpDuration)
+        
+        runAction(enlargeSequence)
+        //        penguinShadow.runAction(enlargeSequence)
+        shadow.runAction(shadowEnlargeSequence)
+        
+        shadow.runAction(counterSequence)
+        runAction(move)
+        
+        //            penguinInAir = true
+        //        lockMovement = true
+        runAction(jumpSequence, completion: { () -> Void in
+            //            self.shakeScreen()
+            self.inAir = false
+            
+            self.checkOnIceberg()
+            
+            let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 7.0)
+            self.runAction(penguinSinking)
+        })
+    }
+    
+    func checkOnIceberg() {
+        
+    }
 }

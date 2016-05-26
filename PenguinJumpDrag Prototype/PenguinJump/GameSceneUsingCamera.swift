@@ -21,7 +21,8 @@ class GameSceneUsingCamera: SKScene {
     
     var cam:SKCameraNode!
     
-    var penguin = SKSpriteNode(imageNamed: "penguintemp")
+    let penguin = Penguin()
+//    var penguin = SKSpriteNode(imageNamed: "penguintemp")
     var penguinShadow: SKShapeNode!
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
@@ -146,15 +147,15 @@ class GameSceneUsingCamera: SKScene {
                             restart()
                         }
                         if name == "penguin" {
-                            playerTouched = true
-                            targetReticle.position = penguin.position
-                            targetDot1.position = penguin.position
-                            targetDot2.position = penguin.position
-                            targetDot3.position = penguin.position
-                            addChild(targetReticle)
-                            addChild(targetDot1)
-                            addChild(targetDot2)
-                            addChild(targetDot3)
+//                            playerTouched = true
+//                            targetReticle.position = penguin.position
+//                            targetDot1.position = penguin.position
+//                            targetDot2.position = penguin.position
+//                            targetDot3.position = penguin.position
+//                            addChild(targetReticle)
+//                            addChild(targetDot1)
+//                            addChild(targetDot2)
+//                            addChild(targetDot3)
                         }
                     }
                 }
@@ -201,15 +202,15 @@ class GameSceneUsingCamera: SKScene {
             for touch: AnyObject in touches {
                 let positionInScene = touch.locationInNode(self)
                 if positionInScene.y < penguin.position.y {
-                    targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.y - (positionInScene.y - penguin.position.y) * 2)
-                    targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 )/2)
-                    targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 )/4)
-                    targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 ) * 3/4)
-                } else {
-                    targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.y)
-                    targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.y)
-                    targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.y)
-                    targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.y)
+//                    targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.y - (positionInScene.y - penguin.position.y) * 2)
+//                    targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 )/2)
+//                    targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 )/4)
+//                    targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.y - ( (positionInScene.y - penguin.position.y) * 2 ) * 3/4)
+//                } else {
+//                    targetReticle.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x), y: penguin.position.y)
+//                    targetDot1.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/2, y: penguin.position.y)
+//                    targetDot2.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x)/4, y: penguin.position.y)
+//                    targetDot3.position = CGPoint(x: penguin.position.x - (positionInScene.x - penguin.position.x) * 3/4, y: penguin.position.y)
                 }
             }
         }
@@ -221,31 +222,31 @@ class GameSceneUsingCamera: SKScene {
                 let positionInScene = touch.locationInNode(self)
                 if playerTouched == true {
                     lockMovement = true
-                    if positionInScene.y < penguin.position.y {
-                        for touch: AnyObject in touches {
-                            let touchEndPos = touch.locationInNode(self)
-                            
-//                            let destination = CGPoint(x: -touchEndPos.x, y: -touchEndPos.y)
-                            
-                            let delta = penguin.position - touchEndPos
-                            
-                            jump(delta)
-                        }
-                    } else {
-                        for touch: AnyObject in touches {
-                            let touchEndPos = touch.locationInNode(self)
-                            
-                            let delta = CGPoint(x: penguin.position.x - touchEndPos.x, y: 0)
-                            
-                            jump(delta)
-                        }
-                    }
-                    playerTouched = false
-                    lockMovement = false
-                    targetReticle.removeFromParent()
-                    targetDot1.removeFromParent()
-                    targetDot2.removeFromParent()
-                    targetDot3.removeFromParent()
+//                    if positionInScene.y < penguin.position.y {
+//                        for touch: AnyObject in touches {
+//                            let touchEndPos = touch.locationInNode(self)
+//                            
+////                            let destination = CGPoint(x: -touchEndPos.x, y: -touchEndPos.y)
+//                            
+//                            let delta = penguin.position - touchEndPos
+//                            
+//                            jump(delta)
+//                        }
+//                    } else {
+//                        for touch: AnyObject in touches {
+//                            let touchEndPos = touch.locationInNode(self)
+//                            
+//                            let delta = CGPoint(x: penguin.position.x - touchEndPos.x, y: 0)
+//                            
+//                            jump(delta)
+//                        }
+//                    }
+//                    playerTouched = false
+//                    lockMovement = false
+//                    targetReticle.removeFromParent()
+//                    targetDot1.removeFromParent()
+//                    targetDot2.removeFromParent()
+//                    targetDot3.removeFromParent()
                 }
             }
         }
@@ -329,38 +330,7 @@ class GameSceneUsingCamera: SKScene {
     
     
 
-    override func update(currentTime: NSTimeInterval) {
-
-        stage.update()
-        
-        if gameStarted {
-//            scoreLabel.text = "Score: " + String(Int(score))
-            scoreLabel.text = "Score: " + String(intScore)
-
-            centerCamera()
-            trackScore()
-            checkGameOver()
-        }
-        
-    }
-    func checkGameOver() {
-        if gameOver {
-            view?.paused = true
-            
-            backgroundColor = SKColor.redColor()
-            
-            let restartButton = SKLabelNode(text: "Restart")
-            restartButton.name = "restartButton"
-            restartButton.userInteractionEnabled = false
-            restartButton.fontName = "Helvetica Neue Condensed Black"
-            restartButton.fontSize = 48
-            restartButton.fontColor = SKColor.whiteColor()
-            restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
-            restartButton.zPosition = 30000
-            cam.addChild(restartButton)
-        }
-    }
- 
+    
     
     func centerCamera() {
         let cameraFinalDestX = penguin.position.x
@@ -408,8 +378,9 @@ class GameSceneUsingCamera: SKScene {
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
         
         penguin.position = penguinPositionInScene
-        penguin.name = "penguin"
+//        penguin.name = "penguin"
         penguin.zPosition = 2100
+        penguin.userInteractionEnabled = true
         addChild(penguin)
         
         // Create penguin's shadow
@@ -418,8 +389,8 @@ class GameSceneUsingCamera: SKScene {
         penguinShadow.alpha = 0.2
         penguinShadow.position =  CGPoint(x: 0, y: -penguin.frame.height / 2 + penguinShadow.frame.height / 2)
         penguinShadow.zPosition = 2000
-        penguin.removeAllChildren()
-        penguin.addChild(penguinShadow)
+//        penguin.removeAllChildren()
+//        penguin.addChild(penguinShadow)
         
         // Set Aim Sprites
         targetReticle.xScale = 0.3
@@ -436,54 +407,113 @@ class GameSceneUsingCamera: SKScene {
         targetDot3.zPosition = 1500
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
+        
+        
+        
+//        let classyPenguin = Penguin()
+//        classyPenguin.position = penguinPositionInScene
+//        classyPenguin.position.y += 200.0
+//        classyPenguin.userInteractionEnabled = true
+//        classyPenguin.zPosition = 2200
+//        addChild(classyPenguin)
 
     }
     
     
-    
-    
-    func onIceberg() -> Bool {
-        var onBerg = false
-        for berg in stage!.children {
-            if penguinShadow!.intersectsNode(berg) {
-                let berg = berg as! Iceberg
-                onBerg = true
-                stage?.updateCurrentBerg(berg)
-                berg.land()
-                
-            }
+    override func update(currentTime: NSTimeInterval) {
+        
+        stage.update()
+        
+        
+        if gameStarted {
+            //            scoreLabel.text = "Score: " + String(Int(score))
+            scoreLabel.text = "Score: " + String(intScore)
+            
+            centerCamera()
+            trackScore()
+            checkGameOver()
+            penguinUpdate()
         }
-        return onBerg
+        
     }
+    func checkGameOver() {
+        if gameOver {
+            view?.paused = true
+            
+            backgroundColor = SKColor.redColor()
+            
+            let restartButton = SKLabelNode(text: "Restart")
+            restartButton.name = "restartButton"
+            restartButton.userInteractionEnabled = false
+            restartButton.fontName = "Helvetica Neue Condensed Black"
+            restartButton.fontSize = 48
+            restartButton.fontColor = SKColor.whiteColor()
+            restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
+            restartButton.zPosition = 30000
+            cam.addChild(restartButton)
+        }
+    }
+
+    
+//    func onIceberg() -> Bool {
+//        var onBerg = false
+//        for berg in stage!.children {
+//            if penguinShadow!.intersectsNode(berg) {
+//                let berg = berg as! Iceberg
+//                onBerg = true
+//                stage?.updateCurrentBerg(berg)
+//                berg.land()
+//                
+//            }
+//        }
+//        return onBerg
+//    }
     
 //    func landOnIceberg() {
 //        
 //    }
     
-    func checkOnIceberg() {
-//        let check = onIceberg() ? "On an iceberg" : "Not on an iceberg"
-        for berg in stage.children {
-            if penguinShadow.intersectsNode(berg) {
-                let berg = berg as! Iceberg
-//                onBerg = true
-                stage.updateCurrentBerg(berg)
-                berg.land()
-                
-                intScore += 1
-                berg.sink(7.0, completion: {
-                    if !self.onIceberg() /* && !self.penguinInAir */{
-                        
-                        self.gameOver = true
-                    }
-                })
-            } else {
-                if !onIceberg() /*&& !penguinInAir*/ {
-                    gameOver = true
+    func penguinUpdate() {
+        if penguin.inAir {
+            
+        } else {
+            for child in stage.children {
+                let berg = child as! Iceberg
+                if penguin.shadow.intersectsNode(berg) {
+                    print(true)
+                    berg.land()
+                } else {
+//                    gameOver = true
                 }
-                
             }
+            
         }
-        
+    }
+    
+    func checkOnIceberg() {
+////        let check = onIceberg() ? "On an iceberg" : "Not on an iceberg"
+//        for berg in stage.children {
+//            if penguinShadow.intersectsNode(berg) {
+//                let berg = berg as! Iceberg
+////                onBerg = true
+//                stage.updateCurrentBerg(berg)
+//                berg.land()
+//                
+//                intScore += 1
+//                berg.sink(7.0, completion: {
+//                    if !self.onIceberg() /* && !self.penguinInAir */{
+//                        
+//                        self.gameOver = true
+//                    }
+//                })
+//            } else {
+//                if !onIceberg() /*&& !penguinInAir*/ {
+//                    gameOver = true
+//                }
+//                
+//            }
+//        }
+//        
     
     }
     
