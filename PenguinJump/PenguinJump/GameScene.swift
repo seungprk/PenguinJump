@@ -25,23 +25,27 @@ class GameScene: SKScene {
     let penguin = Penguin()
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
+    let deathSprite = SKSpriteNode(imageNamed: "deathtemp")
 
     // Labels
     let title = SKSpriteNode(texture: nil)
     let playButton = SKLabelNode(text: "Play")
 
     // Game session logic
-    var gameStarted = false
+    var gameBegin = false
+    var gameRunning = false
     var gameOver = false
     var playerTouched = false
+    var freezeCamera = false
     
     // Score tracking
     var distance:CGFloat = 0.0
     var intScore = 0
     var scoreLabel: SKLabelNode!
+    var highScore = 0
     
     override func didMoveToView(view: SKView) {
-        backgroundColor = SKColor(red: 0.2, green: 0.9, blue: 0.9, alpha: 0.4)
+//        backgroundColor = SKColor(red: 0.2, green: 0.9, blue: 0.9, alpha: 0.4)
 
         newGame()
         
@@ -86,6 +90,12 @@ class GameScene: SKScene {
         let zoomedIn = SKAction.scaleTo(0.4, duration: 0.0)
         cam.runAction(zoomedIn)
         
+//        let startX = penguin.position.x
+//        let startY = penguin.position.y //+ frame.height / 4
+//        let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
+//        pan.timingMode = .EaseInEaseOut
+//        cam.runAction(pan)
+
         
 //        let lightningAtlas = SKTextureAtlas(named: "lightning")
 //        var lightningFrames = [SKTexture]()
@@ -139,12 +149,12 @@ class GameScene: SKScene {
                 if let name = touchedNode.name
                 {
                     if name == "restartButton" {
-                        view!.paused = false
                         restart()
+                        gameRunning = true
                     }
                     if touchedNode.name == "playButton" {
-
                         beginGame()
+                        
                     }
                 }
             }
@@ -214,7 +224,8 @@ class GameScene: SKScene {
             scoreLabelDown.timingMode = .EaseOut
             self.scoreLabel.runAction(scoreLabelDown)
             
-            self.gameStarted = true
+            self.gameBegin = true
+            self.gameRunning = true
         })
         
         let playButtonDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
@@ -268,8 +279,6 @@ class GameScene: SKScene {
         addChild(penguin)
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
-        
-        
     }
     
     func restart() {
@@ -277,23 +286,27 @@ class GameScene: SKScene {
         removeAllActions()
         cam.removeAllChildren()
         
+        penguin.removeAllActions()
+        
         newGame()
+        freezeCamera = false
+
         intScore = 0
         cam.addChild(scoreLabel)
+        gameRunning = true
+
     }
     
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
-        
         stage.update()
         
-        
-        if gameStarted {
-            //            scoreLabel.text = "Score: " + String(Int(score))
+        if gameRunning {
+            penguin.userInteractionEnabled = true
+
             scoreLabel.text = "Score: " + String(intScore)
             
-            centerCamera()
             trackDistance()
             penguinUpdate()
             
@@ -301,6 +314,41 @@ class GameScene: SKScene {
             if gameOver {
                 runGameOver()
             }
+            
+            centerCamera()
+        } else {
+            penguin.userInteractionEnabled = false
+        }
+        
+    }
+    
+    
+    func penguinUpdate() {
+        for child in stage.children {
+            let berg = child as! Iceberg
+            
+            if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
+                // Penguin landed on an iceberg if check is true
+                penguin.land()
+                
+                
+                berg.land()
+                stage.updateCurrentBerg(berg)
+                shakeScreen()
+                
+                berg.sink(7.0, completion: {})
+                
+                intScore += 1
+                
+                if intScore > highScore {
+                    highScore = intScore
+                }
+                
+                let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
+                let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
+                scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+            }
+            
         }
         
     }
@@ -313,48 +361,69 @@ class GameScene: SKScene {
     
     func runGameOver() {
         if gameOver {
-            view?.paused = true
+            for child in stage.children {
+                let berg = child as! Iceberg
+                berg.removeAllActions()
+            }
             
-            backgroundColor = SKColor.redColor()
+            shakeScreen()
+            gameRunning = false
+            freezeCamera = true
             
-            let restartButton = SKLabelNode(text: "Restart")
-            restartButton.name = "restartButton"
-            restartButton.userInteractionEnabled = false
-            restartButton.fontName = "Helvetica Neue Condensed Black"
-            restartButton.fontSize = 48
-            restartButton.fontColor = SKColor.whiteColor()
-            restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
-            restartButton.zPosition = 30000
-            cam.addChild(restartButton)
+            if !penguin.onBerg {
+                let fall = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 0.3)
+                fall.timingMode = .EaseIn
+                
+                penguin.runAction(fall, completion: {
+                    self.deathSprite.position = self.penguin.position
+                    self.deathSprite.zPosition = 3000
+                    self.addChild(self.deathSprite)
+                    self.backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
+                    
+//                    let restartButton = SKLabelNode(text: "Restart")
+//                    restartButton.name = "restartButton"
+//                    restartButton.userInteractionEnabled = false
+//                    restartButton.fontName = "Helvetica Neue Condensed Black"
+//                    restartButton.fontSize = 48
+//                    restartButton.fontColor = SKColor.whiteColor()
+//                    restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
+//                    restartButton.zPosition = 30000
+//                    self.cam.addChild(restartButton)
+                })
+
+            } else {
+                deathSprite.position = penguin.position
+                deathSprite.zPosition = 3000
+                addChild(deathSprite)
+                backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
+                
+//                let restartButton = SKLabelNode(text: "Restart")
+//                restartButton.name = "restartButton"
+//                restartButton.userInteractionEnabled = false
+//                restartButton.fontName = "Helvetica Neue Condensed Black"
+//                restartButton.fontSize = 48
+//                restartButton.fontColor = SKColor.whiteColor()
+//                restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
+//                restartButton.zPosition = 30000
+//                cam.addChild(restartButton)
+            }
+            
+            let wait = SKAction.waitForDuration(2.0)
+            
+            self.runAction(wait, completion:  {
+                var scoreScene = ScoreScene(size: self.size)
+                
+                scoreScene.highScore = self.highScore
+                scoreScene.score = self.intScore
+                
+                var transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                scoreScene.scaleMode = SKSceneScaleMode.AspectFill
+                self.scene!.view?.presentScene(scoreScene, transition: transition)
+
+            })
         }
     }
     
-    func penguinUpdate() {
-        for child in stage.children {
-            let berg = child as! Iceberg
-            if penguin.shadow.intersectsNode(berg) {
-                if !berg.landed && !penguin.inAir {
-                    if berg.name != "firstBerg" {
-                        berg.land()
-                        stage.updateCurrentBerg(berg)
-                        shakeScreen()
-                        
-                        berg.sink(7.0, completion: {})
-                        
-                        intScore += 1
-                        
-                        let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                        let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                        
-                        scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
-                    }
-                    
-                   
-                }
-            }
-        }
-
-    }
     
     func onBerg() -> Bool {
         for child in stage.children {
@@ -369,13 +438,19 @@ class GameScene: SKScene {
     // MARK: - Camera control
     
     func centerCamera() {
-        let cameraFinalDestX = penguin.position.x
-        let cameraFinalDestY = penguin.position.y + frame.height / 4
+        if !freezeCamera {
+            let cameraFinalDestX = penguin.position.x
+            let cameraFinalDestY = penguin.position.y + frame.height / 4
+            
+            let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.25)
+            pan.timingMode = .EaseInEaseOut
+            
+            cam.runAction(pan)
+        } else {
+            cam.removeAllActions()
+        }
         
-        let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.25)
-        pan.timingMode = .EaseInEaseOut
         
-        cam.runAction(pan)
     }
     
     // MARK: - Utilities

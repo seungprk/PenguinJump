@@ -143,11 +143,16 @@ class Iceberg: SKSpriteNode {
     }
     
     func beginMoving() {
-        let forth = SKAction.moveBy(CGVector(dx: 50, dy: 0), duration: 1.0)
-        let back = SKAction.moveBy(CGVector(dx: -100, dy: 0), duration: 2.0)
-        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forth, back, forth]))
+        let moveSpeed = 4.0
         
-//        position.x -= 25
+        let forth = SKAction.moveBy(CGVector(dx: 200, dy: 0), duration: moveSpeed)
+        let back = SKAction.moveBy(CGVector(dx: -200, dy: 0), duration: moveSpeed)
+        forth.timingMode = .EaseInEaseOut
+        back.timingMode = .EaseInEaseOut
+        
+        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forth, back]))
+        
+        position.x -= 100
         runAction(backAndForth)
     }
     
