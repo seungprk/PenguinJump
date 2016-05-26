@@ -90,27 +90,12 @@ class GameScene: SKScene {
         let zoomedIn = SKAction.scaleTo(0.4, duration: 0.0)
         cam.runAction(zoomedIn)
         
-//        let startX = penguin.position.x
-//        let startY = penguin.position.y //+ frame.height / 4
-//        let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
-//        pan.timingMode = .EaseInEaseOut
-//        cam.runAction(pan)
+        let startX = penguin.position.x
+        let startY = penguin.position.y //+ frame.height / 4
+        let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
+        pan.timingMode = .EaseInEaseOut
+        cam.runAction(pan)
 
-        
-//        let lightningAtlas = SKTextureAtlas(named: "lightning")
-//        var lightningFrames = [SKTexture]()
-//        for number in 1...3 {
-//            let texture = SKTexture(imageNamed: "lightning\(number)")
-//            lightningFrames.append(texture)
-//        }
-//        
-//        let lightning = SKSpriteNode(texture: lightningFrames.first)
-//        lightning.position = view.center
-//        lightning.zPosition = 3000
-//        let lightningAnim = SKAction.animateWithTextures(lightningFrames, timePerFrame: 0.2)
-//        lightning.runAction(SKAction.repeatActionForever(lightningAnim))
-//        
-//        addChild(lightning)
     }
     
     // MARK: - Gameplay logic

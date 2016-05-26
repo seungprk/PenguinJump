@@ -58,17 +58,17 @@ class ScoreScene: SKScene {
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        var touch = touches
-        var location = touch.first!.locationInNode(self)
-        var node = self.nodeAtPoint(location)
+        let touch = touches
+        let location = touch.first!.locationInNode(self)
+        let node = self.nodeAtPoint(location)
         
         // If previous button is touched, start transition to previous scene
         if (node.name == "restartButton") {
-            var gameScene = GameScene(size: self.size)
+            let gameScene = GameScene(size: self.size)
             
             gameScene.highScore = highScore
             
-            var transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
+            let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
             gameScene.scaleMode = SKSceneScaleMode.AspectFill
             self.scene!.view?.presentScene(gameScene, transition: transition)
         }
