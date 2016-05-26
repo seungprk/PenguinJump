@@ -1,55 +1,56 @@
 //
-//  GameScene.swift
+//  GameSceneUsingCamera.swift
 //  PenguinJump
 //
-//  Created by Matthew Tso on 5/13/16.
-//  Copyright (c) 2016 De Anza. All rights reserved.
+//  Created by Matthew Tso on 5/25/16.
+//  Copyright © 2016 De Anza. All rights reserved.
 //
 
 import SpriteKit
 
 // Overload minus operator to use on CGPoint
-//func -(first: CGPoint, second: CGPoint) -> CGPoint {
-//    let deltaX = first.x - second.x
-//    let deltaY = first.y - second.y
-//    return CGPoint(x: deltaX, y: deltaY)
-//}
+func -(first: CGPoint, second: CGPoint) -> CGPoint {
+    let deltaX = first.x - second.x
+    let deltaY = first.y - second.y
+    return CGPoint(x: deltaX, y: deltaY)
+}
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameSceneUsingCamera: SKScene {
     
-    // Control options
-    let inverseControl = false
-    let enableScreenShake = true
+    var enableScreenShake = true
     
-    var stage: IcebergGenerator?
-    let penguin = SKSpriteNode(imageNamed: "penguintemp")
+    var cam:SKCameraNode!
+    
+    var penguin = SKSpriteNode(imageNamed: "penguintemp")
+    var penguinShadow: SKShapeNode!
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
     let targetDot2 = SKSpriteNode(imageNamed: "targetdot")
     let targetDot3 = SKSpriteNode(imageNamed: "targetdot")
-    var penguinShadow: SKShapeNode!
-//    var stage : SKSpriteNode?
-    var yIncrement : CGFloat?
-    var gameOver = false
-    var highestIceberg = 0
-    var lockMovement = false
-    var score: CGFloat = 0.0
-    var yPosition: CGFloat = 0.0
-    var scoreLabel: SKLabelNode?
-    var playerTouched = false
-    // Transfer Vars
-    var touchBegPos : CGPoint?
+    var stage: IcebergGenerator!
+    var yIncrement: CGFloat!
     
-    // Gameplay variables
-//    var difficulty = 1.0
+    var gameOver = false
+    var lockMovement = false
+    var playerTouched = false
     
     override func didMoveToView(view: SKView) {
-        createSceneContent()
-        
-        let camera = SKCameraNode()
-        
-        self.camera = camera
+        backgroundColor = SKColor(red: 0.2, green: 0.9, blue: 0.9, alpha: 0.4)
+
+        newGame()
+
     }
+    
+//    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//        let firstTouch = touches.first
+//        let location = (firstTouch?.locationInNode(self))!
+//        
+////        penguin.position = location
+//        jump(location)
+////        centerCamera()
+//    }
+    
+    
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if !lockMovement {
@@ -108,12 +109,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     if positionInScene.y < penguin.position.y {
                         for touch: AnyObject in touches {
                             let touchEndPos = touch.locationInNode(self)
-                            jump(touchEndPos)
+                            
+//                            let destination = CGPoint(x: -touchEndPos.x, y: -touchEndPos.y)
+                            
+                            let delta = penguin.position - touchEndPos
+                            
+                            jump(delta)
                         }
                     } else {
                         for touch: AnyObject in touches {
                             let touchEndPos = touch.locationInNode(self)
-                            jump(CGPoint(x: touchEndPos.x, y: penguin.position.y))
+                            
+                            let delta = CGPoint(x: penguin.position.x - touchEndPos.x, y: 0)
+                            
+                            jump(delta)
                         }
                     }
                     playerTouched = false
@@ -126,23 +135,58 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
     }
+
     
-    func createSceneContent() {
+    
+    
+    
+    
+
+    override func update(currentTime: NSTimeInterval) {
+        stage.update()
+        
+        centerCamera()
+        
+        checkGameOver()
+    }
+    
+    func checkGameOver() {
+        if gameOver {
+            backgroundColor = SKColor.redColor()
+        }
+    }
+    
+    func centerCamera() {
+        let cameraFinalDestX = penguin.position.x
+        let cameraFinalDestY = penguin.position.y + frame.height / 4
+        
+        let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.4)
+        pan.timingMode = .EaseOut
+        
+        cam.runAction(pan)
+    }
+    
+    func newGame() {
+        cam = SKCameraNode()
+        cam.xScale = 1.0
+        cam.yScale = 1.0
+        
+        camera = cam
+        addChild(cam)
+        
+        cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        
+        stage = IcebergGenerator(view: view!, camera: cam)
+        stage.position = view!.center
+        addChild(stage)
+
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         
-        scoreLabel = SKLabelNode(text: "Score: " + String(Int(score)))
-        scoreLabel!.fontName = "Avenir"
-        scoreLabel!.fontSize = 16
-        scoreLabel!.fontColor = SKColor.blackColor()
-        scoreLabel!.position = CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.95)
-        scoreLabel!.zPosition = 3000
-        addChild(scoreLabel!)
-        
-        // Set constants based on scene size
         yIncrement = size.height / 5
-        
+
         // Create penguin
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
+        
         penguin.position = penguinPositionInScene
         penguin.name = "penguin"
         penguin.zPosition = 2100
@@ -150,11 +194,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Create penguin's shadow
         penguinShadow = SKShapeNode(rectOfSize: CGSize(width: penguin.frame.width, height: penguin.frame.width), cornerRadius: penguin.frame.width / 2)
-        penguinShadow!.fillColor = SKColor.blackColor()
-        penguinShadow!.alpha = 0.2
-        penguinShadow!.position = CGPoint(x: penguin.position.x, y: penguin.position.y - 10)
-        penguinShadow!.zPosition = 2000
-        addChild(penguinShadow!)
+        penguinShadow.fillColor = SKColor.blackColor()
+        penguinShadow.alpha = 0.2
+        penguinShadow.position =  CGPoint(x: 0, y: -penguin.frame.height / 2 + penguinShadow.frame.height / 2)
+        penguinShadow.zPosition = 2000
+        penguin.addChild(penguinShadow)
         
         // Set Aim Sprites
         targetReticle.xScale = 0.3
@@ -170,40 +214,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         targetDot3.yScale = 0.3
         targetDot3.zPosition = 1500
         
-        // Create stage
-//        let stageNode = SKSpriteNode(color: UIColor.clearColor(), size: CGSize(width: size.width, height: size.height))
-//        stage = IcebergGenerator(view: view!, scene: self)
-//        stage!.position = view!.center //CGPoint(x: size.width * 0.5, y: size.height * 0.5)
-//        addChild(stage!)
-        
-        stage?.newGame(convertPoint(penguinPositionInScene, toNode: stage!))
-        
-//        generateBerg()
-    }
-    
-    
-    
-    func trackScore(translationY: CGFloat) {
-        yPosition += -translationY
-        if yPosition > score {
-            score = yPosition / 10
-        }
-    }
-    
-    override func update(currentTime: NSTimeInterval) {
-        scoreLabel!.text = "Score: " + String(Int(score))
-        
-        stage?.update()
-//        generateBerg()
-        
-        checkGameOver()
+        stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
+
     }
     
     func jump(destination: CGPoint) {
-        let jumpHeight = yIncrement! * 0.5
+        let jumpHeight = yIncrement * 0.5
         let jumpDuration = 1.0
-        let xPlatformTravel = destination.x - penguin.position.x
-        let yPlatformTravel = (destination.y - penguin.position.y) * 2
+//        let xPlatformTravel = destination.x - penguin.position.x
+//        let yPlatformTravel = (destination.y - penguin.position.y) * 2
         
         let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
@@ -216,25 +235,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let jumpSequence = SKAction.sequence([jumpAction, fallAction])
         let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
         
+        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        jumpCounter.timingMode = SKActionTimingMode.EaseOut
+        fallCounter.timingMode = SKActionTimingMode.EaseIn
+        
+        let shadowEnlarge = SKAction.scaleTo(0.6, duration: jumpDuration * 0.5)
+        let shadowReduce = SKAction.scaleTo(1.0, duration: jumpDuration * 0.5)
+        shadowEnlarge.timingMode = .EaseOut
+        shadowReduce.timingMode = .EaseIn
+        let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
+        
+        let counterSequence = SKAction.sequence([jumpCounter, fallCounter])
+        
+        let move = SKAction.moveBy(CGVector(dx: destination.x, dy: destination.y * 2), duration: jumpDuration)
+        
         penguin.runAction(enlargeSequence)
-        penguinShadow!.runAction(enlargeSequence)
+//        penguinShadow.runAction(enlargeSequence)
+        penguinShadow.runAction(shadowEnlargeSequence)
+        
+        penguinShadow.runAction(counterSequence)
+        penguin.runAction(move)
         
         penguin.runAction(jumpSequence, completion: { () -> Void in
             self.shakeScreen()
             
-            if !self.onIceberg() {
-                self.gameOver = true
-            } else {
-                self.sinkIceberg()
-//                self.checkPathing()
-            }
+            self.checkOnIceberg()
         })
         
-        let velocity = CGVector(dx: xPlatformTravel, dy: yPlatformTravel)
-        stage?.scrollTo(velocity, duration: jumpDuration)
-        
-        trackScore((destination.y - penguin.position.y) * 2)
+//        centerCamera()
     }
+    
+    
     
     func onIceberg() -> Bool {
         var onBerg = false
@@ -250,66 +282,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return onBerg
     }
     
-    func checkOnIceberg() {
-        let check = onIceberg() ? "On an iceberg" : "Not on an iceberg"
-        if !onIceberg() {
-            gameOver = true
-        }
-    }
-    
-//    func checkPathing() {
-//        if forking {
-//            for berg in stage!.children {
-//                if penguinShadow!.intersectsNode(berg) {
-//                    pathing = berg.name == "left" ? "left" : "right"
-//                }
-//            }
-//        }
+//    func landOnIceberg() {
+//        
 //    }
     
-    func sinkIceberg() {
-        for berg in stage!.children {
-            if penguinShadow!.intersectsNode(berg) {
-                let currentBerg = berg as! Iceberg
-                currentBerg.sink(7.0, completion: {
-                    currentBerg.removeFromParent()
-                    self.checkOnIceberg()
+    func checkOnIceberg() {
+//        let check = onIceberg() ? "On an iceberg" : "Not on an iceberg"
+        for berg in stage.children {
+            if penguinShadow.intersectsNode(berg) {
+                let berg = berg as! Iceberg
+//                onBerg = true
+                stage.updateCurrentBerg(berg)
+                berg.bump()
+                berg.sink(7.0, completion: {
+                    if !self.onIceberg() {
+                        self.gameOver = true
+                    }
                 })
+            } else {
+                if !self.onIceberg() {
+                    gameOver = true
+                }
+                
             }
         }
-    }
+        
     
-    func checkGameOver() {
-        if gameOver {
-            view?.paused = true
-            
-            self.backgroundColor = SKColor.redColor()
-            
-            let restartButton = SKLabelNode(text: "Restart")
-            restartButton.name = "restartButton"
-            restartButton.userInteractionEnabled = false
-            restartButton.fontName = "Avenir"
-            restartButton.fontSize = 24
-            restartButton.fontColor = SKColor.whiteColor()
-            restartButton.position = CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
-            restartButton.zPosition = 3000
-            addChild(restartButton)
-        }
     }
     
     func restart() {
-        penguin.removeAllChildren()
         removeAllChildren()
         removeAllActions()
-        
-        gameOver = false
-        highestIceberg = 0
-        lockMovement = false
-        score = 0.0
-        yPosition = 0.0
-        createSceneContent()
+
+        newGame()
     }
-    
     func shakeScreen() {
         if enableScreenShake {
             let shakeAnimation = CAKeyframeAnimation(keyPath: "transform")

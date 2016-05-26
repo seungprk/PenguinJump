@@ -37,6 +37,7 @@ class Iceberg: SKSpriteNode {
         bergVertices = generateRandomPoints(aroundPoint: CGPointZero)
         
         createBergShapes()
+        bob()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -208,6 +209,8 @@ class Iceberg: SKSpriteNode {
             
             let fade = SKAction.fadeOutWithDuration(0.5)
             self.runAction(fade, completion: {
+                self.removeFromParent()
+//                completed()
                 block()
             })
         })

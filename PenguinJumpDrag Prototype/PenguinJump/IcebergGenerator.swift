@@ -15,6 +15,10 @@ enum pathingMode {
 
 class IcebergGenerator: SKSpriteNode {
     
+    var visibleView: SKView!
+//    var gameScene: SKScene!
+    var camera:SKCameraNode!
+    
     var bergSize:CGFloat = 150.0
     var gapDistance:CGFloat = 300.0
     var forkingFrequency = 7
@@ -29,9 +33,12 @@ class IcebergGenerator: SKSpriteNode {
     var highestLeftBerg: Iceberg?
     var highestRightBerg: Iceberg?
     
-    init(view: SKView) {
+    init(view: SKView, camera: SKCameraNode) {
         super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
         position = view.center
+
+        visibleView = view
+        self.camera = camera
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -71,11 +78,24 @@ class IcebergGenerator: SKSpriteNode {
     
     func shouldGenerate() -> Bool {
         if let highestBerg = highestBerg {
-            if highestBerg.frame.origin.y + highestBerg.frame.height < frame.height / 2 {
+            
+            if highestBerg.position.y < camera.position.y {
                 return true
             } else {
                 return false
             }
+//
+//            if highestBerg.frame.origin.y + highestBerg.frame.height < camera.position.y {
+//                return true
+//            } else {
+//                return false
+//            }
+//            
+//            if highestBerg.frame.origin.y + highestBerg.frame.height < frame.height / 2 {
+//                return true
+//            } else {
+//                return false
+//            }
         } else {
             return false
         }
@@ -83,10 +103,14 @@ class IcebergGenerator: SKSpriteNode {
     
     func clearBerg() {
         for child in children {
-            // If top edge of child's frame is less than bottom edge of scene's frame, remove child.
-            if child.frame.origin.y + child.frame.height < -frame.height / 2 {
+            // If top edge of child's frame is less than bottom edge of view's frame, remove child.
+            if child.position.y < camera.position.y - visibleView.frame.height - 100 {
                 child.removeFromParent()
             }
+            
+//            if child.frame.origin.y + child.frame.height < -frame.height / 2 {
+//                child.removeFromParent()
+//            }
         }
     }
     func updateCurrentBerg(berg: Iceberg) {
@@ -151,9 +175,6 @@ class IcebergGenerator: SKSpriteNode {
                 let yPosition = highestBerg!.position.y + gapDistance
                 
                 berg.position = CGPoint(x: xPosition, y: yPosition)
-                print(highestBerg?.position.y)
-                print(berg.position.y)
-                print("")
                 
                 highestBerg = berg
                 

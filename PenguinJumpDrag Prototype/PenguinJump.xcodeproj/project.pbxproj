@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE5B1CF5630300EC559E /* Iceberg.swift */; };
 		7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE651CF647E700EC559E /* IcebergGenerator.swift */; };
+		7F36CE681CF653F200EC559E /* GameSceneUsingCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE671CF653F200EC559E /* GameSceneUsingCamera.swift */; };
 		7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */; };
 		7F7FB3821CE5B80C0067FC9B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7FB3811CE5B80C0067FC9B /* GameScene.swift */; };
 		7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		7F36CE5B1CF5630300EC559E /* Iceberg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Iceberg.swift; sourceTree = "<group>"; };
 		7F36CE651CF647E700EC559E /* IcebergGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IcebergGenerator.swift; sourceTree = "<group>"; };
+		7F36CE671CF653F200EC559E /* GameSceneUsingCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSceneUsingCamera.swift; sourceTree = "<group>"; };
 		7F7FB37A1CE5B80C0067FC9B /* PenguinJump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PenguinJump.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7F7FB3811CE5B80C0067FC9B /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			children = (
 				7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */,
 				7F7FB3811CE5B80C0067FC9B /* GameScene.swift */,
+				7F36CE671CF653F200EC559E /* GameSceneUsingCamera.swift */,
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
 				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
@@ -147,6 +150,7 @@
 			files = (
 				7F7FB3821CE5B80C0067FC9B /* GameScene.swift in Sources */,
 				7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */,
+				7F36CE681CF653F200EC559E /* GameSceneUsingCamera.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
 				7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */,
