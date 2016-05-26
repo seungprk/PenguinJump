@@ -10,16 +10,18 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    // Game options
+    var stormMode = false
     
-    var forkNextBerg = false
+    // Scene SKNodes
+    var stage: SKSpriteNode?
+    var waves: SKSpriteNode?
+    
+    // Path forking variables
     var forking = false
     var topmostOfLeft: Iceberg?
     var topmostOfRight: Iceberg?
     var pathing = ""
-    var stormMode = false
-    
-    var stage: SKSpriteNode?
-    var waves: SKSpriteNode?
     
     override func didMoveToView(view: SKView) {
         backgroundColor = SKColor(red: 0.55, green: 0.9, blue: 95, alpha: 1)
@@ -80,7 +82,6 @@ class GameScene: SKScene {
         }
         
         bob(waves!)
-
     }
     
     func bob(node: SKSpriteNode) {
@@ -109,7 +110,7 @@ class GameScene: SKScene {
                     if name == "sinkButton" {
                         for berg in stage!.children {
                             let berg = berg as! Iceberg
-                            berg.runSinkAction()
+                            berg.testSink()
                         }
                     }
                     if name == "stopButton" {
