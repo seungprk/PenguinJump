@@ -112,21 +112,21 @@ class GameScene: SKScene {
     }
     
     // MARK: - Background
-    
-    func bob(node: SKSpriteNode) {
-        let bobDepth = 2.0
-        let bobDuration = 2.0
-        
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        let wait = SKAction.waitForDuration(bobDuration / 2)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-        
-        let bobSequence = SKAction.sequence([down, wait, up, wait])
-        let bob = SKAction.repeatActionForever(bobSequence)
-        
-        node.removeAllActions()
-        node.runAction(bob)
-    }
+//    
+//    func bob(node: SKSpriteNode) {
+//        let bobDepth = 2.0
+//        let bobDuration = 2.0
+//        
+//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+//        let wait = SKAction.waitForDuration(bobDuration / 2)
+//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+//        
+//        let bobSequence = SKAction.sequence([down, wait, up, wait])
+//        let bob = SKAction.repeatActionForever(bobSequence)
+//        
+//        node.removeAllActions()
+//        node.runAction(bob)
+//    }
     
     // MARK: - Controls
     
