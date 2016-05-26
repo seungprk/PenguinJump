@@ -17,26 +17,28 @@ func -(first: CGPoint, second: CGPoint) -> CGPoint {
 
 class GameScene: SKScene {
     
+    // Game options
     var enableScreenShake = true
     
+    // Node Objects
     var cam:SKCameraNode!
-    
     let penguin = Penguin()
     var stage: IcebergGenerator!
-//    var yIncrement: CGFloat!
-    
+    let jumpAir = SKShapeNode(circleOfRadius: 20.0)
+
+    // Labels
+    let title = SKSpriteNode(texture: nil)
+    let playButton = SKLabelNode(text: "Play")
+
+    // Game session logic
     var gameStarted = false
     var gameOver = false
     var playerTouched = false
     
-    var score: CGFloat = 0.0
+    // Score tracking
+    var distance:CGFloat = 0.0
     var intScore = 0
     var scoreLabel: SKLabelNode!
-    
-    let title = SKSpriteNode(texture: nil)
-    let playButton = SKLabelNode(text: "Play")
-    
-    let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     
     override func didMoveToView(view: SKView) {
         backgroundColor = SKColor(red: 0.2, green: 0.9, blue: 0.9, alpha: 0.4)
@@ -68,8 +70,6 @@ class GameScene: SKScene {
         playButton.fontColor = SKColor.blackColor()
         playButton.position = CGPointZero
         playButton.position.y -= view.frame.height / 3
-//        playButton.position.x = CGRectGetMidX(cam.frame)
-//        playButton.position.y = CGRectGetMidY(cam)
         playButton.zPosition = 10000
         cam.addChild(playButton)
         
@@ -105,9 +105,9 @@ class GameScene: SKScene {
     
     // MARK: - Gameplay logic
     
-    func trackScore() {
-        if penguin.position.y > score {
-            score = penguin.position.y / 10
+    func trackDistance() {
+        if penguin.position.y > distance {
+            distance = penguin.position.y / 10
         }
     }
     
@@ -249,7 +249,7 @@ class GameScene: SKScene {
 //        backgroundColor = SKColor(red: 0.2, green: 0.8, blue: 0.9, alpha: 0.4)
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         
-        scoreLabel = SKLabelNode(text: "Score: " + String(Int(score)))
+        scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
         scoreLabel.fontName = "Helvetica Neue Condensed Black"
         scoreLabel.fontSize = 24
         scoreLabel.fontColor = SKColor.blackColor()
@@ -294,7 +294,7 @@ class GameScene: SKScene {
             scoreLabel.text = "Score: " + String(intScore)
             
             centerCamera()
-            trackScore()
+            trackDistance()
             penguinUpdate()
             
             checkGameOver()

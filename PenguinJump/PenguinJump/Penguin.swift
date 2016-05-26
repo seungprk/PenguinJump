@@ -28,7 +28,6 @@ class Penguin: SKSpriteNode {
     var targeting = false
     var playerTouched = false
     
-//    var jumping = false
     var doubleJumped = false
     var inAir = false
     

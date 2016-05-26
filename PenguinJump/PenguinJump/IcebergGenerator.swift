@@ -16,12 +16,12 @@ enum pathingMode {
 class IcebergGenerator: SKSpriteNode {
     
     var visibleView: SKView!
-//    var gameScene: SKScene!
     var camera:SKCameraNode!
     
     var bergSize:CGFloat = 100.0
     var gapDistance:CGFloat = 250.0
     var forkingFrequency = 7
+    var shouldMove = true
     
     var mode = pathingMode.straight
     
@@ -65,20 +65,6 @@ class IcebergGenerator: SKSpriteNode {
         generateBerg()
     }
     
-    func scroll(velocity: CGVector) {
-        for child in children {
-            child.position.x -= velocity.dx
-            child.position.y += velocity.dy
-        }
-    }
-    
-    func scrollTo(velocity: CGVector, duration: NSTimeInterval) {
-        let movePlatformAction = SKAction.moveBy(velocity, duration: NSTimeInterval(duration))
-        for child in children{
-            child.runAction(movePlatformAction)
-        }
-    }
-    
     func update() {
         clearBerg()
         generateBerg()
@@ -102,7 +88,6 @@ class IcebergGenerator: SKSpriteNode {
         for child in children {
             if child.name == "firstBerg" {
                 if child.position.y + child.frame.height < camera.position.y - visibleView.frame.height {
-                    print("removing first berg")
                     child.removeFromParent()
                 }
             } else if child.position.y < camera.position.y - visibleView.frame.height - 100 {
@@ -158,14 +143,13 @@ class IcebergGenerator: SKSpriteNode {
                 insertChild(berg, atIndex: 0)
             }
             
-            highestBerg = highestLeftBerg?.position.y > highestRightBerg?.position.y ?
-                highestLeftBerg : highestRightBerg // doesn't really matter since they are equal
-
+            // doesn't really matter since they are equal
+            // but by default the path will continue on the right
+            highestBerg = highestLeftBerg?.position.y > highestRightBerg?.position.y ? highestLeftBerg : highestRightBerg
             
             mode = .straight
         } else {
             while shouldGenerate() {
-                
                 let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
                 
                 let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
@@ -188,19 +172,19 @@ class IcebergGenerator: SKSpriteNode {
                 }
                 
                 normalBergCount += 1
-                
                 if normalBergCount >= forkingFrequency {
                     // Enter forking mode
                     mode = .forking
                     normalBergCount = 0
                 }
+                
                 insertChild(berg, atIndex: 0)
                 
-                berg.beginMoving()
+                if shouldMove {
+                    berg.beginMoving()
+                    
+                }
 
-//                if arc4random_uniform(2) == 0 {
-//                    berg.beginMoving()
-//                }
             }
         }
         
