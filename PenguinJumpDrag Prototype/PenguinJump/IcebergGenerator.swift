@@ -19,8 +19,8 @@ class IcebergGenerator: SKSpriteNode {
 //    var gameScene: SKScene!
     var camera:SKCameraNode!
     
-    var bergSize:CGFloat = 150.0
-    var gapDistance:CGFloat = 300.0
+    var bergSize:CGFloat = 100.0
+    var gapDistance:CGFloat = 250.0
     var forkingFrequency = 7
     
     var mode = pathingMode.straight
@@ -48,7 +48,7 @@ class IcebergGenerator: SKSpriteNode {
     func newGame(startPoint: CGPoint) {
         removeAllChildren()
         
-        let firstBerg = Iceberg(size: CGSize(width: 150.0, height: 150.0))
+        let firstBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
         firstBerg.position = startPoint
         
         insertChild(firstBerg, atIndex: 0)
@@ -197,6 +197,11 @@ class IcebergGenerator: SKSpriteNode {
                 }
                 insertChild(berg, atIndex: 0)
                 
+                berg.beginMoving()
+
+//                if arc4random_uniform(2) == 0 {
+//                    berg.beginMoving()
+//                }
             }
         }
         

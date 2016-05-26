@@ -140,12 +140,12 @@ class Iceberg: SKSpriteNode {
         }
     }
     
-    func beginMovingBerg() {
-        let forth = SKAction.moveBy(CGVector(dx: 50, dy: 0), duration: 2.0)
-        let back = SKAction.moveBy(CGVector(dx: -50, dy: 0), duration: 2.0)
-        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forth, back]))
+    func beginMoving() {
+        let forth = SKAction.moveBy(CGVector(dx: 50, dy: 0), duration: 1.0)
+        let back = SKAction.moveBy(CGVector(dx: -100, dy: 0), duration: 2.0)
+        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forth, back, forth]))
         
-        position.x -= 25
+//        position.x -= 25
         runAction(backAndForth)
     }
     
@@ -267,7 +267,9 @@ class Iceberg: SKSpriteNode {
         shadow!.runAction(bob)
     }
     
-    func bump() {
+    func land() {
+        self.removeAllActions()
+        
         let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
         let reduce = SKAction.scaleTo(1.0, duration: 0.06)
         

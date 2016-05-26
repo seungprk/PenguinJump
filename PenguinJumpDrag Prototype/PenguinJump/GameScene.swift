@@ -21,7 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let inverseControl = false
     let enableScreenShake = true
     
-    var stage: IcebergGenerator?
+    var stage: IcebergGenerator!
     let penguin = SKSpriteNode(imageNamed: "penguintemp")
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
@@ -29,13 +29,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let targetDot3 = SKSpriteNode(imageNamed: "targetdot")
     var penguinShadow: SKShapeNode!
 //    var stage : SKSpriteNode?
-    var yIncrement : CGFloat?
+    var yIncrement : CGFloat!
     var gameOver = false
     var highestIceberg = 0
     var lockMovement = false
     var score: CGFloat = 0.0
     var yPosition: CGFloat = 0.0
-    var scoreLabel: SKLabelNode?
+    var scoreLabel: SKLabelNode!
     var playerTouched = false
     // Transfer Vars
     var touchBegPos : CGPoint?
@@ -243,7 +243,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let berg = berg as! Iceberg
                 onBerg = true
                 stage?.updateCurrentBerg(berg)
-                berg.bump()
+                berg.land()
                 
             }
         }
@@ -251,7 +251,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func checkOnIceberg() {
-        let check = onIceberg() ? "On an iceberg" : "Not on an iceberg"
         if !onIceberg() {
             gameOver = true
         }
@@ -269,7 +268,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func sinkIceberg() {
         for berg in stage!.children {
-            if penguinShadow!.intersectsNode(berg) {
+            if penguinShadow.intersectsNode(berg) {
                 let currentBerg = berg as! Iceberg
                 currentBerg.sink(7.0, completion: {
                     currentBerg.removeFromParent()
