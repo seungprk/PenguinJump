@@ -28,20 +28,15 @@ class Penguin: SKSpriteNode {
     var targeting = false
     var playerTouched = false
     
-    var jumping = false
+//    var jumping = false
     var doubleJumped = false
     var inAir = false
-    var onLand = true
     
     init() {
         super.init(texture: nil, color: UIColor.clearColor(), size: body.size)
         
         // Create penguin
-        let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
-        
-//        penguin.position = penguinPositionInScene
         name = "penguin"
-//        zPosition = 2100
         
         body.position = CGPointZero
         body.zPosition = 21000
@@ -84,41 +79,18 @@ class Penguin: SKSpriteNode {
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        print("touches began!")
-        
         playerTouched = true
-        
+        targeting = true
         
         targetReticle.position = CGPointZero
         targetDot1.position = CGPointZero
         targetDot2.position = CGPointZero
         targetDot3.position = CGPointZero
+        
         addChild(targetReticle)
         addChild(targetDot1)
         addChild(targetDot2)
         addChild(targetDot3)
-        
-//            for touch in touches{
-//                let positionInSelf = touch.locationInNode(self)
-//                let touchedNodes = self.nodesAtPoint(positionInSelf)
-//                for touchedNode in touchedNodes {
-//                    if let name = touchedNode.name
-//                    {
-//                        if name == "penguin" {
-//                            print("touched penguin")
-//                            playerTouched = true
-//                            targetReticle.position = CGPointZero
-//                            targetDot1.position = CGPointZero
-//                            targetDot2.position = CGPointZero
-//                            targetDot3.position = CGPointZero
-//                            addChild(targetReticle)
-//                            addChild(targetDot1)
-//                            addChild(targetDot2)
-//                            addChild(targetDot3)
-//                        }
-//                    }
-//                }
-//            }
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -145,102 +117,95 @@ class Penguin: SKSpriteNode {
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-//        if !lockMovement {
-            for touch: AnyObject in touches {
-                let touchPosition = touch.locationInNode(self)
-                
-                if playerTouched {
-
-                    
-                    if touchPosition.y < 0 {
-                        for touch: AnyObject in touches {
-                            let touchEndPos = touch.locationInNode(self)
-                            
-                            let direction = CGVector(dx: -touchEndPos.x, dy: -touchEndPos.y)
-                            
-                            jump(direction)
-                        }
-                    } else {
-                        for touch: AnyObject in touches {
-                            let touchEndPos = touch.locationInNode(self)
-                            
-                            let direction = CGVector(dx: -touchEndPos.x, dy: 0)
-                            
-                            jump(direction)
+        for touch: AnyObject in touches {
+            let touchPosition = touch.locationInNode(self)
+            
+            if playerTouched {
+                if touchPosition.y < 0 {
+                    for touch: AnyObject in touches {
+                        let touchEndPos = touch.locationInNode(self)
+                        
+                        let velocity = CGVector(dx: -touchEndPos.x, dy: -touchEndPos.y)
+                        
+                        if !inAir {
+                            jump(velocity)
                         }
                     }
-                    playerTouched = false
-                    
-                    targetReticle.removeFromParent()
-                    targetDot1.removeFromParent()
-                    targetDot2.removeFromParent()
-                    targetDot3.removeFromParent()
+                } else {
+                    for touch: AnyObject in touches {
+                        let touchEndPos = touch.locationInNode(self)
+                        
+                        let velocity = CGVector(dx: -touchEndPos.x, dy: 0)
+                        
+                        if !inAir {
+                            jump(velocity)
+                        }                    }
                 }
+                playerTouched = false
+                targeting = false
+                
+                targetReticle.removeFromParent()
+                targetDot1.removeFromParent()
+                targetDot2.removeFromParent()
+                targetDot3.removeFromParent()
             }
-//        }
+        }
     }
     
     
-    func jump(direction: CGVector) {
+    func jump(velocity: CGVector) {
         removeAllActions()
-        
         inAir = true
         
+        // Jump Duration based on travel distance
+//        let jumpRate: CGFloat = 150
+//        let distance = sqrt(direction.dx * direction.dx + direction.dy * direction.dy)
+//        let jumpDuration = Double(distance / jumpRate)
+        
+        // Fixed jump duration
+        let jumpDuration = 1.0
         let jumpHeight = frame.height * 2
         
-        let jumpRate: CGFloat = 150
-        let distance = sqrt(direction.dx * direction.dx + direction.dy * direction.dy)
-        
-        let jumpDuration = Double(distance / jumpRate)
-
         
         let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let enlargeAction = SKAction.scaleBy(2.0, duration: jumpDuration * 0.5)
         let reduceAction = SKAction.scaleBy(0.5, duration: jumpDuration * 0.5)
+        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
+        let shadowEnlarge = SKAction.scaleTo(0.6, duration: jumpDuration * 0.5)
+        let shadowReduce = SKAction.scaleTo(1.0, duration: jumpDuration * 0.5)
+
         jumpAction.timingMode = SKActionTimingMode.EaseOut
         fallAction.timingMode = SKActionTimingMode.EaseIn
         enlargeAction.timingMode = SKActionTimingMode.EaseOut
         reduceAction.timingMode = SKActionTimingMode.EaseIn
-        let jumpSequence = SKAction.sequence([jumpAction, fallAction])
-        let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
-        
-        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
-        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
         jumpCounter.timingMode = SKActionTimingMode.EaseOut
         fallCounter.timingMode = SKActionTimingMode.EaseIn
-        
-        let shadowEnlarge = SKAction.scaleTo(0.6, duration: jumpDuration * 0.5)
-        let shadowReduce = SKAction.scaleTo(1.0, duration: jumpDuration * 0.5)
         shadowEnlarge.timingMode = .EaseOut
         shadowReduce.timingMode = .EaseIn
+
+        let jumpSequence = SKAction.sequence([jumpAction, fallAction])
+        let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
         let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
-        
         let counterSequence = SKAction.sequence([jumpCounter, fallCounter])
         
-        let move = SKAction.moveBy(CGVector(dx: direction.dx, dy: direction.dy * 2), duration: jumpDuration)
+        let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
+        
+        shadow.runAction(shadowEnlargeSequence)
+        shadow.runAction(counterSequence)
         
         runAction(enlargeSequence)
-        //        penguinShadow.runAction(enlargeSequence)
-        shadow.runAction(shadowEnlargeSequence)
-        
-        shadow.runAction(counterSequence)
         runAction(move)
-        
-        //            penguinInAir = true
-        //        lockMovement = true
         runAction(jumpSequence, completion: { () -> Void in
-            //            self.shakeScreen()
             self.inAir = false
-            
-            self.checkOnIceberg()
+            self.doubleJumped = false
+            self.removeAllActions()
             
             let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 7.0)
             self.runAction(penguinSinking)
+            
         })
     }
-    
-    func checkOnIceberg() {
-        
-    }
+
 }

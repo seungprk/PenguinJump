@@ -48,11 +48,19 @@ class IcebergGenerator: SKSpriteNode {
     func newGame(startPoint: CGPoint) {
         removeAllChildren()
         
-        let firstBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+        let firstBerg = Iceberg(size: CGSize(width: 500, height: 500))
+        firstBerg.name = "firstBerg"
         firstBerg.position = startPoint
+        firstBerg.position.y -= firstBerg.frame.height * 0.38
+        
+        let secondBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+        secondBerg.position = startPoint
+        secondBerg.position.y += 300
         
         insertChild(firstBerg, atIndex: 0)
-        highestBerg = firstBerg
+        insertChild(secondBerg, atIndex: 0)
+        
+        highestBerg = secondBerg
         
         generateBerg()
     }
@@ -84,33 +92,24 @@ class IcebergGenerator: SKSpriteNode {
             } else {
                 return false
             }
-//
-//            if highestBerg.frame.origin.y + highestBerg.frame.height < camera.position.y {
-//                return true
-//            } else {
-//                return false
-//            }
-//            
-//            if highestBerg.frame.origin.y + highestBerg.frame.height < frame.height / 2 {
-//                return true
-//            } else {
-//                return false
-//            }
         } else {
             return false
         }
     }
     
     func clearBerg() {
+        // If top edge of child's frame is less than bottom edge of view's frame, remove child.
         for child in children {
-            // If top edge of child's frame is less than bottom edge of view's frame, remove child.
-            if child.position.y < camera.position.y - visibleView.frame.height - 100 {
+            if child.name == "firstBerg" {
+                if child.position.y + child.frame.height < camera.position.y - visibleView.frame.height {
+                    print("removing first berg")
+                    child.removeFromParent()
+                }
+            } else if child.position.y < camera.position.y - visibleView.frame.height - 100 {
                 child.removeFromParent()
             }
             
-//            if child.frame.origin.y + child.frame.height < -frame.height / 2 {
-//                child.removeFromParent()
-//            }
+            
         }
     }
     func updateCurrentBerg(berg: Iceberg) {
