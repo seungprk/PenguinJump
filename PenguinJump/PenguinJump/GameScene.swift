@@ -396,12 +396,12 @@ class GameScene: SKScene {
             let wait = SKAction.waitForDuration(2.0)
             
             self.runAction(wait, completion:  {
-                var scoreScene = ScoreScene(size: self.size)
+                let scoreScene = ScoreScene(size: self.size)
                 
                 scoreScene.highScore = self.highScore
                 scoreScene.score = self.intScore
                 
-                var transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
                 scoreScene.scaleMode = SKSceneScaleMode.AspectFill
                 self.scene!.view?.presentScene(scoreScene, transition: transition)
 
