@@ -43,10 +43,10 @@ class Penguin: SKSpriteNode {
         addChild(body)
         
         // Create penguin's shadow
-        shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width, height: body.frame.width), cornerRadius: body.frame.width / 2)
+        shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width * 0.8, height: body.frame.width * 0.8), cornerRadius: body.frame.width / 2)
         shadow.fillColor = SKColor.blackColor()
         shadow.alpha = 0.2
-        shadow.position =  CGPoint(x: 0, y: -body.frame.height / 2 + body.frame.height / 2)
+        shadow.position =  CGPoint(x: 0, y: -body.frame.height / 2 + body.frame.height / 4)
         shadow.zPosition = 2000
         addChild(shadow)
         
@@ -172,9 +172,9 @@ class Penguin: SKSpriteNode {
         let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
         let enlargeAction = SKAction.scaleBy(2.0, duration: jumpDuration * 0.5)
         let reduceAction = SKAction.scaleBy(0.5, duration: jumpDuration * 0.5)
-        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
-        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight / 2), duration: NSTimeInterval(jumpDuration * 0.5))
-        let shadowEnlarge = SKAction.scaleTo(0.6, duration: jumpDuration * 0.5)
+        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
+        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
+        let shadowEnlarge = SKAction.scaleTo(2.0, duration: jumpDuration * 0.5)
         let shadowReduce = SKAction.scaleTo(1.0, duration: jumpDuration * 0.5)
 
         jumpAction.timingMode = SKActionTimingMode.EaseOut
@@ -196,7 +196,7 @@ class Penguin: SKSpriteNode {
         shadow.runAction(shadowEnlargeSequence)
         shadow.runAction(counterSequence)
         
-        runAction(enlargeSequence)
+        body.runAction(enlargeSequence)
         runAction(move)
         runAction(jumpSequence, completion: { () -> Void in
             self.inAir = false
