@@ -10,7 +10,7 @@ import SpriteKit
 
 class Iceberg: SKSpriteNode {
     
-    var stormMode = false
+    var stormMode = true
     
     let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
     var underwaterColor = SKColor(red: 0.5, green: 0.8, blue: 0.89, alpha: 0.5)
@@ -21,12 +21,12 @@ class Iceberg: SKSpriteNode {
     var shadowHeight:CGFloat = 20.0
     var underwaterHeight:CGFloat = 20.0
     
-    var bergVertices:[CGPoint]?
+    var bergVertices:[CGPoint]!
     
-    var berg:SKShapeNode?
-    var shadow:SKShapeNode?
-    var underwater:SKShapeNode?
-    var shadowMask:SKShapeNode?
+    var berg:SKShapeNode!
+    var shadow:SKShapeNode!
+    var underwater:SKShapeNode!
+    var shadowMask:SKShapeNode!
     
     var landed = false
         
@@ -59,16 +59,15 @@ class Iceberg: SKSpriteNode {
             
             // Create berg shape node
             berg = SKShapeNode(path: bergPath)
-            if let berg = berg {
-                berg.path = bergPath
-                berg.position = CGPointZero
-                berg.fillColor = SKColor.whiteColor()
-                //        berg!.strokeColor = SKColor.redColor()
-                berg.strokeColor = SKColor.whiteColor()
-                berg.lineWidth = 1
-                berg.zPosition = 100
-                addChild(berg)
-            }
+            
+            berg.path = bergPath
+            berg.position = CGPointZero
+            berg.fillColor = SKColor.whiteColor()
+            berg.strokeColor = SKColor.redColor()
+            berg.strokeColor = SKColor.whiteColor()
+            berg.lineWidth = 1
+            berg.zPosition = 100
+
             
             // Set startPoint and endPoint of shadows based on which point is further out
             let startPoint = vertices[1].x > vertices[2].x ? 1 : 2
@@ -89,16 +88,16 @@ class Iceberg: SKSpriteNode {
             CGPathAddLineToPoint(underwaterPath, nil, vertices[endPoint].x, vertices[endPoint].y)
             CGPathCloseSubpath(underwaterPath)
             
-            if let underwater = underwater {
-                underwater.path = underwaterPath
-                underwater.position = CGPointZero
-                underwater.fillColor = underwaterColor
-                underwater.strokeColor = underwaterColor
-                underwater.lineWidth = 1
-                underwater.zPosition = -100
-                
-                addChild(underwater)
-            }
+            
+            
+            underwater.path = underwaterPath
+            underwater.position = CGPointZero
+            underwater.fillColor = underwaterColor
+            underwater.strokeColor = underwaterColor
+            underwater.lineWidth = 1
+            underwater.zPosition = -100
+            
+            addChild(underwater)
             
             
             
@@ -106,16 +105,17 @@ class Iceberg: SKSpriteNode {
             let croppedShadow = SKCropNode()
             shadowMask = SKShapeNode(path: underwaterPath)
             shadow = SKShapeNode()
-            
-            if let shadowMask = shadowMask {
-                shadowMask.fillColor = SKColor.blackColor()
-                shadowMask.position = CGPointZero
-                shadowMask.name = "shadowMask"
-            }
+                        
+            shadowMask.fillColor = SKColor.blackColor()
+            shadowMask.strokeColor = SKColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+            shadowMask.position = CGPointZero
+            shadowMask.name = "shadowMask"
             
             croppedShadow.maskNode = shadowMask
             croppedShadow.position = CGPointZero
             croppedShadow.zPosition = 50
+//            print(croppedShadow.frame)
+//            print(frame)
             addChild(croppedShadow)
 
             let shadowPath = CGPathCreateMutable()
@@ -128,16 +128,26 @@ class Iceberg: SKSpriteNode {
             CGPathAddLineToPoint(shadowPath, nil, vertices[endPoint].x, vertices[endPoint].y)
             CGPathCloseSubpath(shadowPath)
             
-            if let shadow = shadow{
-                shadow.path = shadowPath
-                shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
-                shadow.fillColor = shadowColor
-                shadow.strokeColor = shadowColor
-                shadow.lineWidth = 1
-                shadow.zPosition = 50
-                
-                croppedShadow.addChild(shadow)
-            }
+            
+            
+            shadow.path = shadowPath
+            shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
+            shadow.fillColor = shadowColor
+            shadow.strokeColor = SKColor.redColor()// shadowColor
+            shadow.lineWidth = 1
+            shadow.zPosition = 50
+            croppedShadow.addChild(shadow)
+//            croppedShadow.addChild(shadow)
+//            if let shadow = shadow{
+//                shadow.path = shadowPath
+//                shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
+//                shadow.fillColor = shadowColor
+//                shadow.strokeColor = shadowColor
+//                shadow.lineWidth = 1
+//                shadow.zPosition = 50
+//                
+//                croppedShadow.addChild(shadow)
+//            }
             
         }
     }

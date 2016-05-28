@@ -16,8 +16,8 @@ class Lightning: SKSpriteNode {
     let lightningTexture = SKTexture(imageNamed: "lightning")
     
     init(view: SKView) {
-        super.init(texture: <#T##SKTexture?#>, color: <#T##UIColor#>, size: <#T##CGSize#>)
-        let lightningAtlas = SKTextureAtlas(named: "lightning")
+        super.init(texture: nil, color: SKColor.clearColor(), size: view.frame.size)
+//        let lightningAtlas = SKTextureAtlas(named: "lightning")
         var lightningFrames = [SKTexture]()
         for number in 1...3 {
             let texture = SKTexture(imageNamed: "lightning\(number)")
