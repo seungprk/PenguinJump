@@ -9,27 +9,26 @@
 import SpriteKit
 
 class Iceberg: SKSpriteNode {
-    
-    var stormMode = true
-    
-    let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
-    var underwaterColor = SKColor(red: 0.5, green: 0.8, blue: 0.89, alpha: 0.5)
-//    var underwaterColor = SKColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
 
-    let debug = false
-    
-    var shadowHeight:CGFloat = 20.0
-    var underwaterHeight:CGFloat = 20.0
-    
-    var bergVertices:[CGPoint]!
-    
+    // Main Objects
     var berg:SKShapeNode!
     var shadow:SKShapeNode!
     var underwater:SKShapeNode!
     var shadowMask:SKShapeNode!
+    var bergVertices:[CGPoint]!
     
+    // Attributes
+    let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
+    var underwaterColor = SKColor(red: 0.5, green: 0.8, blue: 0.89, alpha: 0.5)
+    var shadowHeight:CGFloat = 20.0
+    var underwaterHeight:CGFloat = 20.0
+    
+    // Settings
+    var stormMode = true
+    let debug = false
     var landed = false
-        
+    
+    // Functions
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
         if stormMode {
@@ -44,6 +43,26 @@ class Iceberg: SKSpriteNode {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func generateRandomPoints(aroundPoint center: CGPoint) -> [CGPoint] { // Generate 8 points around a circle
+        let radius = Double(size.width / 2)
+        
+        var randomPoints = [CGPoint]()
+        for count in 0...7 {
+            let section = M_PI / 4 * Double(count)
+            let randomAngleInSection = section + Double(arc4random_uniform(628)) / 100 / 8
+            
+            let xFromCenter = sin(randomAngleInSection) * radius
+            let yFromCenter = cos(randomAngleInSection) * radius
+            
+            let pointX = center.x + CGFloat(xFromCenter)
+            let pointY = center.y + CGFloat(yFromCenter)
+            
+            let point = CGPoint(x: pointX, y: pointY)
+            randomPoints.append(point)
+        }
+        return randomPoints
     }
     
     func createBergShapes() {
@@ -68,12 +87,11 @@ class Iceberg: SKSpriteNode {
             berg.lineWidth = 1
             berg.zPosition = 100
 
+            addChild(berg)
             
             // Set startPoint and endPoint of shadows based on which point is further out
             let startPoint = vertices[1].x > vertices[2].x ? 1 : 2
             let endPoint = vertices[6].x < vertices[5].x ? 6 : 5
-            
-            
             
             // Create underwater shape
             underwater = SKShapeNode()
@@ -88,8 +106,6 @@ class Iceberg: SKSpriteNode {
             CGPathAddLineToPoint(underwaterPath, nil, vertices[endPoint].x, vertices[endPoint].y)
             CGPathCloseSubpath(underwaterPath)
             
-            
-            
             underwater.path = underwaterPath
             underwater.position = CGPointZero
             underwater.fillColor = underwaterColor
@@ -98,8 +114,6 @@ class Iceberg: SKSpriteNode {
             underwater.zPosition = -100
             
             addChild(underwater)
-            
-            
             
             // Create shadow shape cropped to underwater path
             let croppedShadow = SKCropNode()
@@ -113,9 +127,6 @@ class Iceberg: SKSpriteNode {
             
             croppedShadow.maskNode = shadowMask
             croppedShadow.position = CGPointZero
-            croppedShadow.zPosition = 50
-//            print(croppedShadow.frame)
-//            print(frame)
             addChild(croppedShadow)
 
             let shadowPath = CGPathCreateMutable()
@@ -128,16 +139,13 @@ class Iceberg: SKSpriteNode {
             CGPathAddLineToPoint(shadowPath, nil, vertices[endPoint].x, vertices[endPoint].y)
             CGPathCloseSubpath(shadowPath)
             
-            
-            
             shadow.path = shadowPath
             shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
             shadow.fillColor = shadowColor
-            shadow.strokeColor = SKColor.redColor()// shadowColor
+            shadow.strokeColor = SKColor.clearColor()// shadowColor
             shadow.lineWidth = 1
             shadow.zPosition = 50
             croppedShadow.addChild(shadow)
-//            croppedShadow.addChild(shadow)
 //            if let shadow = shadow{
 //                shadow.path = shadowPath
 //                shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
@@ -148,7 +156,6 @@ class Iceberg: SKSpriteNode {
 //                
 //                croppedShadow.addChild(shadow)
 //            }
-            
         }
     }
     
@@ -247,26 +254,6 @@ class Iceberg: SKSpriteNode {
         self.runAction(fade)
     }
     
-    func generateRandomPoints(aroundPoint center: CGPoint) -> [CGPoint] {
-        let radius = Double(size.width / 2)
-        
-        var randomPoints = [CGPoint]()
-        for count in 0...7 {
-            let section = M_PI / 4 * Double(count)
-            let randomAngleInSection = section + Double(arc4random_uniform(628)) / 100 / 8
-            
-            let xFromCenter = sin(randomAngleInSection) * radius
-            let yFromCenter = cos(randomAngleInSection) * radius
-            
-            let pointX = center.x + CGFloat(xFromCenter)
-            let pointY = center.y + CGFloat(yFromCenter)
-            
-            let point = CGPoint(x: pointX, y: pointY)
-            randomPoints.append(point)
-        }
-        return randomPoints
-    }
-    
     func bob() {
         // Need to implement berg position reset with each new bob call.
         
@@ -280,8 +267,10 @@ class Iceberg: SKSpriteNode {
         let bobSequence = SKAction.sequence([down, wait, up, wait])
         let bob = SKAction.repeatActionForever(bobSequence)
         
-        shadow!.removeAllActions()
-        shadow!.runAction(bob)
+        berg!.removeAllActions()
+        berg!.runAction(bob)
+        underwater!.removeAllActions()
+        underwater!.runAction(bob)
     }
     
     func land() {

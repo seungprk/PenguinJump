@@ -48,7 +48,7 @@ class IcebergGenerator: SKSpriteNode {
     func newGame(startPoint: CGPoint) {
         removeAllChildren()
         
-        let firstBerg = Iceberg(size: CGSize(width: 500, height: 500))
+        let firstBerg = Iceberg(size: CGSize(width: 200, height: 200))
         firstBerg.name = "firstBerg"
         firstBerg.position = startPoint
         firstBerg.position.y -= firstBerg.frame.height * 0.38

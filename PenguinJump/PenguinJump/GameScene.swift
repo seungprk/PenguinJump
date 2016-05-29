@@ -8,13 +8,6 @@
 
 import SpriteKit
 
-// Overload minus operator to use on CGPoint
-func -(first: CGPoint, second: CGPoint) -> CGPoint {
-    let deltaX = first.x - second.x
-    let deltaY = first.y - second.y
-    return CGPoint(x: deltaX, y: deltaY)
-}
-
 class GameScene: SKScene {
     
     // Game options
@@ -45,7 +38,6 @@ class GameScene: SKScene {
     var highScore = 0
     
     override func didMoveToView(view: SKView) {
-//        backgroundColor = SKColor(red: 0.2, green: 0.9, blue: 0.9, alpha: 0.4)
 
         newGame()
         
@@ -83,7 +75,6 @@ class GameScene: SKScene {
         let bumpWait = SKAction.waitForDuration(2.0)
         let bump = SKAction.sequence([shrinkDown, bumpUp, bumpDown, bumpWait])
         playButton.runAction(SKAction.repeatActionForever(bump))
-        
         
         cam.position = penguin.position
         cam.position.y += view.frame.height * 0.06
@@ -172,10 +163,7 @@ class GameScene: SKScene {
                 doubleJump(CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5))
             }
         }
-        
     }
-    
-    
     
     func doubleJump(velocity: CGVector) {
         let nudgeRate: CGFloat = 180
@@ -242,7 +230,6 @@ class GameScene: SKScene {
         stage.position = view!.center
         addChild(stage)
 
-//        backgroundColor = SKColor(red: 0.2, green: 0.8, blue: 0.9, alpha: 0.4)
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         
         scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
@@ -252,13 +239,11 @@ class GameScene: SKScene {
         scoreLabel.position = CGPoint(x: 0, y: view!.frame.height * 0.45)
         scoreLabel.zPosition = 30000
         
-//        yIncrement = size.height / 5
 
         // Create penguin
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
         
         penguin.position = penguinPositionInScene
-//        penguin.name = "penguin"
         penguin.zPosition = 2100
         penguin.userInteractionEnabled = true
         addChild(penguin)
@@ -457,4 +442,11 @@ class GameScene: SKScene {
             view!.layer.addAnimation(shakeAnimation, forKey: nil)
         }
     }
+}
+
+// Overload minus operator to use on CGPoint
+func -(first: CGPoint, second: CGPoint) -> CGPoint {
+    let deltaX = first.x - second.x
+    let deltaY = first.y - second.y
+    return CGPoint(x: deltaX, y: deltaY)
 }

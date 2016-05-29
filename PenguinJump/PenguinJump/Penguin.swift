@@ -194,11 +194,11 @@ class Penguin: SKSpriteNode {
         let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
         
         shadow.runAction(shadowEnlargeSequence)
-        shadow.runAction(counterSequence)
+        //shadow.runAction(counterSequence)
         
         body.runAction(enlargeSequence)
         runAction(move)
-        runAction(jumpSequence, completion: { () -> Void in
+        body.runAction(jumpSequence, completion: { () -> Void in
             self.inAir = false
             self.doubleJumped = false
             self.removeAllActions()
