@@ -17,6 +17,7 @@ import SpriteKit
 
 class Penguin: SKSpriteNode {
     
+    let penguinCropNode = SKCropNode()
     let body = SKSpriteNode(imageNamed: "penguintemp")
     var shadow: SKShapeNode!
     
@@ -37,10 +38,14 @@ class Penguin: SKSpriteNode {
         
         // Create penguin
         name = "penguin"
-        
+        penguinCropNode.position = CGPointZero
+        penguinCropNode.zPosition = 21000
+        addChild(penguinCropNode)
         body.position = CGPointZero
         body.zPosition = 21000
-        addChild(body)
+//        addChild(body)
+        penguinCropNode.addChild(body)
+        penguinCropNode.maskNode = SKSpriteNode(imageNamed: "deathtemp")
         
         // Create penguin's shadow
         shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width * 0.8, height: body.frame.width * 0.8), cornerRadius: body.frame.width / 2)
@@ -49,7 +54,6 @@ class Penguin: SKSpriteNode {
         shadow.position =  CGPoint(x: 0, y: -body.frame.height / 2 + body.frame.height / 4)
         shadow.zPosition = 2000
         addChild(shadow)
-        
         
         // Set Aim Sprites
         let xScale: CGFloat = 0.3
@@ -189,16 +193,16 @@ class Penguin: SKSpriteNode {
         let jumpSequence = SKAction.sequence([jumpAction, fallAction])
         let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
         let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
-        let counterSequence = SKAction.sequence([jumpCounter, fallCounter])
+//        let counterSequence = SKAction.sequence([jumpCounter, fallCounter])
         
         let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
         
         shadow.runAction(shadowEnlargeSequence)
-        //shadow.runAction(counterSequence)
+//        shadow.runAction(counterSequence)
         
-        body.runAction(enlargeSequence)
+        penguinCropNode.runAction(enlargeSequence)
         runAction(move)
-        body.runAction(jumpSequence, completion: { () -> Void in
+        penguinCropNode.runAction(jumpSequence, completion: { () -> Void in
             self.inAir = false
             self.doubleJumped = false
             self.removeAllActions()

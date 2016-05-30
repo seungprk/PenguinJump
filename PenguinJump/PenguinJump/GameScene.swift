@@ -18,12 +18,10 @@ class GameScene: SKScene {
     let penguin = Penguin()
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
-    let deathSprite = SKSpriteNode(imageNamed: "deathtemp")
 
     // Labels
-    let title = SKSpriteNode(texture: nil)
-    let playButton = SKLabelNode(text: "Play")
-
+    var startMenu : StartMenuNode!
+    
     // Game session logic
     var gameBegin = false
     var gameRunning = false
@@ -41,41 +39,12 @@ class GameScene: SKScene {
 
         newGame()
         
-        title.position = CGPointZero
-        title.position.y += view.frame.height / 3
-        title.zPosition = 10000
-        cam.addChild(title)
+        // Start Menu Setup
+        startMenu = StartMenuNode(frame: view.frame)
+        startMenu.userInteractionEnabled = false //change to true once menu interaction properly enabled
+        cam.addChild(startMenu)
         
-        let titleLabel = SKLabelNode(text: "PENGUIN")
-        titleLabel.fontName = "Helvetica Neue Condensed Black"
-        titleLabel.fontSize = 80
-        titleLabel.position = CGPointZero
-        
-        let subtitleLabel = SKLabelNode(text: "JUMP")
-        subtitleLabel.fontName = "Helvetica Neue Condensed Black"
-        subtitleLabel.fontSize = 122
-        subtitleLabel.position = CGPointZero
-        subtitleLabel.position.y -= subtitleLabel.frame.height
-        
-        title.addChild(titleLabel)
-        title.addChild(subtitleLabel)
-        
-        playButton.name = "playButton"
-        playButton.fontName = "Helvetica Neue Condensed Black"
-        playButton.fontSize = 60
-        playButton.fontColor = SKColor.blackColor()
-        playButton.position = CGPointZero
-        playButton.position.y -= view.frame.height / 3
-        playButton.zPosition = 10000
-        cam.addChild(playButton)
-        
-        let shrinkDown = SKAction.scaleTo(0.95, duration: 0.1)
-        let bumpUp = SKAction.scaleTo(1.05, duration: 0.1)
-        let bumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-        let bumpWait = SKAction.waitForDuration(2.0)
-        let bump = SKAction.sequence([shrinkDown, bumpUp, bumpDown, bumpWait])
-        playButton.runAction(SKAction.repeatActionForever(bump))
-        
+        // Camera Setup
         cam.position = penguin.position
         cam.position.y += view.frame.height * 0.06
         let zoomedIn = SKAction.scaleTo(0.4, duration: 0.0)
@@ -86,7 +55,42 @@ class GameScene: SKScene {
         let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
-
+    }
+    
+    func newGame() {
+        gameOver = false
+        
+        cam = SKCameraNode()
+        cam.xScale = 1.0
+        cam.yScale = 1.0
+        
+        camera = cam
+        addChild(cam)
+        
+        cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        
+        stage = IcebergGenerator(view: view!, camera: cam)
+        stage.position = view!.center
+        addChild(stage)
+        
+        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
+        
+        scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
+        scoreLabel.fontName = "Helvetica Neue Condensed Black"
+        scoreLabel.fontSize = 24
+        scoreLabel.fontColor = SKColor.blackColor()
+        scoreLabel.position = CGPoint(x: 0, y: view!.frame.height * 0.45)
+        scoreLabel.zPosition = 30000
+        
+        // Wrap penguin around a cropnode for death animation
+        let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
+        
+        penguin.position = penguinPositionInScene
+        penguin.zPosition = 2100
+        penguin.userInteractionEnabled = true
+        addChild(penguin)
+        
+        stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
     }
     
     // MARK: - Gameplay logic
@@ -130,7 +134,6 @@ class GameScene: SKScene {
                     }
                     if touchedNode.name == "playButton" {
                         beginGame()
-                        
                     }
                 }
             }
@@ -186,7 +189,6 @@ class GameScene: SKScene {
         pan.timingMode = .EaseInEaseOut
         zoomOut.timingMode = .EaseInEaseOut
         
-        
         cam.runAction(zoomOut)
         cam.runAction(pan, completion: {
             self.cam.addChild(self.scoreLabel)
@@ -203,52 +205,15 @@ class GameScene: SKScene {
         
         let playButtonDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
         playButtonDown.timingMode = .EaseIn
-        playButton.runAction(playButtonDown, completion: {
-            self.playButton.removeFromParent()
+        startMenu.playButton.runAction(playButtonDown, completion: {
+            self.startMenu.playButton.removeFromParent()
         })
         
         let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
         titleUp.timingMode = .EaseIn
-        title.runAction(titleUp, completion: {
-            self.title.removeFromParent()
+        startMenu.title.runAction(titleUp, completion: {
+            self.startMenu.title.removeFromParent()
         })
-    }
-    
-    func newGame() {
-        gameOver = false
-        
-        cam = SKCameraNode()
-        cam.xScale = 1.0
-        cam.yScale = 1.0
-        
-        camera = cam
-        addChild(cam)
-        
-        cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
-        
-        stage = IcebergGenerator(view: view!, camera: cam)
-        stage.position = view!.center
-        addChild(stage)
-
-        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
-        
-        scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
-        scoreLabel.fontName = "Helvetica Neue Condensed Black"
-        scoreLabel.fontSize = 24
-        scoreLabel.fontColor = SKColor.blackColor()
-        scoreLabel.position = CGPoint(x: 0, y: view!.frame.height * 0.45)
-        scoreLabel.zPosition = 30000
-        
-
-        // Create penguin
-        let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
-        
-        penguin.position = penguinPositionInScene
-        penguin.zPosition = 2100
-        penguin.userInteractionEnabled = true
-        addChild(penguin)
-        
-        stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
     }
     
     func restart() {
@@ -292,7 +257,6 @@ class GameScene: SKScene {
         
     }
     
-    
     func penguinUpdate() {
         for child in stage.children {
             let berg = child as! Iceberg
@@ -300,7 +264,6 @@ class GameScene: SKScene {
             if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
                 // Penguin landed on an iceberg if check is true
                 penguin.land()
-                
                 
                 berg.land()
                 stage.updateCurrentBerg(berg)
@@ -335,48 +298,21 @@ class GameScene: SKScene {
                 let berg = child as! Iceberg
                 berg.removeAllActions()
             }
-            
-            shakeScreen()
             gameRunning = false
             freezeCamera = true
+            self.backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
             
-            if !penguin.onBerg {
-                let fall = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 0.3)
-                fall.timingMode = .EaseIn
-                
-                penguin.runAction(fall, completion: {
-                    self.deathSprite.position = self.penguin.position
-                    self.deathSprite.zPosition = 3000
-                    self.addChild(self.deathSprite)
-                    self.backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
-                    
-//                    let restartButton = SKLabelNode(text: "Restart")
-//                    restartButton.name = "restartButton"
-//                    restartButton.userInteractionEnabled = false
-//                    restartButton.fontName = "Helvetica Neue Condensed Black"
-//                    restartButton.fontSize = 48
-//                    restartButton.fontColor = SKColor.whiteColor()
-//                    restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
-//                    restartButton.zPosition = 30000
-//                    self.cam.addChild(restartButton)
-                })
-
-            } else {
-                deathSprite.position = penguin.position
-                deathSprite.zPosition = 3000
-                addChild(deathSprite)
-                backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
-                
-//                let restartButton = SKLabelNode(text: "Restart")
-//                restartButton.name = "restartButton"
-//                restartButton.userInteractionEnabled = false
-//                restartButton.fontName = "Helvetica Neue Condensed Black"
-//                restartButton.fontSize = 48
-//                restartButton.fontColor = SKColor.whiteColor()
-//                restartButton.position = CGPointZero // CGPoint(x: view!.frame.width * 0.5, y: view!.frame.height * 0.5)
-//                restartButton.zPosition = 30000
-//                cam.addChild(restartButton)
-            }
+            penguin.shadow.removeFromParent()
+            
+            let fall = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 0.2)
+            fall.timingMode = .EaseOut
+            let slideUp = SKAction.moveBy(CGVector(dx: 0, dy: 25), duration: 0.2)
+            slideUp.timingMode = .EaseOut
+            
+            penguin.runAction(slideUp)
+            penguin.body.runAction(fall)
+            
+            //shakeScreen()
             
             let wait = SKAction.waitForDuration(2.0)
             
@@ -389,7 +325,6 @@ class GameScene: SKScene {
                 let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
                 scoreScene.scaleMode = SKSceneScaleMode.AspectFill
                 self.scene!.view?.presentScene(scoreScene, transition: transition)
-
             })
         }
     }
@@ -431,13 +366,13 @@ class GameScene: SKScene {
             let randomIntensityOne = CGFloat(random() % 4 + 1)
             let randomIntensityTwo = CGFloat(random() % 4 + 1)
             shakeAnimation.values = [
-                NSValue( CATransform3D:CATransform3DMakeTranslation(-randomIntensityOne, 0, 0 ) ),
-                NSValue( CATransform3D:CATransform3DMakeTranslation( randomIntensityOne, 0, 0 ) ),
+                //NSValue( CATransform3D:CATransform3DMakeTranslation(-randomIntensityOne, 0, 0 ) ),
+                //NSValue( CATransform3D:CATransform3DMakeTranslation( randomIntensityOne, 0, 0 ) ),
                 NSValue( CATransform3D:CATransform3DMakeTranslation( 0, -randomIntensityTwo, 0 ) ),
                 NSValue( CATransform3D:CATransform3DMakeTranslation( 0, randomIntensityTwo, 0 ) ),
             ]
             shakeAnimation.repeatCount = 1
-            shakeAnimation.duration = 10/100
+            shakeAnimation.duration = 25/100
             
             view!.layer.addAnimation(shakeAnimation, forKey: nil)
         }

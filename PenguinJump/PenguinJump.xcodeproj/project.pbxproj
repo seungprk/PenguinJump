@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */; };
 		7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE5B1CF5630300EC559E /* Iceberg.swift */; };
 		7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE651CF647E700EC559E /* IcebergGenerator.swift */; };
 		7F36CE681CF653F200EC559E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE671CF653F200EC559E /* GameScene.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartMenuNode.swift; sourceTree = "<group>"; };
 		7F36CE5B1CF5630300EC559E /* Iceberg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Iceberg.swift; sourceTree = "<group>"; };
 		7F36CE651CF647E700EC559E /* IcebergGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IcebergGenerator.swift; sourceTree = "<group>"; };
 		7F36CE671CF653F200EC559E /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -67,13 +69,14 @@
 			isa = PBXGroup;
 			children = (
 				7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */,
+				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
 				7F36CE671CF653F200EC559E /* GameScene.swift */,
 				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
 				7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */,
+				2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */,
 				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
-				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
 				7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */,
 				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
 				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
@@ -160,6 +163,7 @@
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
+				2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */,
 				7FB95AD71CF7B7B2005875DF /* Lightning.swift in Sources */,
 				7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */,
 			);
