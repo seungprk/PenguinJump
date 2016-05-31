@@ -24,7 +24,7 @@ class Iceberg: SKSpriteNode {
     var underwaterHeight:CGFloat = 20.0
     
     // Settings
-    var stormMode = true
+    var stormMode = false
     let debug = false
     var landed = false
     
@@ -206,13 +206,10 @@ class Iceberg: SKSpriteNode {
 //    runAction(action: SKAction, completion block: () -> Void)
     
     
-    func sink(duration: Double, completion block: () -> Void) {
-//        let completed = block
-        
+    func sink(duration: Double, completion block: (() -> Void)?) {
         let sinkDepth = shadowHeight
         
         let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -sinkDepth), duration: duration)
-
         
         underwater!.runAction(sink)
         shadowMask!.runAction(sink)
@@ -234,8 +231,8 @@ class Iceberg: SKSpriteNode {
             let fade = SKAction.fadeOutWithDuration(0.5)
             self.runAction(fade, completion: {
                 self.removeFromParent()
-//                completed()
-                block()
+
+                block?()
             })
         })
         

@@ -269,7 +269,7 @@ class GameScene: SKScene {
                 stage.updateCurrentBerg(berg)
                 shakeScreen()
                 
-                berg.sink(7.0, completion: {})
+                berg.sink(7.0, completion: nil)
                 
                 intScore += 1
                 
