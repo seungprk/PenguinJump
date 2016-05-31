@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import CoreData
 
 class GameScene: SKScene {
     
@@ -33,7 +34,7 @@ class GameScene: SKScene {
     var distance:CGFloat = 0.0
     var intScore = 0
     var scoreLabel: SKLabelNode!
-    var highScore = 0
+//    var highScore = 0
     
     override func didMoveToView(view: SKView) {
 
@@ -177,7 +178,7 @@ class GameScene: SKScene {
         penguin.runAction(nudge)
     }
     
-    // MARK: - Initialize game
+    // MARK: - Game state
     
     func beginGame() {
         let zoomOut = SKAction.scaleTo(1.0, duration: 2.0)
@@ -232,6 +233,72 @@ class GameScene: SKScene {
 
     }
     
+    func runGameOver() {
+        if gameOver {
+            for child in stage.children {
+                let berg = child as! Iceberg
+                berg.removeAllActions()
+            }
+            gameRunning = false
+            freezeCamera = true
+            self.backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
+            
+            penguin.shadow.removeFromParent()
+            
+            let fall = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 0.2)
+            fall.timingMode = .EaseOut
+            let slideUp = SKAction.moveBy(CGVector(dx: 0, dy: 25), duration: 0.2)
+            slideUp.timingMode = .EaseOut
+            
+            penguin.runAction(slideUp)
+            penguin.body.runAction(fall)
+            
+            
+            let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+            let fetchRequest = NSFetchRequest(entityName: "GameData")
+            var fetchedData = [GameData]()
+            
+            do {
+                fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+                
+                if fetchedData.isEmpty {
+                    // Create initial game data
+                    let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
+                    newGameData.highScore = 0
+                }
+            } catch {
+                print(error)
+            }
+            
+            if let firstGameData = fetchedData.first {
+                let highScore = firstGameData.highScore as Int
+                
+                if intScore > highScore {
+                    firstGameData.highScore = intScore
+                    
+                    do {
+                        try managedObjectContext.save()
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
+            
+            let wait = SKAction.waitForDuration(2.0)
+            
+            self.runAction(wait, completion:  {
+                let scoreScene = ScoreScene(size: self.size)
+                
+//                scoreScene.highScore = self.highScore
+                scoreScene.score = self.intScore
+                
+                let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                scoreScene.scaleMode = SKSceneScaleMode.AspectFill
+                self.scene!.view?.presentScene(scoreScene, transition: transition)
+            })
+        }
+    }
+    
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
@@ -273,9 +340,9 @@ class GameScene: SKScene {
                 
                 intScore += 1
                 
-                if intScore > highScore {
-                    highScore = intScore
-                }
+//                if intScore > highScore {
+//                    highScore = intScore
+//                }
                 
                 let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
                 let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
@@ -291,44 +358,6 @@ class GameScene: SKScene {
             gameOver = true            
         }
     }
-    
-    func runGameOver() {
-        if gameOver {
-            for child in stage.children {
-                let berg = child as! Iceberg
-                berg.removeAllActions()
-            }
-            gameRunning = false
-            freezeCamera = true
-            self.backgroundColor = SKColor(red: 0/255, green: 120/255, blue: 200/255, alpha: 1.0)
-            
-            penguin.shadow.removeFromParent()
-            
-            let fall = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 0.2)
-            fall.timingMode = .EaseOut
-            let slideUp = SKAction.moveBy(CGVector(dx: 0, dy: 25), duration: 0.2)
-            slideUp.timingMode = .EaseOut
-            
-            penguin.runAction(slideUp)
-            penguin.body.runAction(fall)
-            
-            //shakeScreen()
-            
-            let wait = SKAction.waitForDuration(2.0)
-            
-            self.runAction(wait, completion:  {
-                let scoreScene = ScoreScene(size: self.size)
-                
-                scoreScene.highScore = self.highScore
-                scoreScene.score = self.intScore
-                
-                let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
-                scoreScene.scaleMode = SKSceneScaleMode.AspectFill
-                self.scene!.view?.presentScene(scoreScene, transition: transition)
-            })
-        }
-    }
-    
     
     func onBerg() -> Bool {
         for child in stage.children {
@@ -363,7 +392,7 @@ class GameScene: SKScene {
     func shakeScreen() {
         if enableScreenShake {
             let shakeAnimation = CAKeyframeAnimation(keyPath: "transform")
-            let randomIntensityOne = CGFloat(random() % 4 + 1)
+//            let randomIntensityOne = CGFloat(random() % 4 + 1)
             let randomIntensityTwo = CGFloat(random() % 4 + 1)
             shakeAnimation.values = [
                 //NSValue( CATransform3D:CATransform3DMakeTranslation(-randomIntensityOne, 0, 0 ) ),
