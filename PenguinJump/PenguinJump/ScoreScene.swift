@@ -7,14 +7,17 @@
 //
 
 import SpriteKit
+import CoreData
 
 class ScoreScene: SKScene {
     
-    var highScore = 0
-    var score = 0
+    var highScore: Int!
+    var score: Int!
     
     override func didMoveToView(view: SKView) {
         backgroundColor = SKColor.whiteColor()
+        
+        fetchHighscore()
         
         let highScoreTitle = SKLabelNode(text: "Highscore")
         highScoreTitle.fontName = "Helvetica Neue Condensed Black"
@@ -66,11 +69,27 @@ class ScoreScene: SKScene {
         if (node.name == "restartButton") {
             let gameScene = GameScene(size: self.size)
             
-            gameScene.highScore = highScore
-            
             let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
             gameScene.scaleMode = SKSceneScaleMode.AspectFill
             self.scene!.view?.presentScene(gameScene, transition: transition)
+        }
+    }
+    
+    func fetchHighscore() {
+        let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName: "GameData")
+        
+        var fetchedData = [GameData]()
+        do {
+            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+        } catch {
+            print(error)
+        }
+        
+        if fetchedData.isEmpty {
+            highScore = 0
+        } else {
+            highScore = fetchedData.first?.highScore as! Int
         }
     }
 }

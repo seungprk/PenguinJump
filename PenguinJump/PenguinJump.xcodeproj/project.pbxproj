@@ -12,6 +12,8 @@
 		7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE651CF647E700EC559E /* IcebergGenerator.swift */; };
 		7F36CE681CF653F200EC559E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE671CF653F200EC559E /* GameScene.swift */; };
 		7F36CE6A1CF6BB1900EC559E /* Penguin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE691CF6BB1900EC559E /* Penguin.swift */; };
+		7F61263D1CFE409F006BE5DA /* PenguinJump.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */; };
+		7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F61263E1CFE4329006BE5DA /* GameData.swift */; };
 		7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */; };
 		7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */; };
 		7F7FB3871CE5B80C0067FC9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB3851CE5B80C0067FC9B /* Main.storyboard */; };
@@ -27,6 +29,8 @@
 		7F36CE651CF647E700EC559E /* IcebergGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IcebergGenerator.swift; sourceTree = "<group>"; };
 		7F36CE671CF653F200EC559E /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		7F36CE691CF6BB1900EC559E /* Penguin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Penguin.swift; sourceTree = "<group>"; };
+		7F61263C1CFE409F006BE5DA /* PenguinJump.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PenguinJump.xcdatamodel; sourceTree = "<group>"; };
+		7F61263E1CFE4329006BE5DA /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
 		7F7FB37A1CE5B80C0067FC9B /* PenguinJump.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PenguinJump.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -77,9 +81,11 @@
 				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
+				7F61263E1CFE4329006BE5DA /* GameData.swift */,
 				7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */,
 				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
 				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
+				7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */,
 				7F7FB38D1CE5B80C0067FC9B /* Info.plist */,
 			);
 			path = PenguinJump;
@@ -161,10 +167,12 @@
 				7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */,
 				7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */,
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
+				7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
 				2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */,
 				7FB95AD71CF7B7B2005875DF /* Lightning.swift in Sources */,
+				7F61263D1CFE409F006BE5DA /* PenguinJump.xcdatamodeld in Sources */,
 				7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,6 +328,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7F61263C1CFE409F006BE5DA /* PenguinJump.xcdatamodel */,
+			);
+			currentVersion = 7F61263C1CFE409F006BE5DA /* PenguinJump.xcdatamodel */;
+			path = PenguinJump.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 7F7FB3721CE5B80C0067FC9B /* Project object */;
 }
