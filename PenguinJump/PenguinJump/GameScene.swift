@@ -19,6 +19,7 @@ class GameScene: SKScene {
     let penguin = Penguin()
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
+    var waves: SKSpriteNode!
 
     // Labels
     var startMenu : StartMenuNode!
@@ -71,6 +72,7 @@ class GameScene: SKScene {
         
         stage = IcebergGenerator(view: view!, camera: cam)
         stage.position = view!.center
+        stage.zPosition = 10
         addChild(stage)
         
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
@@ -91,24 +93,44 @@ class GameScene: SKScene {
         addChild(penguin)
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
+        
+        
+        waves = SKSpriteNode()
+        waves.position = view!.center
+        waves.zPosition = 0
+        addChild(waves!)
+        
+        // Fake wave crests
+        for crest in 1...34 {
+            let yPosition = view!.frame.height / 30
+            
+            let wave = SKSpriteNode()
+            wave.name = "crest"
+            wave.color = SKColor.whiteColor()
+            wave.size = CGSize(width: view!.frame.width, height: 0.5)
+            wave.position = CGPoint(x: 0, y: -view!.frame.height / 2 + yPosition * CGFloat(crest) - 20)
+            waves.addChild(wave)
+        }
+        
+        bob(waves!)
     }
     
     // MARK: - Background
-//    
-//    func bob(node: SKSpriteNode) {
-//        let bobDepth = 2.0
-//        let bobDuration = 2.0
-//        
-//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-//        let wait = SKAction.waitForDuration(bobDuration / 2)
-//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-//        
-//        let bobSequence = SKAction.sequence([down, wait, up, wait])
-//        let bob = SKAction.repeatActionForever(bobSequence)
-//        
-//        node.removeAllActions()
-//        node.runAction(bob)
-//    }
+    
+    func bob(node: SKSpriteNode) {
+        let bobDepth = 2.0
+        let bobDuration = 2.0
+        
+        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+        let wait = SKAction.waitForDuration(bobDuration / 2)
+        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+        
+        let bobSequence = SKAction.sequence([down, wait, up, wait])
+        let bob = SKAction.repeatActionForever(bobSequence)
+        
+        node.removeAllActions()
+        node.runAction(bob)
+    }
     
     // MARK: - Controls
     
@@ -361,14 +383,7 @@ class GameScene: SKScene {
     
     // MARK: - Gameplay logic
     
-//    func trackDistance() {
-//        if penguin.position.y > distance {
-//            distance = penguin.position.y / 10
-//        }
-//    }
-    
     func trackDifficulty() {
-        
         // Difficulty:
         // minimum 0.0
         // maximum 1.0
