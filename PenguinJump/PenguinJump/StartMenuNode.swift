@@ -70,8 +70,8 @@ class StartMenuNode: SKNode {
         title.addChild(titleLabel)
         title.addChild(subtitleLabel)
         addChild(title)
-        addChild(highScoreButton)
-        addChild(aboutButton)
+//        addChild(highScoreButton)
+//        addChild(aboutButton)
         addChild(playButton)
     }
     

@@ -19,6 +19,7 @@ class GameScene: SKScene {
     let penguin = Penguin()
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
+    var waves: Waves!
 
     // Labels
     var startMenu : StartMenuNode!
@@ -34,6 +35,9 @@ class GameScene: SKScene {
     // Score tracking
     var intScore = 0
     var scoreLabel: SKLabelNode!
+    
+    // Debug
+    var testZoomed = false
     
     override func didMoveToView(view: SKView) {
 
@@ -55,6 +59,19 @@ class GameScene: SKScene {
         let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
+        
+        // Zoom out button for debugging
+        let zoomButton = SKLabelNode(text: "ZOOM")
+        zoomButton.name = "testZoom"
+        zoomButton.fontName = "Helvetica Neue Condensed Black"
+        zoomButton.fontSize = 24
+        zoomButton.alpha = 0.5
+        zoomButton.zPosition = 200000
+        zoomButton.fontColor = UIColor.blackColor()
+        zoomButton.position = CGPoint(x: -view.frame.width / 2, y: view.frame.height / 2)
+        zoomButton.position.x += zoomButton.frame.width
+        zoomButton.position.y -= zoomButton.frame.height * 2
+        cam.addChild(zoomButton)
     }
     
     func newGame() {
@@ -71,6 +88,7 @@ class GameScene: SKScene {
         
         stage = IcebergGenerator(view: view!, camera: cam)
         stage.position = view!.center
+        stage.zPosition = 10
         addChild(stage)
         
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
@@ -91,24 +109,30 @@ class GameScene: SKScene {
         addChild(penguin)
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
+        
+        waves = Waves(camera: cam, gameScene: self)
+        waves.position = view!.center
+        waves.zPosition = 0
+        addChild(waves)
+        bob(waves)
     }
     
     // MARK: - Background
-//    
-//    func bob(node: SKSpriteNode) {
-//        let bobDepth = 2.0
-//        let bobDuration = 2.0
-//        
-//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-//        let wait = SKAction.waitForDuration(bobDuration / 2)
-//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-//        
-//        let bobSequence = SKAction.sequence([down, wait, up, wait])
-//        let bob = SKAction.repeatActionForever(bobSequence)
-//        
-//        node.removeAllActions()
-//        node.runAction(bob)
-//    }
+    
+    func bob(node: SKSpriteNode) {
+        let bobDepth = 2.0
+        let bobDuration = 2.0
+        
+        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+        let wait = SKAction.waitForDuration(bobDuration / 2)
+        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+        
+        let bobSequence = SKAction.sequence([down, wait, up, wait])
+        let bob = SKAction.repeatActionForever(bobSequence)
+        
+        node.removeAllActions()
+        node.runAction(bob)
+    }
     
     // MARK: - Controls
     
@@ -126,6 +150,13 @@ class GameScene: SKScene {
                     }
                     if touchedNode.name == "playButton" {
                         beginGame()
+                    }
+                    if touchedNode.name == "testZoom" {
+                        let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
+                        let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
+                        
+                        testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
+                        testZoomed = testZoomed ? false : true
                     }
                 }
             }
@@ -294,13 +325,13 @@ class GameScene: SKScene {
     
     override func update(currentTime: NSTimeInterval) {
         stage.update()
-        
+        waves.update()
+
         if gameRunning {
             penguin.userInteractionEnabled = true
 
             scoreLabel.text = "Score: " + String(intScore)
             
-//            trackDistance()
             penguinUpdate()
             trackDifficulty()
             
@@ -361,14 +392,7 @@ class GameScene: SKScene {
     
     // MARK: - Gameplay logic
     
-//    func trackDistance() {
-//        if penguin.position.y > distance {
-//            distance = penguin.position.y / 10
-//        }
-//    }
-    
     func trackDifficulty() {
-        
         // Difficulty:
         // minimum 0.0
         // maximum 1.0

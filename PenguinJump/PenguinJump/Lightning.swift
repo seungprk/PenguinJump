@@ -10,6 +10,8 @@ import SpriteKit
 
 class Lightning: SKSpriteNode {
     
+    /*
+    
     var cloud: SKSpriteNode!
     var shadow: SKSpriteNode!
     
@@ -29,12 +31,14 @@ class Lightning: SKSpriteNode {
         lightning.zPosition = 3000
         let lightningAnim = SKAction.animateWithTextures(lightningFrames, timePerFrame: 0.2)
         lightning.runAction(lightningAnim)
-        //
+        
         addChild(lightning)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    */
     
 }

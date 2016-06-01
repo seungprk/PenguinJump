@@ -19,6 +19,7 @@
 		7F7FB3871CE5B80C0067FC9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB3851CE5B80C0067FC9B /* Main.storyboard */; };
 		7F7FB3891CE5B80C0067FC9B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */; };
 		7F7FB38C1CE5B80C0067FC9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */; };
+		7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */; };
 		7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */; };
 		7FB95AD71CF7B7B2005875DF /* Lightning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD61CF7B7B2005875DF /* Lightning.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +39,7 @@
 		7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7F7FB38B1CE5B80C0067FC9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7F7FB38D1CE5B80C0067FC9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Waves.swift; sourceTree = "<group>"; };
 		7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreScene.swift; sourceTree = "<group>"; };
 		7FB95AD61CF7B7B2005875DF /* Lightning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lightning.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,13 +77,9 @@
 				7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */,
 				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
 				7F36CE671CF653F200EC559E /* GameScene.swift */,
-				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
 				7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */,
-				2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */,
-				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
-				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
-				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
 				7F61263E1CFE4329006BE5DA /* GameData.swift */,
+				7FA6BCDE1CFF78AF003C7CDA /* Nodes */,
 				7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */,
 				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
 				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
@@ -89,6 +87,19 @@
 				7F7FB38D1CE5B80C0067FC9B /* Info.plist */,
 			);
 			path = PenguinJump;
+			sourceTree = "<group>";
+		};
+		7FA6BCDE1CFF78AF003C7CDA /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */,
+				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
+				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
+				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
+				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
+				7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */,
+			);
+			name = Nodes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +178,7 @@
 				7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */,
 				7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */,
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
+				7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */,
 				7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
