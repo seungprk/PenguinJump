@@ -46,10 +46,6 @@ class Waves: SKSpriteNode {
         totalRows = 1
         totalColumns = 1
         
-        highestNodeY = -10000.0
-        lowestNodeY = CGFloat.max
-        leftmostNodeX = CGFloat.max
-        rightmostNodeX = -10000.0
         updateFurthestNodes()
         
         for _ in 0...rowsInView {
@@ -62,8 +58,9 @@ class Waves: SKSpriteNode {
     }
     
     func update() {
+        // Add wave nodes to fill screen
         updateFurthestNodes()
-        if highestNodeY < camera.position.y + gameScene!.frame.height / 6 {
+        if highestNodeY < camera.position.y + gameScene.frame.height / 6 {
             totalRows += 1
             for cell in 0..<totalColumns {
                 let waveNode = newWaveNode()
@@ -76,7 +73,7 @@ class Waves: SKSpriteNode {
         }
         
         updateFurthestNodes()
-        if leftmostNodeX > camera.position.x - gameScene!.frame.width  {
+        if leftmostNodeX > camera.position.x - gameScene.frame.width  {
             totalColumns += 1
             for cell in 0..<totalRows {
                 let waveNode = newWaveNode()
@@ -101,9 +98,51 @@ class Waves: SKSpriteNode {
             }
         }
         
+        // Delete wave nodes that are no longer visible
+        updateFurthestNodes()
+        while lowestNodeY < camera.position.y - gameScene.frame.height {
+            for waveNode in children {
+                if waveNode.position.y < lowestNodeY + waveGap / 2 {
+                    waveNode.removeFromParent()
+                }
+                
+            }
+            totalRows -= 1
+            updateFurthestNodes()
+        }
+        
+        updateFurthestNodes()
+        while rightmostNodeX > camera.position.x + nodeWidth {
+            for waveNode in children {
+                if waveNode.position.x > rightmostNodeX - nodeWidth / 2 {
+                    waveNode.removeFromParent()
+                }
+                
+            }
+            totalColumns -= 1
+            updateFurthestNodes()
+        }
+        
+        updateFurthestNodes()
+        while leftmostNodeX < camera.position.x - gameScene.frame.width - nodeWidth {
+            for waveNode in children {
+                if waveNode.position.x < leftmostNodeX + nodeWidth / 2 {
+                    waveNode.removeFromParent()
+                }
+                
+            }
+            totalColumns -= 1
+            updateFurthestNodes()
+        }
     }
     
     func updateFurthestNodes() {
+        // Reset values
+        highestNodeY = -10000.0
+        lowestNodeY = CGFloat.max
+        leftmostNodeX = CGFloat.max
+        rightmostNodeX = camera.position.x - gameScene.frame.width
+
         for waveNode in children {
             if highestNodeY < waveNode.position.y {
                 highestNodeY = waveNode.position.y

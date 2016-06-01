@@ -60,15 +60,17 @@ class GameScene: SKScene {
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
         
+        // Zoom out button for debugging
         let zoomButton = SKLabelNode(text: "ZOOM")
         zoomButton.name = "testZoom"
-        zoomButton.position = CGPointZero
-        zoomButton.position.y += 200
         zoomButton.fontName = "Helvetica Neue Condensed Black"
-        zoomButton.fontSize = 50
+        zoomButton.fontSize = 24
         zoomButton.alpha = 0.5
         zoomButton.zPosition = 200000
         zoomButton.fontColor = UIColor.blackColor()
+        zoomButton.position = CGPoint(x: -view.frame.width / 2, y: view.frame.height / 2)
+        zoomButton.position.x += zoomButton.frame.width
+        zoomButton.position.y -= zoomButton.frame.height * 2
         cam.addChild(zoomButton)
     }
     
@@ -108,25 +110,6 @@ class GameScene: SKScene {
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
         
-        
-//        waves = SKSpriteNode()
-//        waves.position = view!.center
-//        waves.zPosition = 0
-//        addChild(waves)
-//        bob(waves)
-//        
-//        // Fake wave crests
-//        for crest in 1...34 {
-//            let yPosition = view!.frame.height / 30
-//            
-//            let wave = SKSpriteNode()
-//            wave.name = "crest"
-//            wave.color = SKColor.whiteColor()
-//            wave.size = CGSize(width: view!.frame.width, height: 0.5)
-//            wave.position = CGPoint(x: 0, y: -view!.frame.height / 2 + yPosition * CGFloat(crest) - 20)
-//            waves.addChild(wave)
-//        }
-
         waves = Waves(camera: cam, gameScene: self)
         waves.position = view!.center
         waves.zPosition = 0
@@ -349,7 +332,6 @@ class GameScene: SKScene {
 
             scoreLabel.text = "Score: " + String(intScore)
             
-//            trackDistance()
             penguinUpdate()
             trackDifficulty()
             
