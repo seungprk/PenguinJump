@@ -343,6 +343,10 @@ class GameScene: SKScene {
             centerCamera()
         } else {
             penguin.userInteractionEnabled = false
+            penguin.removeAllActions()
+            for child in penguin.children {
+                child.removeAllActions()
+            }
         }
         
     }
