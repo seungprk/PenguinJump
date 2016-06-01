@@ -140,36 +140,29 @@ class Iceberg: SKSpriteNode {
             CGPathCloseSubpath(shadowPath)
             
             shadow.path = shadowPath
-            shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
+            shadow.position = CGPointZero
             shadow.fillColor = shadowColor
             shadow.strokeColor = SKColor.clearColor()// shadowColor
             shadow.lineWidth = 1
             shadow.zPosition = 50
             croppedShadow.addChild(shadow)
-//            if let shadow = shadow{
-//                shadow.path = shadowPath
-//                shadow.position = CGPointZero //(x: view.center.x, y: view.center.y)// - shadowHeight)
-//                shadow.fillColor = shadowColor
-//                shadow.strokeColor = shadowColor
-//                shadow.lineWidth = 1
-//                shadow.zPosition = 50
-//                
-//                croppedShadow.addChild(shadow)
-//            }
         }
     }
     
     func beginMoving() {
-        let moveSpeed = 4.0
+        let maxDuration = 6.0
+        let minDuration = 3.0
+        let moveDuration = maxDuration - ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
         
-        let forth = SKAction.moveBy(CGVector(dx: 200, dy: 0), duration: moveSpeed)
-        let back = SKAction.moveBy(CGVector(dx: -200, dy: 0), duration: moveSpeed)
-        forth.timingMode = .EaseInEaseOut
+        let forthFirst = SKAction.moveBy(CGVector(dx: 100, dy: 0), duration: moveDuration / 2)
+        let forthSecond = SKAction.moveBy(CGVector(dx: 100, dy: 0), duration: moveDuration / 2)
+        let back = SKAction.moveBy(CGVector(dx: -200, dy: 0), duration: moveDuration)
+        forthFirst.timingMode = .EaseOut
         back.timingMode = .EaseInEaseOut
+        forthSecond.timingMode = .EaseIn
         
-        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forth, back]))
+        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forthFirst, back, forthSecond]))
         
-        position.x -= 100
         runAction(backAndForth)
     }
     

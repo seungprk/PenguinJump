@@ -8,13 +8,6 @@
 
 import SpriteKit
 
-//// Overload minus operator to use on CGPoint
-//func -(first: CGPoint, second: CGPoint) -> CGPoint {
-//    let deltaX = first.x - second.x
-//    let deltaY = first.y - second.y
-//    return CGPoint(x: deltaX, y: deltaY)
-//}
-
 class Penguin: SKSpriteNode {
     
     let penguinCropNode = SKCropNode()

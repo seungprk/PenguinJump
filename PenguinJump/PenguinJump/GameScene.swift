@@ -29,12 +29,11 @@ class GameScene: SKScene {
     var gameOver = false
     var playerTouched = false
     var freezeCamera = false
+    var difficulty = 0.0
     
     // Score tracking
-    var distance:CGFloat = 0.0
     var intScore = 0
     var scoreLabel: SKLabelNode!
-//    var highScore = 0
     
     override func didMoveToView(view: SKView) {
 
@@ -92,14 +91,6 @@ class GameScene: SKScene {
         addChild(penguin)
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
-    }
-    
-    // MARK: - Gameplay logic
-    
-    func trackDistance() {
-        if penguin.position.y > distance {
-            distance = penguin.position.y / 10
-        }
     }
     
     // MARK: - Background
@@ -309,8 +300,9 @@ class GameScene: SKScene {
 
             scoreLabel.text = "Score: " + String(intScore)
             
-            trackDistance()
+//            trackDistance()
             penguinUpdate()
+            trackDifficulty()
             
             checkGameOver()
             if gameOver {
@@ -336,13 +328,10 @@ class GameScene: SKScene {
                 stage.updateCurrentBerg(berg)
                 shakeScreen()
                 
-                berg.sink(7.0, completion: nil)
-                
+                let sinkDuration = 7.0 - (3.0 * difficulty)
+                berg.sink(sinkDuration, completion: nil)
+
                 intScore += 1
-                
-//                if intScore > highScore {
-//                    highScore = intScore
-//                }
                 
                 let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
                 let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
@@ -369,6 +358,23 @@ class GameScene: SKScene {
         return false
     }
     
+    
+    // MARK: - Gameplay logic
+    
+//    func trackDistance() {
+//        if penguin.position.y > distance {
+//            distance = penguin.position.y / 10
+//        }
+//    }
+    
+    func trackDifficulty() {
+        
+        // Difficulty:
+        // minimum 0.0
+        // maximum 1.0
+        difficulty = -1.0 * pow(0.9995, Double(penguin.position.y)) + 1.0
+    }
+    
     // MARK: - Camera control
     
     func centerCamera() {
@@ -383,8 +389,6 @@ class GameScene: SKScene {
         } else {
             cam.removeAllActions()
         }
-        
-        
     }
     
     // MARK: - Utilities
