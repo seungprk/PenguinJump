@@ -19,7 +19,7 @@ class GameScene: SKScene {
     let penguin = Penguin()
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
-    var waves: SKSpriteNode!
+    var waves: Waves!
 
     // Labels
     var startMenu : StartMenuNode!
@@ -35,6 +35,9 @@ class GameScene: SKScene {
     // Score tracking
     var intScore = 0
     var scoreLabel: SKLabelNode!
+    
+    // Debug
+    var testZoomed = false
     
     override func didMoveToView(view: SKView) {
 
@@ -56,6 +59,17 @@ class GameScene: SKScene {
         let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
+        
+        let zoomButton = SKLabelNode(text: "ZOOM")
+        zoomButton.name = "testZoom"
+        zoomButton.position = CGPointZero
+        zoomButton.position.y += 200
+        zoomButton.fontName = "Helvetica Neue Condensed Black"
+        zoomButton.fontSize = 50
+        zoomButton.alpha = 0.5
+        zoomButton.zPosition = 200000
+        zoomButton.fontColor = UIColor.blackColor()
+        cam.addChild(zoomButton)
     }
     
     func newGame() {
@@ -95,24 +109,29 @@ class GameScene: SKScene {
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
         
         
-        waves = SKSpriteNode()
+//        waves = SKSpriteNode()
+//        waves.position = view!.center
+//        waves.zPosition = 0
+//        addChild(waves)
+//        bob(waves)
+//        
+//        // Fake wave crests
+//        for crest in 1...34 {
+//            let yPosition = view!.frame.height / 30
+//            
+//            let wave = SKSpriteNode()
+//            wave.name = "crest"
+//            wave.color = SKColor.whiteColor()
+//            wave.size = CGSize(width: view!.frame.width, height: 0.5)
+//            wave.position = CGPoint(x: 0, y: -view!.frame.height / 2 + yPosition * CGFloat(crest) - 20)
+//            waves.addChild(wave)
+//        }
+
+        waves = Waves(camera: cam, gameScene: self)
         waves.position = view!.center
         waves.zPosition = 0
-        addChild(waves!)
-        
-        // Fake wave crests
-        for crest in 1...34 {
-            let yPosition = view!.frame.height / 30
-            
-            let wave = SKSpriteNode()
-            wave.name = "crest"
-            wave.color = SKColor.whiteColor()
-            wave.size = CGSize(width: view!.frame.width, height: 0.5)
-            wave.position = CGPoint(x: 0, y: -view!.frame.height / 2 + yPosition * CGFloat(crest) - 20)
-            waves.addChild(wave)
-        }
-        
-        bob(waves!)
+        addChild(waves)
+        bob(waves)
     }
     
     // MARK: - Background
@@ -148,6 +167,13 @@ class GameScene: SKScene {
                     }
                     if touchedNode.name == "playButton" {
                         beginGame()
+                    }
+                    if touchedNode.name == "testZoom" {
+                        let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
+                        let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
+                        
+                        testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
+                        testZoomed = testZoomed ? false : true
                     }
                 }
             }
@@ -316,7 +342,8 @@ class GameScene: SKScene {
     
     override func update(currentTime: NSTimeInterval) {
         stage.update()
-        
+        waves.update()
+
         if gameRunning {
             penguin.userInteractionEnabled = true
 
