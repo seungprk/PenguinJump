@@ -186,12 +186,10 @@ class Penguin: SKSpriteNode {
         let jumpSequence = SKAction.sequence([jumpAction, fallAction])
         let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
         let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
-//        let counterSequence = SKAction.sequence([jumpCounter, fallCounter])
         
         let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
         
         shadow.runAction(shadowEnlargeSequence)
-//        shadow.runAction(counterSequence)
         
         penguinCropNode.runAction(enlargeSequence)
         runAction(move)
@@ -200,7 +198,10 @@ class Penguin: SKSpriteNode {
             self.doubleJumped = false
             self.removeAllActions()
         })
+        
+        runAction(SKAction.playSoundFileNamed("jump.m4a", waitForCompletion: false))
     }
+    
     func land() {
         onBerg = true
         let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 7.0)

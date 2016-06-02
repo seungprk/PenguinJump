@@ -13,6 +13,8 @@ class GameScene: SKScene {
     
     // Game options
     var enableScreenShake = true
+    var musicOn = false
+    var soundsOn = true
     
     // Node Objects
     var cam:SKCameraNode!
@@ -21,6 +23,8 @@ class GameScene: SKScene {
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
     var background: Background!
+    var backgroundMusic: SKAudioNode!
+    var backgroundOcean: SKAudioNode!
 
     // Labels
     var startMenu : StartMenuNode!
@@ -29,6 +33,7 @@ class GameScene: SKScene {
     var gameBegin = false
     var gameRunning = false
     var gameOver = false
+    var gamePaused = false
     var playerTouched = false
     var freezeCamera = false
     var difficulty = 0.0
@@ -73,6 +78,30 @@ class GameScene: SKScene {
         zoomButton.position.x += zoomButton.frame.width
         zoomButton.position.y -= zoomButton.frame.height * 2
         cam.addChild(zoomButton)
+        
+        let pauseButton = SKLabelNode(text: "I I")
+        pauseButton.name = "pauseButton"
+        pauseButton.fontName = "Helvetica Neue Condensed Black"
+        pauseButton.fontSize = 24
+        pauseButton.alpha = 0.5
+        pauseButton.zPosition = 200000
+        pauseButton.fontColor = UIColor.blackColor()
+        pauseButton.position = CGPoint(x: view.frame.width / 2, y: view.frame.height / 2)
+        pauseButton.position.x -= pauseButton.frame.width * 1.5
+        pauseButton.position.y -= pauseButton.frame.height * 2
+        cam.addChild(pauseButton)
+        
+        if musicOn {
+            // Music setup
+            if let musicURL = NSBundle.mainBundle().URLForResource("Reformat", withExtension: "mp3") {
+                backgroundMusic = SKAudioNode(URL: musicURL)
+                addChild(backgroundMusic)
+            }
+            if let musicURL = NSBundle.mainBundle().URLForResource("ocean", withExtension: "m4a") {
+                backgroundOcean = SKAudioNode(URL: musicURL)
+                addChild(backgroundOcean)
+            }
+        }
     }
     
     func newGame() {
@@ -121,6 +150,7 @@ class GameScene: SKScene {
         background.position = view!.center
         background.zPosition = -1000
         addChild(background)
+        
     }
     
     // MARK: - Background
@@ -156,6 +186,7 @@ class GameScene: SKScene {
                     }
                     if touchedNode.name == "playButton" {
                         beginGame()
+                        runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
                     }
                     if touchedNode.name == "testZoom" {
                         let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
@@ -163,6 +194,38 @@ class GameScene: SKScene {
                         
                         testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
                         testZoomed = testZoomed ? false : true
+                    }
+                    if touchedNode.name == "pauseButton" {
+                        if gamePaused == false {
+                            gamePaused = true
+                            penguin.userInteractionEnabled = false
+                            paused = true
+                            
+                            let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
+                            cover.name = "pauseCover"
+                            cover.position = cam.position
+                            cover.alpha = 0.5
+                            cover.zPosition = 1000000
+                            addChild(cover)
+                            
+                            let unPause = SKLabelNode(text: "Tap to Play")
+                            unPause.name = "pauseCover"
+                            unPause.position = cam.position
+                            unPause.fontColor = SKColor.whiteColor()
+                            unPause.fontName = "Helvetica Neue Condensed Black"
+                            unPause.zPosition = 1000001
+                            addChild(unPause)
+                        }
+                    }
+                    if touchedNode.name == "pauseCover" {
+                        for child in children {
+                            if child.name == "pauseCover" {
+                                child.removeFromParent()
+                            }
+                        }
+                        gamePaused = false
+                        penguin.userInteractionEnabled = true
+                        paused = false
                     }
                 }
             }
@@ -204,6 +267,7 @@ class GameScene: SKScene {
         
         let nudge = SKAction.moveBy(velocity, duration: nudgeDuration)
         penguin.runAction(nudge)
+        penguin.runAction(SKAction.playSoundFileNamed("jump.m4a", waitForCompletion: false))
     }
     
     // MARK: - Game state
@@ -281,6 +345,7 @@ class GameScene: SKScene {
             penguin.runAction(slideUp)
             penguin.body.runAction(fall)
             
+            runAction(SKAction.playSoundFileNamed("splash.m4a", waitForCompletion: false))
             
             let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "GameData")
@@ -316,8 +381,6 @@ class GameScene: SKScene {
             
             self.runAction(wait, completion:  {
                 let scoreScene = ScoreScene(size: self.size)
-                
-//                scoreScene.highScore = self.highScore
                 scoreScene.score = self.intScore
                 
                 let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
@@ -329,21 +392,11 @@ class GameScene: SKScene {
     
     // MARK: - Updates
     
-//    var silhouetteCounter = 0
-    
     override func update(currentTime: NSTimeInterval) {
         stage.update()
         waves.update()
 
         if gameRunning {
-//            if silhouetteCounter == 90 {
-////                let random = 
-//                background.generateSilhouette()
-//                silhouetteCounter = 0
-//            } else {
-//                silhouetteCounter += 1
-//            }
-            
             penguin.userInteractionEnabled = true
 
             scoreLabel.text = "Score: " + String(intScore)
@@ -374,6 +427,7 @@ class GameScene: SKScene {
             if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
                 // Penguin landed on an iceberg if check is true
                 penguin.land()
+                runAction(SKAction.playSoundFileNamed("landing.m4a", waitForCompletion: false))
                 
                 berg.land()
                 stage.updateCurrentBerg(berg)
