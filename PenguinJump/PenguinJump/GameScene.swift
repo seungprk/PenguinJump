@@ -20,6 +20,7 @@ class GameScene: SKScene {
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
+    var background: Background!
 
     // Labels
     var startMenu : StartMenuNode!
@@ -115,6 +116,12 @@ class GameScene: SKScene {
         waves.zPosition = 0
         addChild(waves)
         bob(waves)
+        
+        background = Background(view: view!, camera: cam)
+        background.position = view!.center
+        background.zPosition = -1000
+        addChild(background)
+
     }
     
     // MARK: - Background
@@ -322,12 +329,20 @@ class GameScene: SKScene {
     }
     
     // MARK: - Updates
-    
+    var silhouetteCounter = 0
     override func update(currentTime: NSTimeInterval) {
         stage.update()
         waves.update()
 
         if gameRunning {
+            if silhouetteCounter == 30 {
+                background.generateSilhouette()
+                silhouetteCounter = 0
+            } else {
+                silhouetteCounter += 1
+            }
+            
+            
             penguin.userInteractionEnabled = true
 
             scoreLabel.text = "Score: " + String(intScore)
