@@ -67,6 +67,8 @@ class ScoreScene: SKScene {
         
         // If previous button is touched, start transition to previous scene
         if (node.name == "restartButton") {
+            runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
+            
             let gameScene = GameScene(size: self.size)
             
             let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)

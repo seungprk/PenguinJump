@@ -155,7 +155,7 @@ class IcebergGenerator: SKSpriteNode {
             while shouldGenerate() {
                 let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
                 
-                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
+//                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
                 
                 let xPosition = highestBerg!.position.x // + deltaX * 0.2
                 let yPosition = highestBerg!.position.y + gapDistance
