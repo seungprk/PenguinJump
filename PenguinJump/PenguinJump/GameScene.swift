@@ -121,7 +121,6 @@ class GameScene: SKScene {
         background.position = view!.center
         background.zPosition = -1000
         addChild(background)
-
     }
     
     // MARK: - Background
@@ -329,19 +328,21 @@ class GameScene: SKScene {
     }
     
     // MARK: - Updates
-    var silhouetteCounter = 0
+    
+//    var silhouetteCounter = 0
+    
     override func update(currentTime: NSTimeInterval) {
         stage.update()
         waves.update()
 
         if gameRunning {
-            if silhouetteCounter == 30 {
-                background.generateSilhouette()
-                silhouetteCounter = 0
-            } else {
-                silhouetteCounter += 1
-            }
-            
+//            if silhouetteCounter == 90 {
+////                let random = 
+//                background.generateSilhouette()
+//                silhouetteCounter = 0
+//            } else {
+//                silhouetteCounter += 1
+//            }
             
             penguin.userInteractionEnabled = true
 

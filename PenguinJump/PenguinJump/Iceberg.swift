@@ -19,7 +19,7 @@ class Iceberg: SKSpriteNode {
     
     // Attributes
     let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
-    var underwaterColor = SKColor(red: 0.5, green: 0.8, blue: 0.89, alpha: 0.5)
+    var underwaterColor = SKColor(red: 0.25, green: 0.55, blue: 0.8, alpha: 1.0) // SKColor(red: 0.5, green: 0.8, blue: 0.89, alpha: 0.5)
     var shadowHeight:CGFloat = 20.0
     var underwaterHeight:CGFloat = 20.0
     
@@ -150,13 +150,14 @@ class Iceberg: SKSpriteNode {
     }
     
     func beginMoving() {
-        let maxDuration = 6.0
+        let maxDuration = 12.0
         let minDuration = 3.0
         let moveDuration = maxDuration - ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
+        let moveDistance = 100
         
-        let forthFirst = SKAction.moveBy(CGVector(dx: 100, dy: 0), duration: moveDuration / 2)
-        let forthSecond = SKAction.moveBy(CGVector(dx: 100, dy: 0), duration: moveDuration / 2)
-        let back = SKAction.moveBy(CGVector(dx: -200, dy: 0), duration: moveDuration)
+        let forthFirst = SKAction.moveBy(CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
+        let forthSecond = SKAction.moveBy(CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
+        let back = SKAction.moveBy(CGVector(dx: -moveDistance, dy: 0), duration: moveDuration)
         forthFirst.timingMode = .EaseOut
         back.timingMode = .EaseInEaseOut
         forthSecond.timingMode = .EaseIn
