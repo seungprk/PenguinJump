@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8150" systemVersion="15A204g" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" initialViewController="01J-lp-oVM">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8122"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -15,8 +16,78 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <animations/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T0v-qH-Twy">
+                                <rect key="frame" x="230" y="128" width="140" height="345"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="MNR-JG-cKD">
+                                        <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="140" id="THA-Sc-ADl"/>
+                                            <constraint firstAttribute="height" constant="140" id="nPV-Ld-U2Q"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="David Park" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zN0-iZ-gAa">
+                                        <rect key="frame" x="23.5" y="210" width="93.5" height="23"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@seungprk" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kbg-YN-2mb">
+                                        <rect key="frame" x="30" y="233" width="80" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
+                                        <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Matthew Tso" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="thI-Ja-TVK">
+                                        <rect key="frame" x="13.5" y="304" width="112.5" height="23"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@matthewtso" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="waU-Xm-Edy">
+                                        <rect key="frame" x="21" y="327" width="97.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
+                                        <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iHu-AR-eNg">
+                                        <rect key="frame" x="63.5" y="266" width="12.5" height="23"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="iHu-AR-eNg" firstAttribute="centerX" secondItem="kbg-YN-2mb" secondAttribute="centerX" id="1XP-Ha-T9E"/>
+                                    <constraint firstItem="waU-Xm-Edy" firstAttribute="top" secondItem="thI-Ja-TVK" secondAttribute="bottom" id="7ei-cw-qxZ"/>
+                                    <constraint firstItem="thI-Ja-TVK" firstAttribute="centerX" secondItem="iHu-AR-eNg" secondAttribute="centerX" id="AGx-28-hPg"/>
+                                    <constraint firstAttribute="bottom" secondItem="waU-Xm-Edy" secondAttribute="bottom" id="Aq9-Zj-8Fh"/>
+                                    <constraint firstAttribute="trailing" secondItem="MNR-JG-cKD" secondAttribute="trailing" id="E5c-fx-b1J"/>
+                                    <constraint firstItem="MNR-JG-cKD" firstAttribute="leading" secondItem="T0v-qH-Twy" secondAttribute="leading" id="Fft-Nf-Wqo"/>
+                                    <constraint firstItem="zN0-iZ-gAa" firstAttribute="centerX" secondItem="MNR-JG-cKD" secondAttribute="centerX" id="GYg-QT-yqh"/>
+                                    <constraint firstAttribute="width" secondItem="MNR-JG-cKD" secondAttribute="width" id="XPL-rZ-F6I"/>
+                                    <constraint firstItem="waU-Xm-Edy" firstAttribute="centerX" secondItem="thI-Ja-TVK" secondAttribute="centerX" id="ZHo-we-vTN"/>
+                                    <constraint firstItem="iHu-AR-eNg" firstAttribute="top" secondItem="kbg-YN-2mb" secondAttribute="bottom" constant="15" id="bq0-L6-l0R"/>
+                                    <constraint firstItem="MNR-JG-cKD" firstAttribute="top" secondItem="T0v-qH-Twy" secondAttribute="top" id="cuK-ZM-7bO"/>
+                                    <constraint firstItem="kbg-YN-2mb" firstAttribute="top" secondItem="zN0-iZ-gAa" secondAttribute="bottom" id="eIT-88-48j"/>
+                                    <constraint firstItem="thI-Ja-TVK" firstAttribute="top" secondItem="iHu-AR-eNg" secondAttribute="bottom" constant="15" id="q0c-F4-8Xd"/>
+                                    <constraint firstItem="zN0-iZ-gAa" firstAttribute="top" secondItem="MNR-JG-cKD" secondAttribute="bottom" constant="70" id="v4D-nX-nfz"/>
+                                    <constraint firstItem="kbg-YN-2mb" firstAttribute="centerX" secondItem="zN0-iZ-gAa" secondAttribute="centerX" id="vef-Mu-XdH"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="XPL-rZ-F6I"/>
+                                    </mask>
+                                </variation>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="T0v-qH-Twy" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="tiu-IU-ajf"/>
+                            <constraint firstItem="T0v-qH-Twy" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="z4K-OA-fHv"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -24,4 +95,7 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="logo" width="137" height="137"/>
+    </resources>
 </document>
