@@ -28,7 +28,21 @@ class Iceberg: SKSpriteNode {
     let debug = false
     var landed = false
     
+    // Path and Shape
+    var reusablePath: CGMutablePath!
+    var reusableShapeNode: SKShapeNode!
+    
     // Functions
+    init(size: CGSize, reusablePath: CGMutablePath, reusableShapeNode: SKShapeNode) {
+        super.init(texture: nil, color: UIColor.clearColor(), size: size)
+        
+        self.reusablePath = reusablePath
+        self.reusableShapeNode = reusableShapeNode
+        
+        bergVertices = generateRandomPoints(aroundPoint: CGPointZero)
+        createBergImages()
+    }
+    
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
         if stormMode {
@@ -39,6 +53,9 @@ class Iceberg: SKSpriteNode {
         
         createBergShapes()
         bob()
+    }
+    
+    func createBergImages() {
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -64,6 +81,7 @@ class Iceberg: SKSpriteNode {
         }
         return randomPoints
     }
+    
     
     func createBergShapes() {
         if let vertices = bergVertices {

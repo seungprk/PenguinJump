@@ -116,7 +116,7 @@ class GameScene: SKScene {
         
         cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
         
-        stage = IcebergGenerator(view: view!, camera: cam)
+        stage = IcebergGenerator(view: view!, camera: cam, drawImages: true)
         stage.position = view!.center
         stage.zPosition = 10
         addChild(stage)
