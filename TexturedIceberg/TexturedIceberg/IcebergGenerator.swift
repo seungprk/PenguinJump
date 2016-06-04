@@ -39,6 +39,8 @@ class IcebergGenerator: SKSpriteNode {
     init(view: SKView/*, camera sceneCamera: SKCameraNode*/) {
         super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
         position = view.center
+        
+        generateBerg()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -52,85 +54,12 @@ class IcebergGenerator: SKSpriteNode {
         berg.position = CGPointZero
         addChild(berg)
         
-        
-        /*
-        // Create path of iceberg
-        let renderingRect = CGRect(x: 0, y: 0, width: bergSize, height: bergSize)
-        let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
-        
-        let vertices = generateRandomPoints(aroundPoint: renderingRectCenter, radius: Double(bergSize) / 2)
-  
-        UIGraphicsBeginImageContext(CGSize(width: 150, height: 150))
-        let context = UIGraphicsGetCurrentContext()
-        
-        let bergColor = SKColor.whiteColor()
-        let components = CGColorGetComponents(bergColor.CGColor)
-        let bergAlpha = CGColorGetAlpha(bergColor.CGColor)
-        CGContextSetRGBFillColor(context, components[1], components[2], components[4], bergAlpha)
-//        CGContextSetRGBFillColor(context, 1, 1, 1, 1)
-        CGContextAddLines(context, vertices, 8)
-        CGContextFillPath(context)
-        let bergImage = UIGraphicsGetImageFromCurrentImageContext()
-        
-        UIGraphicsEndImageContext()
-        
-        let bergTexture = SKTexture(image: bergImage)
-        let berg = SKSpriteNode(texture: bergTexture)
-        berg.position = CGPointZero
-        addChild(berg)
-        
-        */
-        
-        
-        /*
-        // Create path of iceberg
-        let renderingRect = CGRect(x: 0, y: 0, width: bergSize, height: bergSize)
-        let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
-        
-        let vertices = generateRandomPoints(aroundPoint: renderingRectCenter, radius: Double(bergSize) / 2)
-        let bergPath = CGPathCreateMutable()
-        CGPathMoveToPoint(bergPath, nil, vertices[0].x, vertices[0].y)
-        for point in 1..<vertices.count {
-        CGPathAddLineToPoint(bergPath, nil, vertices[point].x, vertices[point].y)
-        }
-        CGPathCloseSubpath(bergPath)
-        
-        
-        UIGraphicsBeginImageContext(CGSize(width: 150, height: 150))
-        let context = UIGraphicsGetCurrentContext()
-        
-        let renderingLayer = CAShapeLayer()
-        renderingLayer.path = bergPath
-        renderingLayer.fillColor = UIColor.whiteColor().CGColor
-        renderingLayer.setNeedsDisplay()
-        renderingLayer.renderInContext(context!)
-        let bergImage = UIGraphicsGetImageFromCurrentImageContext()
-        
-        UIGraphicsEndImageContext()
-        
-        let bergTexture = SKTexture(image: bergImage)
-        let berg = SKSpriteNode(texture: bergTexture)
-        berg.position = CGPointZero
-        addChild(berg)
-*/
+//        berg.sink(2.0, completion: nil)
     }
     
-    
-    /*
-    // Create path of iceberg
-    let vertices = generateRandomPoints(aroundPoint: CGPointZero)
-    let bergPath = CGPathCreateMutable()
-    CGPathMoveToPoint(bergPath, nil, vertices[0].x, vertices[0].y)
-    for point in 1..<vertices.count {
-    CGPathAddLineToPoint(bergPath, nil, vertices[point].x, vertices[point].y)
-    }
-    CGPathCloseSubpath(bergPath)
-    */
     
     // Generate 8 points around a circle
     func generateRandomPoints(aroundPoint center: CGPoint, radius: Double) -> [CGPoint] {
-//        let radius = Double(size.width / 2)
-        
         var randomPoints = [CGPoint]()
         for count in 0...7 {
             let section = M_PI / 4 * Double(count)

@@ -26,7 +26,11 @@ class GameScene: SKScene {
         for touch in touches {
             let location = touch.locationInNode(self)
             
-            stage.generateBerg()
+//            stage.generateBerg()
+            for child in stage.children {
+                let berg = child as! Iceberg
+                berg.ripple()
+            }
         }
     }
    
