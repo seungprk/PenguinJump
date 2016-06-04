@@ -16,8 +16,6 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-<<<<<<< HEAD
-=======
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T0v-qH-Twy">
                                 <rect key="frame" x="230" y="128" width="140" height="345"/>
@@ -85,7 +83,6 @@
                                 </variation>
                             </view>
                         </subviews>
->>>>>>> master
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="T0v-qH-Twy" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="tiu-IU-ajf"/>
