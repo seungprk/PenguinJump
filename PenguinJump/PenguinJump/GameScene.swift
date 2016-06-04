@@ -145,6 +145,7 @@ class GameScene: SKScene {
         waves.zPosition = 0
         addChild(waves)
         bob(waves)
+        waves.startPassiveAnimation()
         
         background = Background(view: view!, camera: cam)
         background.position = view!.center
@@ -358,6 +359,14 @@ class GameScene: SKScene {
                     // Create initial game data
                     let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
                     newGameData.highScore = 0
+                    
+                    do {
+                        try managedObjectContext.save()
+                    } catch { print(error) }
+                    
+                    do {
+                        fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+                    } catch { print(error) }
                 }
             } catch {
                 print(error)
