@@ -14,7 +14,7 @@ class GameScene: SKScene {
     // Game options
     var enableScreenShake = true
     var musicOn = false
-    var soundsOn = true
+    var soundOn = true
     
     // Node Objects
     var cam:SKCameraNode!

@@ -18,7 +18,7 @@ class Background: SKSpriteNode {
         camera = sceneCamera
         zPosition = -5000
         
-        let sharkTimer = NSTimer.scheduledTimerWithTimeInterval(7.0, target: self, selector: "randomSharkGenerate", userInfo: nil, repeats: true)
+        _ = NSTimer.scheduledTimerWithTimeInterval(7.0, target: self, selector: "randomSharkGenerate", userInfo: nil, repeats: true)
     }
     
     required init?(coder aDecoder: NSCoder) {
