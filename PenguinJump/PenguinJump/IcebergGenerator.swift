@@ -26,26 +26,18 @@ class IcebergGenerator: SKSpriteNode {
     
     var mode = pathingMode.straight
     
-    var currentBerg: Iceberg!
-    var firstBergOfFork: Iceberg!
-    var highestBerg: Iceberg!
+    var currentBerg: Iceberg?
+    var firstBergOfFork: Iceberg?
+    var highestBerg: Iceberg?
     var normalBergCount = 0
     
     var highestLeftBerg: Iceberg?
     var highestRightBerg: Iceberg?
     
-    var reusablePath: CGMutablePath!
-    var reusableShapeNode: SKShapeNode!
-    
-    init(view: SKView, camera sceneCamera: SKCameraNode, drawImages: Bool) {
+    init(view: SKView, camera sceneCamera: SKCameraNode) {
         super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
         position = view.center
         camera = sceneCamera
-        
-        if drawImages {
-            reusablePath = CGPathCreateMutable()
-            reusableShapeNode = SKShapeNode()
-        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -108,7 +100,6 @@ class IcebergGenerator: SKSpriteNode {
             
         }
     }
-    
     func updateCurrentBerg(berg: Iceberg) {
         currentBerg = berg
         if berg.name == "leftBerg" {
@@ -117,7 +108,6 @@ class IcebergGenerator: SKSpriteNode {
             highestBerg = highestRightBerg
         }
     }
-    
     func generateBerg() {
         if mode == .forking {
             firstBergOfFork = highestBerg
