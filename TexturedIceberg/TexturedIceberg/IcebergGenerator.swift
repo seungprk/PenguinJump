@@ -33,7 +33,6 @@ class IcebergGenerator: SKSpriteNode {
     
     var highestLeftBerg: Iceberg?
     var highestRightBerg: Iceberg?
-    
 
         
     init(view: SKView/*, camera sceneCamera: SKCameraNode*/) {
@@ -231,3 +230,4 @@ class IcebergGenerator: SKSpriteNode {
     */
     
 }
+

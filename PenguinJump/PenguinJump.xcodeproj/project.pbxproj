@@ -25,7 +25,6 @@
 		7F887CF21D0021950070B9F4 /* splash.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CF11D0021950070B9F4 /* splash.m4a */; };
 		7F887CF61D00225D0070B9F4 /* landing.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CF51D00225D0070B9F4 /* landing.m4a */; };
 		7F887CF81D00298B0070B9F4 /* ocean.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CF71D00298B0070B9F4 /* ocean.m4a */; };
-		7F887CFA1D00A84C0070B9F4 /* TexturedIceberg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F887CF91D00A84C0070B9F4 /* TexturedIceberg.swift */; };
 		7FA32AA51CFFB28400000D6A /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA32AA41CFFB28400000D6A /* Background.swift */; };
 		7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */; };
 		7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */; };
@@ -53,7 +52,6 @@
 		7F887CF11D0021950070B9F4 /* splash.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = splash.m4a; sourceTree = "<group>"; };
 		7F887CF51D00225D0070B9F4 /* landing.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = landing.m4a; sourceTree = "<group>"; };
 		7F887CF71D00298B0070B9F4 /* ocean.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = ocean.m4a; sourceTree = "<group>"; };
-		7F887CF91D00A84C0070B9F4 /* TexturedIceberg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TexturedIceberg.swift; sourceTree = "<group>"; };
 		7FA32AA41CFFB28400000D6A /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Waves.swift; sourceTree = "<group>"; };
 		7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreScene.swift; sourceTree = "<group>"; };
@@ -126,7 +124,6 @@
 				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
-				7F887CF91D00A84C0070B9F4 /* TexturedIceberg.swift */,
 				7FA32AA41CFFB28400000D6A /* Background.swift */,
 				7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */,
 				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
@@ -214,7 +211,6 @@
 			files = (
 				7F36CE6A1CF6BB1900EC559E /* Penguin.swift in Sources */,
 				7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */,
-				7F887CFA1D00A84C0070B9F4 /* TexturedIceberg.swift in Sources */,
 				7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */,
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
 				7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */,

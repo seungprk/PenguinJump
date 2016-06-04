@@ -29,7 +29,8 @@ class GameScene: SKScene {
 //            stage.generateBerg()
             for child in stage.children {
                 let berg = child as! Iceberg
-                berg.ripple()
+//                berg.ripple()
+                berg.sink(3.0, completion: nil)
             }
         }
     }

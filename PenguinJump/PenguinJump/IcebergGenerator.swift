@@ -55,28 +55,28 @@ class IcebergGenerator: SKSpriteNode {
     func newGame(startPoint: CGPoint) {
         removeAllChildren()
         
-        let berg = TexturedIceberg(size: CGSize(width: bergSize, height: bergSize),
-            reusablePath: reusablePath, reusableShapeNode: reusableShapeNode)
-        berg.position = startPoint
-        berg.position.y += 200
-        insertChild(berg, atIndex: 0)
+//        let berg = TexturedIceberg(size: CGSize(width: bergSize, height: bergSize),
+//            reusablePath: reusablePath, reusableShapeNode: reusableShapeNode)
+//        berg.position = startPoint
+//        berg.position.y += 200
+//        insertChild(berg, atIndex: 0)
         
-//        let firstBergSize = CGSize(width: scene!.view!.frame.width, height: scene!.view!.frame.width)
-//        let firstBerg = Iceberg(size: firstBergSize)
-//        firstBerg.name = "firstBerg"
-//        firstBerg.position = startPoint
-//        firstBerg.position.y -= firstBerg.frame.height * 0.38
-//        
-//        let secondBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
-//        secondBerg.position = startPoint
-//        secondBerg.position.y += 300
-//        
-//        insertChild(firstBerg, atIndex: 0)
-//        insertChild(secondBerg, atIndex: 0)
-//        
-//        highestBerg = secondBerg
+        let firstBergSize = CGSize(width: scene!.view!.frame.width, height: scene!.view!.frame.width)
+        let firstBerg = Iceberg(size: firstBergSize)
+        firstBerg.name = "firstBerg"
+        firstBerg.position = startPoint
+        firstBerg.position.y -= firstBerg.frame.height * 0.38
         
-//        generateBerg()
+        let secondBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+        secondBerg.position = startPoint
+        secondBerg.position.y += 300
+        
+        insertChild(firstBerg, atIndex: 0)
+        insertChild(secondBerg, atIndex: 0)
+        
+        highestBerg = secondBerg
+        
+        generateBerg()
     }
     
     func update() {

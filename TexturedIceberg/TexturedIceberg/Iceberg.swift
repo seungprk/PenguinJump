@@ -16,7 +16,6 @@ class Iceberg: SKSpriteNode {
     var underwater:SKSpriteNode!
     var shadowMask:SKSpriteNode!
     var wave:SKSpriteNode!
-//    var bergVertices:[CGPoint]!
     
     // Attributes
     let bergColor = SKColor.whiteColor()
@@ -30,16 +29,13 @@ class Iceberg: SKSpriteNode {
     let debug = false
     var landed = false
     
-    // Path and Shape
-//    var reusablePath: CGMutablePath!
-//    var drawingLayer: CGLayerRef!
-    
     // Functions
     init(size: CGSize) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
         
         createBergNodes()
         bob()
+        beginMoving()
     }
     
     func createBergNodes() {
@@ -115,7 +111,6 @@ class Iceberg: SKSpriteNode {
         CGContextRestoreGState(contextExtruded)
         UIGraphicsEndImageContext()
 
-        
         // ***** Create Sprite Nodes *****
         // Create the textures
         let bergTexture = SKTexture(image: bergImage)
@@ -175,11 +170,10 @@ class Iceberg: SKSpriteNode {
         return randomPoints
     }
 
-    /*
     func beginMoving() {
         let maxDuration = 12.0
         let minDuration = 3.0
-        let moveDuration = maxDuration - ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
+        let moveDuration = maxDuration //- ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
         let moveDistance = 100
         
         let forthFirst = SKAction.moveBy(CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
@@ -193,41 +187,6 @@ class Iceberg: SKSpriteNode {
         
         runAction(backAndForth)
     }
-    */
-    
-    /*
-        func testSink() {
-            let sinkDepth = shadowHeight
-            let sinkDuration = 1.0
-    
-            let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -sinkDepth), duration: sinkDuration)
-            let wait = SKAction.waitForDuration(sinkDuration * 2)
-            let rise = SKAction.moveBy(CGVector(dx: 0.0, dy: sinkDepth), duration: sinkDuration)
-    
-            let sinkSequence = SKAction.sequence([sink, wait, rise])
-    
-            underwater!.runAction(sinkSequence)
-            shadowMask!.runAction(sinkSequence)
-    
-            berg!.runAction(sink, completion: {
-                let underwaterColor = SKColor(red: 0.83, green: 0.94, blue: 0.97, alpha: 1) //SKColor(red: 0.8, green: 0.95, blue: 1, alpha: 1)
-                self.berg!.fillColor = underwaterColor
-                self.berg!.strokeColor = underwaterColor
-    
-                self.berg!.runAction(wait, completion: {
-                    self.berg!.fillColor = SKColor.whiteColor()
-                    self.berg!.strokeColor = SKColor.whiteColor()
-    
-                    self.berg!.runAction(rise)
-                })
-            })
-        }
-    
-        func sink() {
-            self.sink(7.0)
-        }
-        runAction(action: SKAction, completion block: () -> Void)
-    */
     
     func ripple() {
         wave.xScale = 1.0
@@ -250,17 +209,9 @@ class Iceberg: SKSpriteNode {
         shadowMask!.runAction(sink)
         
         berg!.runAction(sink, completion: {
-//            let underwaterColor = SKColor(red: 0.83, green: 0.94, blue: 0.97, alpha: 1)
-            
-//            let flattenedTexture = self.scene?.view?.textureFromNode(self)
-            
-//            self.removeAllChildren()
-//            
-//            self.texture = flattenedTexture
-//            self.size = flattenedTexture!.size()
-//            self.position.y -= self.shadowHeight * 1.5
-            
             self.berg.removeFromParent()
+            self.zPosition = -500
+            self.alpha = 0.5
             
             let fade = SKAction.fadeOutWithDuration(0.5)
             self.runAction(fade, completion: {
@@ -286,7 +237,7 @@ class Iceberg: SKSpriteNode {
     }
     
     func bob() {
-        // Need to implement berg position reset with each new bob call.
+        // If there is a storm mode, need to implement berg position reset with each new bob call.
         
         let bobDepth = stormMode ? 5.0 : 2.0
         let bobDuration = stormMode ? 0.8 : 2.0
