@@ -33,25 +33,50 @@ class IcebergGenerator: SKSpriteNode {
     
     var highestLeftBerg: Iceberg?
     var highestRightBerg: Iceberg?
-    
-    var reusablePath: CGMutablePath!
-    var reusableShapeNode: SKShapeNode!
-    
-    init(view: SKView, camera sceneCamera: SKCameraNode, drawImages: Bool) {
+
+        
+    init(view: SKView/*, camera sceneCamera: SKCameraNode*/) {
         super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
         position = view.center
-        camera = sceneCamera
         
-        if drawImages {
-            reusablePath = CGPathCreateMutable()
-            reusableShapeNode = SKShapeNode()
-        }
+        generateBerg()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func generateBerg() {
+        removeAllChildren()
+        
+        let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+        berg.position = CGPointZero
+        addChild(berg)
+        
+//        berg.sink(2.0, completion: nil)
+    }
+    
+    
+    // Generate 8 points around a circle
+    func generateRandomPoints(aroundPoint center: CGPoint, radius: Double) -> [CGPoint] {
+        var randomPoints = [CGPoint]()
+        for count in 0...7 {
+            let section = M_PI / 4 * Double(count)
+            let randomAngleInSection = section + Double(arc4random_uniform(628)) / 100 / 8
+            
+            let xFromCenter = sin(randomAngleInSection) * radius
+            let yFromCenter = cos(randomAngleInSection) * radius
+            
+            let pointX = center.x + CGFloat(xFromCenter)
+            let pointY = center.y + CGFloat(yFromCenter)
+            
+            let point = CGPoint(x: pointX, y: pointY)
+            randomPoints.append(point)
+        }
+        return randomPoints
+    }
+    
+    /*
     func newGame(startPoint: CGPoint) {
         removeAllChildren()
         
@@ -60,26 +85,28 @@ class IcebergGenerator: SKSpriteNode {
         firstBerg.name = "firstBerg"
         firstBerg.position = startPoint
         firstBerg.position.y -= firstBerg.frame.height * 0.38
-        
+
         let secondBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
         secondBerg.position = startPoint
         secondBerg.position.y += 300
-        
+
         insertChild(firstBerg, atIndex: 0)
         insertChild(secondBerg, atIndex: 0)
-        
+
         highestBerg = secondBerg
-        
+
         generateBerg()
     }
-    
+    */
+    /*
     func update() {
         let currentDifficulty = CGFloat((scene as! GameScene).difficulty)
         bergSize = maxBergSize - (maxBergSize - minBergSize) * currentDifficulty
         
         clearBerg()
-        generateBerg()
+        //        generateBerg()
     }
+    */
     
     func shouldGenerate() -> Bool {
         if let highestBerg = highestBerg {
@@ -118,6 +145,7 @@ class IcebergGenerator: SKSpriteNode {
         }
     }
     
+    /*
     func generateBerg() {
         if mode == .forking {
             firstBergOfFork = highestBerg
@@ -165,7 +193,7 @@ class IcebergGenerator: SKSpriteNode {
             while shouldGenerate() {
                 let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
                 
-//                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
+                //                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
                 
                 let xPosition = highestBerg!.position.x // + deltaX * 0.2
                 let yPosition = highestBerg!.position.y + gapDistance
@@ -199,5 +227,7 @@ class IcebergGenerator: SKSpriteNode {
             }
         }
     }
+    */
     
 }
+

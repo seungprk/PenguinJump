@@ -35,6 +35,7 @@ class Iceberg: SKSpriteNode {
         
         createBergNodes()
         bob()
+        beginMoving()
     }
     
     func createBergNodes() {
@@ -49,7 +50,7 @@ class Iceberg: SKSpriteNode {
         // Calculate startPoint and endPoint of shadows based on which point is further out
         let startPoint = vertices[1].x > vertices[2].x ? 1 : 2
         let endPoint = vertices[6].x < vertices[5].x ? 6 : 5
-        
+
         // Generate points of extruded shape
         var underwaterVertices = [CGPoint]()
         for point in 0...startPoint {
@@ -109,7 +110,7 @@ class Iceberg: SKSpriteNode {
         let underwaterImage = UIGraphicsGetImageFromCurrentImageContext()
         CGContextRestoreGState(contextExtruded)
         UIGraphicsEndImageContext()
-        
+
         // ***** Create Sprite Nodes *****
         // Create the textures
         let bergTexture = SKTexture(image: bergImage)
@@ -137,7 +138,7 @@ class Iceberg: SKSpriteNode {
         underwater.zPosition = -300
         croppedShadow.zPosition = 50
         wave.zPosition = 20
-        
+
         // Add nodes
         addChild(berg)
         addChild(underwater)
@@ -149,30 +150,30 @@ class Iceberg: SKSpriteNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // Generate 8 points around a circle
     func generateRandomPoints(aroundPoint center: CGPoint, radius: Double) -> [CGPoint] {
         var randomPoints = [CGPoint]()
         for count in 0...7 {
             let section = M_PI / 4 * Double(count)
             let randomAngleInSection = section + Double(arc4random_uniform(628)) / 100 / 8
-            
+
             let xFromCenter = sin(randomAngleInSection) * radius
             let yFromCenter = cos(randomAngleInSection) * radius
-            
+
             let pointX = center.x + CGFloat(xFromCenter)
             let pointY = center.y + CGFloat(yFromCenter)
-            
+
             let point = CGPoint(x: pointX, y: pointY)
             randomPoints.append(point)
         }
         return randomPoints
     }
-    
+
     func beginMoving() {
         let maxDuration = 12.0
         let minDuration = 3.0
-        let moveDuration = maxDuration - ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
+        let moveDuration = maxDuration //- ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
         let moveDistance = 100
         
         let forthFirst = SKAction.moveBy(CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
@@ -194,8 +195,6 @@ class Iceberg: SKSpriteNode {
         
         let pulse = SKAction.scaleTo(1.1, duration: 1)
         let fade = SKAction.fadeAlphaTo(0.0, duration: 1)
-        pulse.timingMode = .EaseOut
-        fade.timingMode = .EaseIn
         
         wave.runAction(pulse)
         wave.runAction(fade)
@@ -273,7 +272,6 @@ class Iceberg: SKSpriteNode {
             let bumpSequence = SKAction.sequence([enlarge, reduce])
             
             runAction(bumpSequence)
-            self.ripple()
         }
     }
 }
