@@ -55,12 +55,6 @@ class IcebergGenerator: SKSpriteNode {
     func newGame(startPoint: CGPoint) {
         removeAllChildren()
         
-//        let berg = TexturedIceberg(size: CGSize(width: bergSize, height: bergSize),
-//            reusablePath: reusablePath, reusableShapeNode: reusableShapeNode)
-//        berg.position = startPoint
-//        berg.position.y += 200
-//        insertChild(berg, atIndex: 0)
-        
         let firstBergSize = CGSize(width: scene!.view!.frame.width, height: scene!.view!.frame.width)
         let firstBerg = Iceberg(size: firstBergSize)
         firstBerg.name = "firstBerg"
@@ -84,7 +78,7 @@ class IcebergGenerator: SKSpriteNode {
         bergSize = maxBergSize - (maxBergSize - minBergSize) * currentDifficulty
         
         clearBerg()
-//        generateBerg()
+        generateBerg()
     }
     
     func shouldGenerate() -> Bool {
