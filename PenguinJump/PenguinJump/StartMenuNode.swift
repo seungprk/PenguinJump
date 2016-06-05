@@ -12,6 +12,8 @@ class StartMenuNode: SKNode {
     
     let title = SKSpriteNode(texture: nil)
     let playButton = SKLabelNode(text: "Play")
+    let highScoreButton = SKLabelNode(text: "High Scores")
+    let aboutButton = SKLabelNode(text: "About")
     
     init(frame: CGRect) {
         super.init()
@@ -49,7 +51,6 @@ class StartMenuNode: SKNode {
         playButton.runAction(SKAction.repeatActionForever(bump))
         
         // Button "High Scores"
-        let highScoreButton = SKLabelNode(text: "High Scores")
         highScoreButton.fontName = "Helvetica Neue Condensed Black"
         highScoreButton.fontSize = 30
         highScoreButton.fontColor = SKColor.blackColor()
@@ -58,7 +59,6 @@ class StartMenuNode: SKNode {
         highScoreButton.zPosition = 10000
         
         // Button "About"
-        let aboutButton = SKLabelNode(text: "About")
         aboutButton.fontName = "Helvetica Neue Condensed Black"
         aboutButton.fontSize = 40
         aboutButton.fontColor = SKColor.blackColor()
@@ -70,21 +70,48 @@ class StartMenuNode: SKNode {
         title.addChild(titleLabel)
         title.addChild(subtitleLabel)
         addChild(title)
-//        addChild(highScoreButton)
-//        addChild(aboutButton)
+        addChild(highScoreButton)
+        addChild(aboutButton)
         addChild(playButton)
     }
     
     // ******** WORK IN PROGRESS!!!!! *********
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        let scoreScene = ScoreScene(size: frame.size)
+        let parentScene = scene as! GameScene
         
-        scoreScene.highScore = 5
-        scoreScene.score = 5
-        
-        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
-        scoreScene.scaleMode = SKSceneScaleMode.AspectFill
-        self.scene!.view?.presentScene(scoreScene, transition: transition)
+        for touch in touches {
+            let positionInScene = touch.locationInNode(self)
+            let touchedNodes = self.nodesAtPoint(positionInScene)
+            for touchedNode in touchedNodes {
+                if let name = touchedNode.name
+                {
+                    if name == "restartButton" {
+                        parentScene.restart()
+                        parentScene.gameRunning = true
+                    }
+                    if touchedNode.name == "playButton" {
+                        let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
+                        titleUp.timingMode = .EaseIn
+                        title.runAction(titleUp, completion: {
+                            self.title.removeFromParent()
+                        })
+                        let playButtonDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
+                        playButtonDown.timingMode = .EaseIn
+                        playButton.runAction(playButtonDown, completion: {
+                            self.playButton.removeFromParent()
+                        })
+                        highScoreButton.runAction(playButtonDown, completion: {
+                            self.playButton.removeFromParent()
+                        })
+                        aboutButton.runAction(playButtonDown, completion: {
+                            self.playButton.removeFromParent()
+                        })
+                        parentScene.beginGame()
+                        parentScene.buttonPressSound?.play()
+                    }
+                }
+            }
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

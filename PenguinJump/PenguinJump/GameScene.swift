@@ -86,7 +86,7 @@ class GameScene: SKScene {
         
         // Start Menu Setup
         startMenu = StartMenuNode(frame: view.frame)
-        startMenu.userInteractionEnabled = false //change to true once menu interaction properly enabled
+        startMenu.userInteractionEnabled = true //change to true once menu interaction properly enabled
         cam.addChild(startMenu)
         
         // Camera Setup
@@ -305,7 +305,7 @@ class GameScene: SKScene {
         let zoomOut = SKAction.scaleTo(1.0, duration: 2.0)
         
         let cameraFinalDestX = penguin.position.x
-        let cameraFinalDestY = penguin.position.y + frame.height / 4
+        let cameraFinalDestY = penguin.position.y + frame.height / 6
         
         let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 2.0)
         pan.timingMode = .EaseInEaseOut
@@ -323,18 +323,6 @@ class GameScene: SKScene {
             
             self.gameBegin = true
             self.gameRunning = true
-        })
-        
-        let playButtonDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
-        playButtonDown.timingMode = .EaseIn
-        startMenu.playButton.runAction(playButtonDown, completion: {
-            self.startMenu.playButton.removeFromParent()
-        })
-        
-        let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
-        titleUp.timingMode = .EaseIn
-        startMenu.title.runAction(titleUp, completion: {
-            self.startMenu.title.removeFromParent()
         })
     }
     
@@ -521,7 +509,7 @@ class GameScene: SKScene {
     func centerCamera() {
         if !freezeCamera {
             let cameraFinalDestX = penguin.position.x
-            let cameraFinalDestY = penguin.position.y + frame.height / 4
+            let cameraFinalDestY = penguin.position.y + frame.height / 6
             
             let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.25)
             pan.timingMode = .EaseInEaseOut
