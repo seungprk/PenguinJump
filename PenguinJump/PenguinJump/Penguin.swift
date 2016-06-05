@@ -199,6 +199,7 @@ class Penguin: SKSpriteNode {
             self.removeAllActions()
         })
         
+//        (scene as! GameScene).jumpSound?.play()
         runAction(SKAction.playSoundFileNamed("jump.m4a", waitForCompletion: false))
     }
     
