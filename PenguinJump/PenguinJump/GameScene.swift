@@ -8,12 +8,13 @@
 
 import SpriteKit
 import CoreData
+import AVFoundation
 
 class GameScene: SKScene {
     
     // Game options
     var enableScreenShake = true
-    var musicOn = false
+    var musicOn = true
     var soundOn = true
     
     // Node Objects
@@ -23,8 +24,14 @@ class GameScene: SKScene {
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
     var background: Background!
-    var backgroundMusic: SKAudioNode!
-    var backgroundOcean: SKAudioNode!
+    
+    var backgroundMusic: AVAudioPlayer?
+    var backgroundOcean: AVAudioPlayer?
+    
+    var splashSound: AVAudioPlayer?
+    var jumpSound: AVAudioPlayer?
+    var landingSound: AVAudioPlayer?
+    var buttonPressSound: AVAudioPlayer?
 
     // Labels
     var startMenu : StartMenuNode!
@@ -42,12 +49,40 @@ class GameScene: SKScene {
     var intScore = 0
     var scoreLabel: SKLabelNode!
     
+    // Audio settings -> fetched from CoreData?
+    var musicVolume:Float = 1.0
+    var soundVolume:Float = 1.0
+    
     // Debug
     var testZoomed = false
+    var presentationMode = false
+    var viewFrame: SKShapeNode!
+    var debugMode = false
+    
+    // MARK: - Scene setup
     
     override func didMoveToView(view: SKView) {
 
-        newGame()
+        if let backgroundMusic = audioPlayerWithFile("Reformat", type: "mp3") {
+            self.backgroundMusic = backgroundMusic
+        }
+        if let backgroundOcean = audioPlayerWithFile("ocean", type: "m4a") {
+            self.backgroundOcean = backgroundOcean
+        }
+        if let splashSound = audioPlayerWithFile("splash", type: "m4a") {
+            self.splashSound = splashSound
+        }
+        if let jumpSound = audioPlayerWithFile("jump", type: "m4a") {
+            self.jumpSound = jumpSound
+        }
+        if let landingSound = audioPlayerWithFile("landing", type: "m4a") {
+            self.landingSound = landingSound
+        }
+        if let buttonPressSound = audioPlayerWithFile("button_press", type: "m4a") {
+            self.buttonPressSound = buttonPressSound
+        }
+        
+        setupScene()
         
         // Start Menu Setup
         startMenu = StartMenuNode(frame: view.frame)
@@ -61,7 +96,7 @@ class GameScene: SKScene {
         cam.runAction(zoomedIn)
         
         let startX = penguin.position.x
-        let startY = penguin.position.y //+ frame.height / 4
+        let startY = penguin.position.y
         let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
@@ -91,20 +126,16 @@ class GameScene: SKScene {
         pauseButton.position.y -= pauseButton.frame.height * 2
         cam.addChild(pauseButton)
         
-        if musicOn {
-            // Music setup
-            if let musicURL = NSBundle.mainBundle().URLForResource("Reformat", withExtension: "mp3") {
-                backgroundMusic = SKAudioNode(URL: musicURL)
-                addChild(backgroundMusic)
-            }
-            if let musicURL = NSBundle.mainBundle().URLForResource("ocean", withExtension: "m4a") {
-                backgroundOcean = SKAudioNode(URL: musicURL)
-                addChild(backgroundOcean)
-            }
+        if presentationMode {
+            viewFrame = SKShapeNode(rectOfSize: view.frame.size)
+            viewFrame.position = cam.position
+            viewFrame.strokeColor = SKColor.redColor()
+            viewFrame.fillColor = SKColor.clearColor()
+            addChild(viewFrame)
         }
     }
     
-    func newGame() {
+    func setupScene() {
         gameOver = false
         
         cam = SKCameraNode()
@@ -152,26 +183,22 @@ class GameScene: SKScene {
         background.zPosition = -1000
         addChild(background)
         
+        if let backgroundMusic = backgroundMusic {
+            backgroundMusic.volume = 0.0
+            backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
+            backgroundMusic.play()
+            fadeAudioPlayer(backgroundMusic, fadeTo: musicVolume * 0.5, duration: 1, completion: nil)
+        }
+        if let backgroundOcean = backgroundOcean {
+            backgroundOcean.volume = 0.0
+            backgroundOcean.numberOfLoops = -1 // Negative integer to loop indefinitely
+//            backgroundOcean.play()
+            fadeAudioPlayer(backgroundOcean, fadeTo: musicVolume * 0.1, duration: 1, completion: nil)
+        }
+        
     }
     
-    // MARK: - Background
-    
-    func bob(node: SKSpriteNode) {
-        let bobDepth = 2.0
-        let bobDuration = 2.0
-        
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        let wait = SKAction.waitForDuration(bobDuration / 2)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-        
-        let bobSequence = SKAction.sequence([down, wait, up, wait])
-        let bob = SKAction.repeatActionForever(bobSequence)
-        
-        node.removeAllActions()
-        node.runAction(bob)
-    }
-    
-    // MARK: - Controls
+    // MARK: - Scene Controls
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
@@ -187,7 +214,7 @@ class GameScene: SKScene {
                     }
                     if touchedNode.name == "playButton" {
                         beginGame()
-                        runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
+                        buttonPressSound?.play()
                     }
                     if touchedNode.name == "testZoom" {
                         let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
@@ -268,7 +295,7 @@ class GameScene: SKScene {
         
         let nudge = SKAction.moveBy(velocity, duration: nudgeDuration)
         penguin.runAction(nudge)
-        penguin.runAction(SKAction.playSoundFileNamed("jump.m4a", waitForCompletion: false))
+        jumpSound?.play()
     }
     
     // MARK: - Game state
@@ -317,7 +344,7 @@ class GameScene: SKScene {
         
         penguin.removeAllActions()
         
-        newGame()
+        setupScene()
         freezeCamera = false
 
         intScore = 0
@@ -346,7 +373,7 @@ class GameScene: SKScene {
             penguin.runAction(slideUp)
             penguin.body.runAction(fall)
             
-            runAction(SKAction.playSoundFileNamed("splash.m4a", waitForCompletion: false))
+            splashSound?.play()
             
             let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
             let fetchRequest = NSFetchRequest(entityName: "GameData")
@@ -386,8 +413,14 @@ class GameScene: SKScene {
                 }
             }
             
-            let wait = SKAction.waitForDuration(2.0)
+            fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
+                self.backgroundMusic?.stop()
+            })
+            fadeAudioPlayer(backgroundOcean!, fadeTo: 0.0, duration: 1.0, completion: {() in
+                self.backgroundOcean?.stop()
+            })
             
+            let wait = SKAction.waitForDuration(2.0)
             self.runAction(wait, completion:  {
                 let scoreScene = ScoreScene(size: self.size)
                 scoreScene.score = self.intScore
@@ -436,7 +469,7 @@ class GameScene: SKScene {
             if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
                 // Penguin landed on an iceberg if check is true
                 penguin.land()
-                runAction(SKAction.playSoundFileNamed("landing.m4a", waitForCompletion: false))
+                landingSound?.play()
                 
                 berg.land()
                 stage.updateCurrentBerg(berg)
@@ -493,12 +526,92 @@ class GameScene: SKScene {
             pan.timingMode = .EaseInEaseOut
             
             cam.runAction(pan)
+            
+            if presentationMode {
+                viewFrame.position = cam.position
+            }
         } else {
             cam.removeAllActions()
         }
     }
     
+    // MARK: - Background
+    
+    func bob(node: SKSpriteNode) {
+        let bobDepth = 2.0
+        let bobDuration = 2.0
+        
+        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+        let wait = SKAction.waitForDuration(bobDuration / 2)
+        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+        
+        let bobSequence = SKAction.sequence([down, wait, up, wait])
+        let bob = SKAction.repeatActionForever(bobSequence)
+        
+        node.removeAllActions()
+        node.runAction(bob)
+    }
+    
+    // MARK: - Audio
+    
+    func audioPlayerWithFile(file: String, type: String) -> AVAudioPlayer? {
+        let path = NSBundle.mainBundle().pathForResource(file, ofType: type)
+        let url = NSURL.fileURLWithPath(path!)
+        
+        var audioPlayer: AVAudioPlayer?
+        
+        do {
+            try audioPlayer = AVAudioPlayer(contentsOfURL: url)
+        } catch {
+            print("Audio player not available")
+        }
+        
+        return audioPlayer
+    }
+    
+    func fadeVolumeDown(player: AVAudioPlayer) {
+        player.volume -= 0.01
+        if player.volume < 0.01 {
+            player.stop()
+        } else {
+            // Use afterDelay value to change duration.
+            performSelector("fadeVolumeDown:", withObject: player, afterDelay: 0.02)
+        }
+    }
+    
+    func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
+        let amount:Float = 0.01
+        let incrementDelay = duration * Double(amount * amount)
+        
+        if player.volume > fadeTo + amount {
+            player.volume -= amount
+            
+            delay(incrementDelay) {
+                self.fadeAudioPlayer(player, fadeTo: fadeTo, duration: duration, completion: block)
+            }
+        } else if player.volume < fadeTo - amount {
+            player.volume += amount
+            
+            delay(incrementDelay) {
+                self.fadeAudioPlayer(player, fadeTo: fadeTo, duration: duration, completion: block)
+            }
+        } else {
+            // Execute when desired volume reached.
+            block?()
+        }
+        
+    }
+    
     // MARK: - Utilities
+    
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
+    }
     
     func shakeScreen() {
         if enableScreenShake {
