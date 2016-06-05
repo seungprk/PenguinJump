@@ -50,7 +50,7 @@ class GameScene: SKScene {
     var scoreLabel: SKLabelNode!
     
     // Audio settings -> fetched from CoreData?
-    var musicVolume:Float = 1.0
+    var musicVolume:Float = 0.0
     var soundVolume:Float = 1.0
     
     // Debug
@@ -295,6 +295,7 @@ class GameScene: SKScene {
         
         let nudge = SKAction.moveBy(velocity, duration: nudgeDuration)
         penguin.runAction(nudge)
+        jumpSound?.currentTime = 0
         jumpSound?.play()
     }
     

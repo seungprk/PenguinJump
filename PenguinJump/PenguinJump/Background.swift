@@ -33,7 +33,7 @@ class Background: SKSpriteNode {
     
     func generateSilhouette() {
         var fishFrames = [SKTexture]()
-        for number in 1...3 {
+        for number in 1...4 {
             let texture = SKTexture(imageNamed: "fish\(number)")
             
             fishFrames.append(texture)
