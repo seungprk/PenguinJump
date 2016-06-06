@@ -155,6 +155,11 @@ class IcebergGenerator: SKSpriteNode {
             while shouldGenerate() {
                 let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
                 
+                let coin = Coin()
+                coin.zPosition = 500
+                coin.position.y += coin.size.height / 3
+                berg.addChild(coin)
+                
 //                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
                 
                 let xPosition = highestBerg!.position.x // + deltaX * 0.2

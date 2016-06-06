@@ -39,6 +39,7 @@ class GameScene: SKScene {
     var jumpSound: AVAudioPlayer?
     var landingSound: AVAudioPlayer?
     var buttonPressSound: AVAudioPlayer?
+    var coinSound: AVAudioPlayer?
 
     // Labels
     var startMenu : StartMenuNode!
@@ -56,14 +57,17 @@ class GameScene: SKScene {
     var timeSinceLastUpdate: NSTimeInterval = 0.0
     var stormTimeElapsed: NSTimeInterval = 0.0
     var stormIntensity = 0.0
-    var stormDuration = 5.0
+    var stormDuration = 10.0
     var stormMode = false
     let bgColorValues = ColorValues(red: 0/255, green: 151/255, blue: 255/255, alpha: 1)
     var windSpeed = 0.0
+    var windEnabled = false
     
-    // Score tracking
+    // Information bar
     var intScore = 0
     var scoreLabel: SKLabelNode!
+    var chargeBar: ChargeBar!
+    var shouldFlash = false
     
     // Audio settings -> fetched from CoreData?
     var musicVolume:Float = 1.0
@@ -75,44 +79,7 @@ class GameScene: SKScene {
     var viewFrame: SKShapeNode!
     var debugMode = false
     
-    
-    // MARK: - Storm Mode
-    
-//    func startStorm(completion block: (() -> ())?) {
-//        if stormIntensity < 0.99 {
-//            print("try start storm")
-//            stormIntensity += 0.1
-//            delay(0.1, closure: {
-//                print("calling startstorm again")
-//                self.startStorm(completion: block)
-//            })
-//        } else {
-//            stormIntensity = 1.0
-//            block?()
-//        }
-//    }
-//    func endStorm(completion block: (() -> ())?) {
-//        if stormIntensity > 0.1 {
-//            stormIntensity -= 0.1
-//            delay(0.1) {
-//                self.endStorm(completion: {() in block})
-//            }
-//        } else {
-//            stormIntensity = 0.0
-//            block?()
-//        }
-//    }
-//    func turnOnStorm() {
-//        startStorm(completion: {
-//            self.delay(self.stormDuration - 2.0) {
-//                print("end storm")
-//                self.endStorm(completion: nil)
-//            }
-//        })
-//        
-//        
-//    }
-    
+
     // MARK: - Scene setup
     
     override func didMoveToView(view: SKView) {
@@ -134,6 +101,9 @@ class GameScene: SKScene {
         }
         if let buttonPressSound = audioPlayerWithFile("button_press", type: "m4a") {
             self.buttonPressSound = buttonPressSound
+        }
+        if let coinSound = audioPlayerWithFile("coin", type: "wav") {
+            self.coinSound = coinSound
         }
         
         setupScene()
@@ -163,8 +133,8 @@ class GameScene: SKScene {
         zoomButton.alpha = 0.5
         zoomButton.zPosition = 200000
         zoomButton.fontColor = UIColor.blackColor()
-        zoomButton.position = CGPoint(x: -view.frame.width / 2, y: view.frame.height / 2)
-        zoomButton.position.x += zoomButton.frame.width
+        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2)
+//        zoomButton.position.x += zoomButton.frame.width
         zoomButton.position.y -= zoomButton.frame.height * 2
         cam.addChild(zoomButton)
         
@@ -213,8 +183,17 @@ class GameScene: SKScene {
         scoreLabel.fontName = "Helvetica Neue Condensed Black"
         scoreLabel.fontSize = 24
         scoreLabel.fontColor = SKColor.blackColor()
-        scoreLabel.position = CGPoint(x: 0, y: view!.frame.height * 0.45)
+        scoreLabel.position = CGPoint(x: -view!.frame.width * 0.45, y: view!.frame.height * 0.45)
         scoreLabel.zPosition = 30000
+        scoreLabel.horizontalAlignmentMode = .Left
+        
+        chargeBar = ChargeBar(size: scoreLabel.frame.size)
+        chargeBar.position = CGPoint(x: 0 /* - scoreLabel.frame.width / 2 */, y: 0 - scoreLabel.frame.height * 0.5)
+        
+        scoreLabel.addChild(chargeBar)
+//        chargeBar.position.x -= scoreLabel.frame.width / 2
+        
+//        chargeBar.position = CGPoint(x: scoreLabel.position.x - scoreLabel.frame.width / 2, y: scoreLabel.position.y - scoreLabel.frame.height)
         
         // Wrap penguin around a cropnode for death animation
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
@@ -398,9 +377,9 @@ class GameScene: SKScene {
 //        })
 //        stormMode = true
 //        beginStorm()
-        delay(5.0) {
-            self.beginStorm()
-        }
+//        delay(5.0) {
+//            self.beginStorm()
+//        }
     }
     
     func restart() {
@@ -517,6 +496,8 @@ class GameScene: SKScene {
             scoreLabel.text = "Score: " + String(intScore)
             
             penguinUpdate()
+            coinUpdate()
+            chargeBarUpdate()
             trackDifficulty()
             
             checkGameOver()
@@ -537,26 +518,19 @@ class GameScene: SKScene {
         
     }
     
-    func beginStorm() {
-        stormMode = true
-        
-        waves.stormMode = self.stormMode
-        waves.bob()
-        
-        for child in stage.children {
-            let berg = child as! Iceberg
-            berg.stormMode = self.stormMode
-            berg.bob()
+    func updateWinds() {
+        if windEnabled {
+            let push = SKAction.moveBy(CGVector(dx: 50.0 * timeSinceLastUpdate * stormIntensity * difficulty, dy: 0), duration: timeSinceLastUpdate)
+            penguin.runAction(push)
         }
+
     }
     
     func updateStorm() {
 
         if stormMode {
-            let push = SKAction.moveBy(CGVector(dx: 20.0 * stormIntensity * difficulty, dy: 0), duration: timeSinceLastUpdate)
-            penguin.runAction(push)
             
-            if stormTimeElapsed < 10.0 {
+            if stormTimeElapsed < stormDuration {
                 stormTimeElapsed += timeSinceLastUpdate
                 
                 if stormIntensity < 0.99 {
@@ -579,6 +553,8 @@ class GameScene: SKScene {
                     berg.stormMode = self.stormMode
                     berg.bob()
                 }
+                
+                chargeBar.barFlash.removeAllActions()
             }
             
         } else {
@@ -613,9 +589,85 @@ class GameScene: SKScene {
                 let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
                 scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
             }
-            
         }
+    }
+    
+    func chargeBarUpdate() {
+//        print(chargeBar.bar.position.x)
+//        print(chargeBar.size.width)
+        chargeBar.mask.size.width = scoreLabel.frame.width * 0.95
+        print(scoreLabel.frame.width)
         
+//        if !stormMode {
+//            chargeBar.barFlash.alpha = 0.0
+//        }
+        
+        if chargeBar.bar.position.x >= chargeBar.mask.size.width {
+            shouldFlash = true
+            
+            if shouldFlash && !stormMode {
+                shouldFlash = false
+                beginStorm()
+                
+                chargeBar.flash(completion: {
+                    
+                    
+                    let chargeDown = SKAction.moveToX(0, duration: self.stormDuration - 1.5)
+                    self.chargeBar.bar.runAction(chargeDown)
+                })
+                
+                
+            }
+        } else if chargeBar.bar.position.x > 0 && !stormMode {
+            let decrease = SKAction.moveBy(CGVector(dx: -5 * timeSinceLastUpdate, dy: 0), duration: timeSinceLastUpdate)
+//            chargeBar.bar.runAction(decrease)
+            
+            if !stormMode {
+                chargeBar.barFlash.alpha = 0.0
+
+            }
+        }
+    }
+    
+    func coinUpdate() {
+        for child in stage.children {
+            for icebergChild in child.children {
+                if icebergChild.name == "coin" {
+                    let coin = icebergChild as! Coin
+                    
+                    if !coin.collected {
+                        if penguin.intersectsNode(coin.body) {
+                            // Run coin hit collision
+                            intScore += stormMode ? 4 : 2
+
+                            let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
+                            let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
+                            scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                            
+                            coin.collected = true
+                            
+                            coinSound?.currentTime = 0
+                            coinSound?.play()
+                            
+                            let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
+                            rise.timingMode = .EaseOut
+                            
+                            coin.body.zPosition = 90000
+                            coin.body.runAction(rise, completion: {
+                                icebergChild.removeFromParent()
+                            })
+                            
+                            if !stormMode {
+                                let incrementAction = SKAction.moveBy(CGVector(dx: chargeBar.increment * 3, dy: 0), duration: 0.5)
+                                incrementAction.timingMode = .EaseOut
+                                chargeBar.bar.runAction(incrementAction)
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        }
     }
     
     func checkGameOver() {
@@ -634,7 +686,29 @@ class GameScene: SKScene {
         return false
     }
     
+    // MARK: - Storm Mode
     
+    func beginStorm() {
+        stormMode = true
+        
+        waves.stormMode = self.stormMode
+        waves.bob()
+        
+        for child in stage.children {
+            let berg = child as! Iceberg
+            berg.stormMode = self.stormMode
+            berg.bob()
+        }
+        
+        let flashUp = SKAction.fadeAlphaTo(1.0, duration: 0.5)
+        let flashDown = SKAction.fadeAlphaTo(0.0, duration: 0.5)
+        flashUp.timingMode = .EaseInEaseOut
+        flashDown.timingMode = .EaseInEaseOut
+        
+        let flash = SKAction.sequence([flashUp, flashDown])
+        chargeBar.barFlash.runAction(SKAction.repeatActionForever(flash))
+    }
+
     // MARK: - Gameplay logic
     
     func trackDifficulty() {

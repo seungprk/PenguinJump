@@ -242,10 +242,12 @@ class Iceberg: SKSpriteNode {
     
     func bob() {
         // If there is a storm mode, need to implement berg position reset with each new bob call.
-        berg.removeAllActions()
-        underwater.removeAllActions()
-        shadowMask.removeAllActions()
-                
+        let bobActionKey = "bob_action"
+        
+        berg.removeActionForKey(bobActionKey)
+        underwater.removeActionForKey(bobActionKey)
+        shadowMask.removeActionForKey(bobActionKey)
+        
         let bobDepth = (stormMode == true) ? 5.0 : 2.0
         let bobDuration = (stormMode == true) ? 0.8 : 2.0
         
@@ -271,13 +273,13 @@ class Iceberg: SKSpriteNode {
             print("berg reset, now start bobbing")
             print(self.stormMode)
             print(bobDepth)
-            self.berg!.runAction(bob)
+            self.berg!.runAction(bob, withKey: bobActionKey)
         })
         underwater.runAction(underwaterReset, completion: {
-            self.underwater!.runAction(bob)
+            self.underwater!.runAction(bob, withKey: bobActionKey)
         })
         shadowMask.runAction(shadowMaskReset, completion: {
-            self.shadowMask!.runAction(bob)
+            self.shadowMask!.runAction(bob, withKey: bobActionKey)
         })
     }
     
