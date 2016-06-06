@@ -15,7 +15,7 @@ class Coin: SKSpriteNode {
     var body: SKSpriteNode!
     var collected = false
     
-    var coinParticles = [SKSpriteNode]()
+    var particles = [SKSpriteNode]()
     
     init() {
         let coinTexture = SKTexture(imageNamed: "coin")
@@ -57,5 +57,5 @@ class Coin: SKSpriteNode {
         body.runAction(bob)
     }
     
-    func generateParticles
+
 }

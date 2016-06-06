@@ -15,6 +15,8 @@ class ChargeBar: SKSpriteNode {
     var increment: CGFloat!
     var mask: SKSpriteNode!
     
+    var flashing = false
+    
     init(size:CGSize) {
         super.init(texture: nil, color: SKColor.clearColor(), size: CGSize(width: size.width, height: size.height / 3))
         anchorPoint = CGPoint(x: 0.0, y: 0.5)
@@ -46,6 +48,7 @@ class ChargeBar: SKSpriteNode {
     }
     
     func flash(completion block: (() -> ())? ) {
+        flashing = true
         let flashUp = SKAction.fadeAlphaTo(1.0, duration: 0.1)
         let flashDown = SKAction.fadeAlphaTo(0.0, duration: 0.1)
         flashUp.timingMode = .EaseOut
@@ -56,17 +59,21 @@ class ChargeBar: SKSpriteNode {
         
         barFlash.runAction(SKAction.repeatAction(flashSequence, count: 3), completion: {
             self.barFlash.alpha = 1.0
+            self.flashing = false
             block?()
         })
     }
     
     func flashOnce() {
+        flashing = true
         let flashUp = SKAction.fadeAlphaTo(1.0, duration: 0.1)
         let flashDown = SKAction.fadeAlphaTo(0.0, duration: 0.1)
         flashUp.timingMode = .EaseOut
         flashDown.timingMode = .EaseIn
 
         let flashSequence = SKAction.sequence([flashUp, flashDown])
-        barFlash.runAction(flashSequence)
+        barFlash.runAction(flashSequence, completion: {
+            self.flashing = false
+        })
     }
 }

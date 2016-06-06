@@ -219,7 +219,6 @@ class GameScene: SKScene {
         addChild(background)
         
         if let backgroundMusic = backgroundMusic {
-            print(musicOn)
             backgroundMusic.volume = 0.0
             backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
             backgroundMusic.play()
@@ -611,8 +610,7 @@ class GameScene: SKScene {
                 
                 chargeBar.flash(completion: {
                     
-                    
-                    let chargeDown = SKAction.moveToX(0, duration: self.stormDuration - 1.5)
+                    let chargeDown = SKAction.moveToX(0, duration: self.stormDuration - self.stormTimeElapsed)
                     self.chargeBar.bar.runAction(chargeDown)
                 })
                 
@@ -622,7 +620,7 @@ class GameScene: SKScene {
             let decrease = SKAction.moveBy(CGVector(dx: -5 * timeSinceLastUpdate, dy: 0), duration: timeSinceLastUpdate)
 //            chargeBar.bar.runAction(decrease)
             
-            if !stormMode {
+            if !stormMode && !chargeBar.flashing {
                 chargeBar.barFlash.alpha = 0.0
 
             }
@@ -654,20 +652,69 @@ class GameScene: SKScene {
                             
                             coin.body.zPosition = 90000
                             coin.body.runAction(rise, completion: {
-                                icebergChild.removeFromParent()
+                                self.generateCoinParticles(coin)
+                                coin.body.removeFromParent()
+                                coin.shadow.removeFromParent()
+                                self.incrementWithCoinParticles(coin)
+//                                icebergChild.removeFromParent()
                             })
-                            
-                            if !stormMode {
-                                let incrementAction = SKAction.moveBy(CGVector(dx: chargeBar.increment * 3, dy: 0), duration: 0.5)
-                                incrementAction.timingMode = .EaseOut
-                                chargeBar.bar.runAction(incrementAction)
-                            }
                         }
                     }
                     
                 }
             }
         }
+    }
+    
+    func generateCoinParticles(coin: Coin) {
+        //        if particles.isEmpty {
+        let numberOfParticles = random() % 2 + 3
+        for _ in 1...3 {
+            let particle = SKSpriteNode(color: SKColor.yellowColor(), size: CGSize(width: coin.size.width / 5, height: coin.size.width / 5))
+            //                let randomX = random() % Int(size.width) - Int(size.width / 2)
+            let randomX = Int( arc4random_uniform( UInt32(coin.size.width) ) ) - Int(coin.size.width / 2)
+            let randomY = Int( arc4random_uniform( UInt32(coin.size.height) ) ) - Int(coin.size.height / 2)
+            
+            let bodyPositionInScene = convertPoint(coin.body.position, fromNode: coin)
+            let bodyPositionInCam = cam.convertPoint(bodyPositionInScene, fromNode: self)
+            
+            
+            particle.position = CGPoint(x: bodyPositionInCam.x + CGFloat(randomX), y: bodyPositionInCam.y + CGFloat(randomY))
+            particle.zPosition = 200000
+            
+            coin.particles.append(particle)
+        }
+        for particle in coin.particles {
+            cam.addChild(particle)
+        }
+        //        }
+    }
+    
+    func incrementWithCoinParticles(coin: Coin) {
+        for particle in coin.particles {
+            let chargeBarPositionInCam = cam.convertPoint(chargeBar.position, fromNode: scoreLabel)
+            
+            let randomX = CGFloat(random()) % (chargeBar.bar.position.x + 1)
+
+            let move = SKAction.moveTo(CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
+            move.timingMode = .EaseOut
+            
+            particle.runAction(move, completion: {
+                particle.removeFromParent()
+                self.chargeBar.flashOnce()
+                
+                if !self.stormMode {
+                    let incrementAction = SKAction.moveBy(CGVector(dx: self.chargeBar.increment * 3, dy: 0), duration: 0.5)
+                    incrementAction.timingMode = .EaseOut
+                    self.chargeBar.bar.runAction(incrementAction)
+                }
+                
+                if coin.particles.isEmpty {
+                    coin.removeFromParent()
+                }
+            })
+        }
+
     }
     
     func checkGameOver() {
