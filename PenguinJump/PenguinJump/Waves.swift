@@ -28,6 +28,7 @@ class Waves: SKSpriteNode {
     var rightmostNodeX: CGFloat!
     
     var animationBegan = false
+    var stormMode = false
     
     init(camera: SKCameraNode, gameScene: GameScene) {
         super.init(texture: nil, color: UIColor.clearColor(), size: CGSizeZero)
@@ -172,9 +173,9 @@ class Waves: SKSpriteNode {
         return waveNode
     }
     
-    func startPassiveAnimation() {
-        let bobDepth = 4.0
-        let bobDuration = 3.0
+    func bob() {
+        let bobDepth = stormMode ? 6.0 : 4.0
+        let bobDuration = stormMode ? 1.8 : 3.0
         
         let fadeOut = SKAction.fadeAlphaTo(0.3, duration: bobDuration * 0.25)
         let fadeIn = SKAction.fadeAlphaTo(0.7, duration: bobDuration * 0.25)
@@ -190,24 +191,38 @@ class Waves: SKSpriteNode {
         let bobSequence = SKAction.sequence([down, up])
         let bob = SKAction.repeatActionForever(bobSequence)
         
+        removeAllActions()
         runAction(SKAction.repeatActionForever(sequence))
         runAction(SKAction.repeatActionForever(bob))
+//        
+//        let bobDepth = 2.0
+//        let bobDuration = 2.0
+//        
+//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+//        let wait = SKAction.waitForDuration(bobDuration / 2)
+//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+//        
+//        let bobSequence = SKAction.sequence([down, wait, up, wait])
+//        let bob = SKAction.repeatActionForever(bobSequence)
+//        
+//        node.removeAllActions()
+//        node.runAction(bob)
     }
     
-    func bob(node: SKSpriteNode) {
-        let bobDepth = 2.0
-        let bobDuration = 2.0
-        
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        let wait = SKAction.waitForDuration(bobDuration / 2)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-        
-        let bobSequence = SKAction.sequence([down, wait, up, wait])
-        let bob = SKAction.repeatActionForever(bobSequence)
-        
-        node.removeAllActions()
-        node.runAction(bob)
-    }
+//    func bob(node: SKSpriteNode) {
+//        let bobDepth = 2.0
+//        let bobDuration = 2.0
+//        
+//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+//        let wait = SKAction.waitForDuration(bobDuration / 2)
+//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+//        
+//        let bobSequence = SKAction.sequence([down, wait, up, wait])
+//        let bob = SKAction.repeatActionForever(bobSequence)
+//        
+//        node.removeAllActions()
+//        node.runAction(bob)
+//    }
 
     
 }

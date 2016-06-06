@@ -10,6 +10,13 @@ import SpriteKit
 import CoreData
 import AVFoundation
 
+struct ColorValues {
+    var red: CGFloat!
+    var green: CGFloat!
+    var blue: CGFloat!
+    var alpha: CGFloat!
+}
+
 class GameScene: SKScene {
     
     // Game options
@@ -44,13 +51,22 @@ class GameScene: SKScene {
     var playerTouched = false
     var freezeCamera = false
     var difficulty = 0.0
+
+    var previousTime: NSTimeInterval?
+    var timeSinceLastUpdate: NSTimeInterval = 0.0
+    var stormTimeElapsed: NSTimeInterval = 0.0
+    var stormIntensity = 0.0
+    var stormDuration = 5.0
+    var stormMode = false
+    let bgColorValues = ColorValues(red: 0/255, green: 151/255, blue: 255/255, alpha: 1)
+    var windSpeed = 0.0
     
     // Score tracking
     var intScore = 0
     var scoreLabel: SKLabelNode!
     
     // Audio settings -> fetched from CoreData?
-    var musicVolume:Float = 0.0
+    var musicVolume:Float = 1.0
     var soundVolume:Float = 1.0
     
     // Debug
@@ -58,6 +74,44 @@ class GameScene: SKScene {
     var presentationMode = false
     var viewFrame: SKShapeNode!
     var debugMode = false
+    
+    
+    // MARK: - Storm Mode
+    
+//    func startStorm(completion block: (() -> ())?) {
+//        if stormIntensity < 0.99 {
+//            print("try start storm")
+//            stormIntensity += 0.1
+//            delay(0.1, closure: {
+//                print("calling startstorm again")
+//                self.startStorm(completion: block)
+//            })
+//        } else {
+//            stormIntensity = 1.0
+//            block?()
+//        }
+//    }
+//    func endStorm(completion block: (() -> ())?) {
+//        if stormIntensity > 0.1 {
+//            stormIntensity -= 0.1
+//            delay(0.1) {
+//                self.endStorm(completion: {() in block})
+//            }
+//        } else {
+//            stormIntensity = 0.0
+//            block?()
+//        }
+//    }
+//    func turnOnStorm() {
+//        startStorm(completion: {
+//            self.delay(self.stormDuration - 2.0) {
+//                print("end storm")
+//                self.endStorm(completion: nil)
+//            }
+//        })
+//        
+//        
+//    }
     
     // MARK: - Scene setup
     
@@ -152,7 +206,8 @@ class GameScene: SKScene {
         stage.zPosition = 10
         addChild(stage)
         
-        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
+//        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
+        backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green, blue: bgColorValues.blue, alpha: bgColorValues.alpha)
         
         scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
         scoreLabel.fontName = "Helvetica Neue Condensed Black"
@@ -175,8 +230,9 @@ class GameScene: SKScene {
         waves.position = view!.center
         waves.zPosition = 0
         addChild(waves)
-        bob(waves)
-        waves.startPassiveAnimation()
+//        bob(waves)
+        waves.stormMode = self.stormMode
+        waves.bob()
         
         background = Background(view: view!, camera: cam)
         background.position = view!.center
@@ -184,6 +240,7 @@ class GameScene: SKScene {
         addChild(background)
         
         if let backgroundMusic = backgroundMusic {
+            print(musicOn)
             backgroundMusic.volume = 0.0
             backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
             backgroundMusic.play()
@@ -192,7 +249,7 @@ class GameScene: SKScene {
         if let backgroundOcean = backgroundOcean {
             backgroundOcean.volume = 0.0
             backgroundOcean.numberOfLoops = -1 // Negative integer to loop indefinitely
-//            backgroundOcean.play()
+            backgroundOcean.play()
             fadeAudioPlayer(backgroundOcean, fadeTo: musicVolume * 0.1, duration: 1, completion: nil)
         }
         
@@ -336,6 +393,14 @@ class GameScene: SKScene {
         startMenu.title.runAction(titleUp, completion: {
             self.startMenu.title.removeFromParent()
         })
+//        startStorm(completion: {() in
+//            print("started storm")
+//        })
+//        stormMode = true
+//        beginStorm()
+        delay(5.0) {
+            self.beginStorm()
+        }
     }
     
     func restart() {
@@ -436,6 +501,13 @@ class GameScene: SKScene {
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
+        if let previousTime = previousTime {
+            timeSinceLastUpdate = currentTime - previousTime
+            self.previousTime = currentTime
+        } else {
+            self.previousTime = currentTime
+        }
+        
         stage.update()
         waves.update()
 
@@ -452,6 +524,8 @@ class GameScene: SKScene {
                 runGameOver()
             }
             
+            updateStorm()
+            
             centerCamera()
         } else {
             penguin.userInteractionEnabled = false
@@ -461,6 +535,60 @@ class GameScene: SKScene {
             }
         }
         
+    }
+    
+    func beginStorm() {
+        stormMode = true
+        
+        waves.stormMode = self.stormMode
+        waves.bob()
+        
+        for child in stage.children {
+            let berg = child as! Iceberg
+            berg.stormMode = self.stormMode
+            berg.bob()
+        }
+    }
+    
+    func updateStorm() {
+
+        if stormMode {
+            let push = SKAction.moveBy(CGVector(dx: 20.0 * stormIntensity * difficulty, dy: 0), duration: timeSinceLastUpdate)
+            penguin.runAction(push)
+            
+            if stormTimeElapsed < 10.0 {
+                stormTimeElapsed += timeSinceLastUpdate
+                
+                if stormIntensity < 0.99 {
+                    stormIntensity += 1.0 * (timeSinceLastUpdate / 2.0)
+                } else {
+                    stormIntensity = 1.0
+                    
+                }
+                
+            } else {
+                // End storm mode.
+                stormTimeElapsed = 0.0
+                stormMode = false
+                
+                waves.stormMode = self.stormMode
+                waves.bob()
+                
+                for child in stage.children {
+                    let berg = child as! Iceberg
+                    berg.stormMode = self.stormMode
+                    berg.bob()
+                }
+            }
+            
+        } else {
+            if stormIntensity > 0.01 {
+                stormIntensity -= 1.0 * (timeSinceLastUpdate / 2.0)
+            } else {
+                stormIntensity = 0.0
+            }
+        }
+        backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green - CGFloat(40 / 255 * stormIntensity), blue: bgColorValues.blue - CGFloat(120 / 255 * stormIntensity), alpha: bgColorValues.alpha)
     }
     
     func penguinUpdate() {
@@ -538,20 +666,20 @@ class GameScene: SKScene {
     
     // MARK: - Background
     
-    func bob(node: SKSpriteNode) {
-        let bobDepth = 2.0
-        let bobDuration = 2.0
-        
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        let wait = SKAction.waitForDuration(bobDuration / 2)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-        
-        let bobSequence = SKAction.sequence([down, wait, up, wait])
-        let bob = SKAction.repeatActionForever(bobSequence)
-        
-        node.removeAllActions()
-        node.runAction(bob)
-    }
+//    func bob(node: SKSpriteNode) {
+//        let bobDepth = 2.0
+//        let bobDuration = 2.0
+//        
+//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+//        let wait = SKAction.waitForDuration(bobDuration / 2)
+//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+//        
+//        let bobSequence = SKAction.sequence([down, wait, up, wait])
+//        let bob = SKAction.repeatActionForever(bobSequence)
+//        
+//        node.removeAllActions()
+//        node.runAction(bob)
+//    }
     
     // MARK: - Audio
     
@@ -580,9 +708,16 @@ class GameScene: SKScene {
         }
     }
     
+    func fadeVolumeUp(player: AVAudioPlayer ) {
+        player.volume += 0.01
+        if player.volume < musicVolume {
+            performSelector("fadeVolumeUp:", withObject: player, afterDelay: 0.02)
+        }
+    }
+    
     func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
-        let amount:Float = 0.01
-        let incrementDelay = duration * Double(amount * amount)
+        let amount:Float = 0.1
+        let incrementDelay = duration * Double(amount)// * amount)
         
         if player.volume > fadeTo + amount {
             player.volume -= amount

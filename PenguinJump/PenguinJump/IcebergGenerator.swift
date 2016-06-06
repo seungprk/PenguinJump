@@ -48,12 +48,12 @@ class IcebergGenerator: SKSpriteNode {
         removeAllChildren()
         
         let firstBergSize = CGSize(width: scene!.view!.frame.width, height: scene!.view!.frame.width)
-        let firstBerg = Iceberg(size: firstBergSize)
+        let firstBerg = Iceberg(size: firstBergSize, stormMode: (scene as! GameScene).stormMode)
         firstBerg.name = "firstBerg"
         firstBerg.position = startPoint
         firstBerg.position.y -= firstBerg.frame.height * 0.38
         
-        let secondBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+        let secondBerg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
         secondBerg.position = startPoint
         secondBerg.position.y += 300
         
@@ -116,7 +116,7 @@ class IcebergGenerator: SKSpriteNode {
             highestRightBerg = firstBergOfFork
             
             for _ in 1...3 {
-                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
                 berg.name = "leftBerg"
                 
                 let deltaX = CGFloat(random()) % frame.width * 0.15 + frame.width * 0.2
@@ -131,7 +131,7 @@ class IcebergGenerator: SKSpriteNode {
                 insertChild(berg, atIndex: 0)
             }
             for _ in 1...3 {
-                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
                 berg.name = "rightBerg"
                 
                 let deltaX = CGFloat(random()) % frame.width * 0.15 + frame.width * 0.2
@@ -153,7 +153,7 @@ class IcebergGenerator: SKSpriteNode {
             mode = .straight
         } else {
             while shouldGenerate() {
-                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize))
+                let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
                 
 //                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
                 

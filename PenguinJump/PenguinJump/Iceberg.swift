@@ -25,17 +25,20 @@ class Iceberg: SKSpriteNode {
     let underwaterHeight:CGFloat = 20.0
     
     // Settings
-    var stormMode = false
+    var stormMode: Bool!// = false
     let debug = false
     var landed = false
     
     // Functions
-    init(size: CGSize) {
+    init(size: CGSize, stormMode: Bool) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
         
         createBergNodes()
+        
+        self.stormMode = stormMode
         bob()
     }
+    
     
     func createBergNodes() {
         // ***** Create images *****
@@ -239,9 +242,14 @@ class Iceberg: SKSpriteNode {
     
     func bob() {
         // If there is a storm mode, need to implement berg position reset with each new bob call.
+        berg.removeAllActions()
+        underwater.removeAllActions()
+        shadowMask.removeAllActions()
+                
+        let bobDepth = (stormMode == true) ? 5.0 : 2.0
+        let bobDuration = (stormMode == true) ? 0.8 : 2.0
         
-        let bobDepth = stormMode ? 5.0 : 2.0
-        let bobDuration = stormMode ? 0.8 : 2.0
+//        let bobDepth = 2.0 + 3.0 * (scene as! GameScene).stormIntensity
         
         let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
         let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
@@ -251,12 +259,26 @@ class Iceberg: SKSpriteNode {
         let bobSequence = SKAction.sequence([down, up])
         let bob = SKAction.repeatActionForever(bobSequence)
         
-        berg!.removeAllActions()
-        berg!.runAction(bob)
-        underwater!.removeAllActions()
-        underwater!.runAction(bob)
-        shadowMask!.removeAllActions()
-        shadowMask!.runAction(bob)
+        // Reset position and then run action
+        let bergReset = SKAction.moveTo(CGPointZero, duration: 2.0)
+        let underwaterReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
+        let shadowMaskReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
+        bergReset.timingMode = .EaseInEaseOut
+        underwaterReset.timingMode = .EaseInEaseOut
+        shadowMaskReset.timingMode = .EaseInEaseOut
+        
+        berg.runAction(bergReset, completion: {
+            print("berg reset, now start bobbing")
+            print(self.stormMode)
+            print(bobDepth)
+            self.berg!.runAction(bob)
+        })
+        underwater.runAction(underwaterReset, completion: {
+            self.underwater!.runAction(bob)
+        })
+        shadowMask.runAction(shadowMaskReset, completion: {
+            self.shadowMask!.runAction(bob)
+        })
     }
     
     func land() {
