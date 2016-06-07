@@ -14,6 +14,7 @@ class StartMenuNode: SKNode {
     let playButton = SKLabelNode(text: "Play")
     let highScoreButton = SKLabelNode(text: "High Scores")
     let aboutButton = SKLabelNode(text: "About")
+    let settingsButton = SKLabelNode(text: "Settings")
     
     init(frame: CGRect) {
         super.init()
@@ -50,15 +51,26 @@ class StartMenuNode: SKNode {
         let bump = SKAction.sequence([shrinkDown, bumpUp, bumpDown, bumpWait])
         playButton.runAction(SKAction.repeatActionForever(bump))
         
+        // Button "Settings"
+        settingsButton.name = "settingsButton"
+        settingsButton.fontName = "Helvetica Neue Condensed Black"
+        settingsButton.fontSize = 30
+        settingsButton.fontColor = SKColor.blackColor()
+        settingsButton.position = CGPointZero
+        settingsButton.position.y = playButton.position.y - playButton.frame.height
+        settingsButton.zPosition = 10000
+        
         // Button "High Scores"
+        highScoreButton.name = "highScoreButton"
         highScoreButton.fontName = "Helvetica Neue Condensed Black"
         highScoreButton.fontSize = 30
         highScoreButton.fontColor = SKColor.blackColor()
         highScoreButton.position = CGPointZero
-        highScoreButton.position.y = playButton.position.y - playButton.frame.height
+        highScoreButton.position.y = settingsButton.position.y - playButton.frame.height
         highScoreButton.zPosition = 10000
         
         // Button "About"
+        aboutButton.name = "aboutButton"
         aboutButton.fontName = "Helvetica Neue Condensed Black"
         aboutButton.fontSize = 40
         aboutButton.fontColor = SKColor.blackColor()
@@ -70,12 +82,12 @@ class StartMenuNode: SKNode {
         title.addChild(titleLabel)
         title.addChild(subtitleLabel)
         addChild(title)
+        addChild(settingsButton)
         addChild(highScoreButton)
         addChild(aboutButton)
         addChild(playButton)
     }
     
-    // ******** WORK IN PROGRESS!!!!! *********
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         let parentScene = scene as! GameScene
         
@@ -100,14 +112,38 @@ class StartMenuNode: SKNode {
                         playButton.runAction(playButtonDown, completion: {
                             self.playButton.removeFromParent()
                         })
+                        settingsButton.runAction(playButtonDown, completion: {
+                            self.settingsButton.removeFromParent()
+                        })
                         highScoreButton.runAction(playButtonDown, completion: {
-                            self.playButton.removeFromParent()
+                            self.highScoreButton.removeFromParent()
                         })
                         aboutButton.runAction(playButtonDown, completion: {
-                            self.playButton.removeFromParent()
+                            self.aboutButton.removeFromParent()
                         })
                         parentScene.beginGame()
                         parentScene.buttonPressSound?.play()
+                    }
+                    if touchedNode.name == "highScoreButton" {
+                        let scoreScene = ScoreScene(size: scene!.size)
+                        let parentScene = scene as! GameScene
+                        scoreScene.score = parentScene.intScore
+                        
+                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                        scoreScene.scaleMode = SKSceneScaleMode.AspectFill
+                        self.scene!.view?.presentScene(scoreScene, transition: transition)
+                    }
+                    if touchedNode.name == "settingsButton" {
+                        let settingsScene = SettingsScene(size: scene!.size)
+                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                        settingsScene.scaleMode = SKSceneScaleMode.AspectFill
+                        self.scene!.view?.presentScene(settingsScene, transition: transition)
+                    }
+                    if touchedNode.name == "aboutButton" {
+                        let aboutScene = AboutScene(size: scene!.size)
+                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                        aboutScene.scaleMode = SKSceneScaleMode.AspectFill
+                        self.scene!.view?.presentScene(aboutScene, transition: transition)
                     }
                 }
             }
