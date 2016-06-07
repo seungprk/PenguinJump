@@ -699,20 +699,30 @@ class GameScene: SKScene {
             let move = SKAction.moveTo(CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
             move.timingMode = .EaseOut
             
-            particle.runAction(move, completion: {
-                particle.removeFromParent()
-                self.chargeBar.flashOnce()
-                
-                if !self.stormMode {
-                    let incrementAction = SKAction.moveBy(CGVector(dx: self.chargeBar.increment * 3, dy: 0), duration: 0.5)
-                    incrementAction.timingMode = .EaseOut
-                    self.chargeBar.bar.runAction(incrementAction)
-                }
-                
-                if coin.particles.isEmpty {
-                    coin.removeFromParent()
-                }
+//            var delaySequence = [SKAction]()
+            
+            let wait = SKAction.waitForDuration(0.2 * Double(coin.particles.indexOf(particle)!))
+            
+            particle.runAction(wait, completion: {
+                particle.runAction(move, completion: {
+                    particle.removeFromParent()
+                    self.chargeBar.flashOnce()
+                    
+                    if !self.stormMode {
+                        let incrementAction = SKAction.moveBy(CGVector(dx: self.chargeBar.increment, dy: 0), duration: 0.5)
+                        incrementAction.timingMode = .EaseOut
+                        self.chargeBar.bar.runAction(incrementAction)
+                    } else {
+                        // Increment bar but add to time elapsed too.
+                    }
+                    
+                    if coin.particles.isEmpty {
+                        coin.removeFromParent()
+                    }
+                })
             })
+            
+
         }
 
     }
