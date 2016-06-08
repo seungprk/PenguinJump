@@ -206,9 +206,9 @@ class Penguin: SKSpriteNode {
         (scene as! GameScene).jumpSound?.play()
     }
     
-    func land() {
+    func land(sinkDuration: NSTimeInterval) {
         onBerg = true
-        let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 7.0)
+        let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: sinkDuration)
         self.runAction(penguinSinking)
     }
 }

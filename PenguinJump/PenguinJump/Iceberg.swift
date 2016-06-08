@@ -25,17 +25,20 @@ class Iceberg: SKSpriteNode {
     let underwaterHeight:CGFloat = 20.0
     
     // Settings
-    var stormMode = false
+    var stormMode: Bool!// = false
     let debug = false
     var landed = false
     
     // Functions
-    init(size: CGSize) {
+    init(size: CGSize, stormMode: Bool) {
         super.init(texture: nil, color: UIColor.clearColor(), size: size)
         
         createBergNodes()
+        
+        self.stormMode = stormMode
         bob()
     }
+    
     
     func createBergNodes() {
         // ***** Create images *****
@@ -238,42 +241,75 @@ class Iceberg: SKSpriteNode {
     }
     
     func bob() {
-        // If there is a storm mode, need to implement berg position reset with each new bob call.
-        
-        let bobDepth = stormMode ? 5.0 : 2.0
-        let bobDuration = stormMode ? 0.8 : 2.0
-        
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        down.timingMode = .EaseInEaseOut
-        up.timingMode = .EaseInEaseOut
-        
-        let bobSequence = SKAction.sequence([down, up])
-        let bob = SKAction.repeatActionForever(bobSequence)
-        
-        berg!.removeAllActions()
-        berg!.runAction(bob)
-        underwater!.removeAllActions()
-        underwater!.runAction(bob)
-        shadowMask!.removeAllActions()
-        shadowMask!.runAction(bob)
+        if !landed {
+            let bobActionKey = "bob_action"
+            
+            berg.removeActionForKey(bobActionKey)
+            underwater.removeActionForKey(bobActionKey)
+            shadowMask.removeActionForKey(bobActionKey)
+            
+            let bobDepth = (stormMode == true) ? 5.0 : 2.0
+            let bobDuration = (stormMode == true) ? 0.8 : 2.0
+            
+            //        let bobDepth = 2.0 + 3.0 * (scene as! GameScene).stormIntensity
+            
+            let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+            let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+            down.timingMode = .EaseInEaseOut
+            up.timingMode = .EaseInEaseOut
+            
+            let bobSequence = SKAction.sequence([down, up])
+            let bob = SKAction.repeatActionForever(bobSequence)
+            
+            // Reset position and then run action
+            let bergReset = SKAction.moveTo(CGPointZero, duration: 2.0)
+            let underwaterReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
+            let shadowMaskReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
+            bergReset.timingMode = .EaseInEaseOut
+            underwaterReset.timingMode = .EaseInEaseOut
+            shadowMaskReset.timingMode = .EaseInEaseOut
+            
+            berg.runAction(bergReset, completion: {
+                self.berg!.runAction(bob, withKey: bobActionKey)
+            })
+            underwater.runAction(underwaterReset, completion: {
+                self.underwater!.runAction(bob, withKey: bobActionKey)
+            })
+            shadowMask.runAction(shadowMaskReset, completion: {
+                self.shadowMask!.runAction(bob, withKey: bobActionKey)
+            })
+        }
     }
     
     func land() {
         if !landed {
             landed = true
-            self.removeAllActions()
+            
+            removeAllActions()
+            berg.removeAllActions()
+            underwater.removeAllActions()
+            shadowMask.removeAllActions()
             
             let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
             let reduce = SKAction.scaleTo(1.0, duration: 0.06)
-            
             enlarge.timingMode = .EaseOut
             reduce.timingMode = .EaseIn
             
             let bumpSequence = SKAction.sequence([enlarge, reduce])
-            
             runAction(bumpSequence)
-            self.ripple()
+            ripple()
         }
+    }
+    
+    func bump() {
+        let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
+        let reduce = SKAction.scaleTo(1.0, duration: 0.06)
+        enlarge.timingMode = .EaseOut
+        reduce.timingMode = .EaseIn
+        
+        let bumpSequence = SKAction.sequence([enlarge, reduce])
+        runAction(bumpSequence)
+        ripple()
+
     }
 }
