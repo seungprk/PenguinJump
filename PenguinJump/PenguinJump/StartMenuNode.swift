@@ -125,6 +125,8 @@ class StartMenuNode: SKNode {
                         parentScene.buttonPressSound?.play()
                     }
                     if touchedNode.name == "highScoreButton" {
+                        (scene as! GameScene).fadeMusic()
+                        
                         let scoreScene = ScoreScene(size: scene!.size)
                         let parentScene = scene as! GameScene
                         scoreScene.score = parentScene.intScore

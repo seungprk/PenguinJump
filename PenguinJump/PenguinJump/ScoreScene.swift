@@ -50,7 +50,7 @@ class ScoreScene: SKScene {
         scoreLabel.fontColor = SKColor.blackColor()
         addChild(scoreLabel)
         
-        let button = SKLabelNode(text: "Restart")
+        let button = SKLabelNode(text: "Again")
         button.fontName = "Helvetica Neue Condensed Black"
         button.fontSize = 48
         button.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))

@@ -473,12 +473,7 @@ class GameScene: SKScene {
                 }
             }
             
-            fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
-                self.backgroundMusic?.stop()
-            })
-            fadeAudioPlayer(backgroundOcean!, fadeTo: 0.0, duration: 1.0, completion: {() in
-                self.backgroundOcean?.stop()
-            })
+            fadeMusic()
             
             let wait = SKAction.waitForDuration(2.0)
             self.runAction(wait, completion:  {
@@ -490,6 +485,16 @@ class GameScene: SKScene {
                 self.scene!.view?.presentScene(scoreScene, transition: transition)
             })
         }
+    }
+    
+    func fadeMusic() {
+        fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
+            self.backgroundMusic?.stop()
+        })
+        fadeAudioPlayer(backgroundOcean!, fadeTo: 0.0, duration: 1.0, completion: {() in
+            self.backgroundOcean?.stop()
+        })
+        
     }
     
     // MARK: - Updates
