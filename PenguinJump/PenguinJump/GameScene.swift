@@ -49,6 +49,7 @@ class GameScene: SKScene {
     var gameRunning = false
     var gameOver = false
     var gamePaused = false
+    var shouldCorrectAfterPause = false
     var playerTouched = false
     var freezeCamera = false
     var difficulty = 0.0
@@ -281,6 +282,7 @@ class GameScene: SKScene {
                     
                     if touchedNode.name == "pauseButton" {
                         if gamePaused == false {
+                            shouldCorrectAfterPause = true
                             gamePaused = true
                             penguin.userInteractionEnabled = false
                             paused = true
@@ -500,12 +502,19 @@ class GameScene: SKScene {
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
-        if let previousTime = previousTime {
-            timeSinceLastUpdate = currentTime - previousTime
-            self.previousTime = currentTime
+        if shouldCorrectAfterPause {
+            timeSinceLastUpdate = 0.0
+            shouldCorrectAfterPause = false
+            previousTime = currentTime
         } else {
-            self.previousTime = currentTime
+            if let previousTime = previousTime {
+                timeSinceLastUpdate = currentTime - previousTime
+                self.previousTime = currentTime
+            } else {
+                self.previousTime = currentTime
+            }
         }
+        
         
         stage.update()
         waves.update()
@@ -755,6 +764,33 @@ class GameScene: SKScene {
                             coin.body.zPosition = 90000
                             coin.body.runAction(rise, completion: {
                                 self.generateCoinParticles(coin)
+                                
+                                let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
+                                let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
+                                
+//                                coinBurst.position = self.convertPoint(coin.body.position, fromNode: coin)
+                                coinBurst.zPosition = 240000
+//                                coinBurst.position = coin.body.position
+                                coinBurst.numParticlesToEmit = 100
+                                coinBurst.targetNode = self.scene
+                                
+                                let coinBurstEffectNode = SKEffectNode()
+                                coinBurstEffectNode.addChild(coinBurst)
+                                coinBurstEffectNode.zPosition = 240000
+                                
+                                coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
+                                coinBurstEffectNode.blendMode = .Replace
+                                
+                                self.addChild(coinBurstEffectNode)
+                                
+                                
+//                                let bodyPositionInScene = self.convertPoint(coin.body.position, fromNode: coin)
+//                                let bodyPositionInCam = self.cam.convertPoint(bodyPositionInScene, fromNode: self)
+//                                coinBurst.position = bodyPositionInCam
+                                
+//                                self.addChild(coinBurst)
+//                                coin.addChild(coinBurst)
+                                
                                 coin.body.removeFromParent()
                                 coin.shadow.removeFromParent()
                                 self.incrementWithCoinParticles(coin)
