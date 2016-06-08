@@ -113,7 +113,7 @@ class GameScene: SKScene {
         
         // Start Menu Setup
         startMenu = StartMenuNode(frame: view.frame)
-        startMenu.userInteractionEnabled = false //change to true once menu interaction properly enabled
+        startMenu.userInteractionEnabled = true //change to true once menu interaction properly enabled
         cam.addChild(startMenu)
         
         // Camera Setup
@@ -363,7 +363,7 @@ class GameScene: SKScene {
         let zoomOut = SKAction.scaleTo(1.0, duration: 2.0)
         
         let cameraFinalDestX = penguin.position.x
-        let cameraFinalDestY = penguin.position.y + frame.height / 4
+        let cameraFinalDestY = penguin.position.y + frame.height / 6
         
         let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 2.0)
         pan.timingMode = .EaseInEaseOut
@@ -394,14 +394,7 @@ class GameScene: SKScene {
         startMenu.title.runAction(titleUp, completion: {
             self.startMenu.title.removeFromParent()
         })
-//        startStorm(completion: {() in
-//            print("started storm")
-//        })
-//        stormMode = true
-//        beginStorm()
-//        delay(5.0) {
-//            self.beginStorm()
-//        }
+
     }
     
     func restart() {

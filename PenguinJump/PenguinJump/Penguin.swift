@@ -11,7 +11,7 @@ import SpriteKit
 class Penguin: SKSpriteNode {
     
     let penguinCropNode = SKCropNode()
-    let body = SKSpriteNode(imageNamed: "penguintemp")
+    let body = SKSpriteNode(imageNamed: "penguin")
     var shadow: SKShapeNode!
     
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
@@ -31,9 +31,12 @@ class Penguin: SKSpriteNode {
         
         // Create penguin
         name = "penguin"
+        size.height = 70
+        size.width = 60
         penguinCropNode.position = CGPointZero
         penguinCropNode.zPosition = 21000
         addChild(penguinCropNode)
+        body.size = CGSize(width: 25, height: 44)
         body.position = CGPointZero
         body.zPosition = 21000
 //        addChild(body)
@@ -44,7 +47,7 @@ class Penguin: SKSpriteNode {
         shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width * 0.8, height: body.frame.width * 0.8), cornerRadius: body.frame.width / 2)
         shadow.fillColor = SKColor.blackColor()
         shadow.alpha = 0.2
-        shadow.position =  CGPoint(x: 0, y: -body.frame.height / 2 + body.frame.height / 4)
+        shadow.position =  CGPoint(x: 0, y: -body.frame.height * 0.35)
         shadow.zPosition = 2000
         addChild(shadow)
         
@@ -162,7 +165,7 @@ class Penguin: SKSpriteNode {
         
         // Fixed jump duration
         let jumpDuration = 1.0
-        let jumpHeight = frame.height * 2
+        let jumpHeight = body.frame.height * 2
         
         
         let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))

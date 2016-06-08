@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		246206EA1D065A9600FE92EF /* AboutScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246206E91D065A9600FE92EF /* AboutScene.swift */; };
+		246206EC1D065AEE00FE92EF /* SettingsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246206EB1D065AEE00FE92EF /* SettingsScene.swift */; };
 		2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */; };
 		7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE5B1CF5630300EC559E /* Iceberg.swift */; };
 		7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE651CF647E700EC559E /* IcebergGenerator.swift */; };
@@ -37,6 +39,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		246206E91D065A9600FE92EF /* AboutScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutScene.swift; sourceTree = "<group>"; };
+		246206EB1D065AEE00FE92EF /* SettingsScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsScene.swift; sourceTree = "<group>"; };
 		2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartMenuNode.swift; sourceTree = "<group>"; };
 		7F36CE5B1CF5630300EC559E /* Iceberg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Iceberg.swift; sourceTree = "<group>"; };
 		7F36CE651CF647E700EC559E /* IcebergGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IcebergGenerator.swift; sourceTree = "<group>"; };
@@ -102,6 +106,8 @@
 				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
 				7F36CE671CF653F200EC559E /* GameScene.swift */,
 				7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */,
+				246206E91D065A9600FE92EF /* AboutScene.swift */,
+				246206EB1D065AEE00FE92EF /* SettingsScene.swift */,
 				7F61263E1CFE4329006BE5DA /* GameData.swift */,
 				7F887CEB1D00107A0070B9F4 /* Audio */,
 				7FA6BCDE1CFF78AF003C7CDA /* Nodes */,
@@ -229,6 +235,7 @@
 				7F36CE6A1CF6BB1900EC559E /* Penguin.swift in Sources */,
 				7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */,
 				7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */,
+				246206EC1D065AEE00FE92EF /* SettingsScene.swift in Sources */,
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
 				7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */,
 				7FB4C51B1D069EE100C6E680 /* Raindrop.swift in Sources */,
@@ -241,6 +248,7 @@
 				7F61263D1CFE409F006BE5DA /* PenguinJump.xcdatamodeld in Sources */,
 				7F9177D91D0604300089D4A7 /* ChargeBar.swift in Sources */,
 				7FA32AA51CFFB28400000D6A /* Background.swift in Sources */,
+				246206EA1D065A9600FE92EF /* AboutScene.swift in Sources */,
 				7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
