@@ -2,5 +2,5 @@
 Group Project for CIS55
 
 Members:
-David Park
-Matthew Tso
+* David Park
+* Matthew Tso
