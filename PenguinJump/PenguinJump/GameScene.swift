@@ -562,23 +562,21 @@ class GameScene: SKScene {
             
             // Storm ending rain ease out
             if stormTimeElapsed > stormDuration - 2 {
-                //                abs(stormTimeElapsed - stormDuration)
                 raindropsPerSecond = 0.1 * pow(5.3, abs(stormTimeElapsed - stormDuration)) - 0.1
             }
             
             let numberOfRainDrops = Int(timeSinceLastUpdate * raindropsPerSecond /* * stormIntensity */) + 1// + randomRaindrops
             
-            for drop in 0..<numberOfRainDrops {
+            for _ in 0..<numberOfRainDrops {
                 
                 let randomX = 1.5 * CGFloat(random()) % view!.frame.width - view!.frame.width / 2
                 let randomY = 2.0 * CGFloat(random()) % view!.frame.height - view!.frame.height / 4
-                
 
                 let raindrop = Raindrop()
 
                 raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2, scene: self)
                 
-                
+                // Attempt to avoid dropping a raindrop over an iceberg.
                 for child in stage.children {
                     let berg = child as! Iceberg
                     if berg.containsPoint(convertPoint(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), toNode: stage)) {
@@ -589,7 +587,6 @@ class GameScene: SKScene {
                     }
                 }
                 
-                
                 addChild(raindrop)
             }
         }
@@ -597,7 +594,6 @@ class GameScene: SKScene {
     
     func updateWinds() {
         if windEnabled {
-            print(stormIntensity)
             windSpeed = windDirectionRight ? stormIntensity * 50 : -stormIntensity * 50
             
             let deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
@@ -704,13 +700,7 @@ class GameScene: SKScene {
     }
     
     func chargeBarUpdate() {
-//        print(chargeBar.bar.position.x)
-//        print(chargeBar.size.width)
         chargeBar.mask.size.width = scoreLabel.frame.width * 0.95
-        
-//        if !stormMode {
-//            chargeBar.barFlash.alpha = 0.0
-//        }
         
         if chargeBar.bar.position.x >= chargeBar.mask.size.width {
             shouldFlash = true
@@ -729,7 +719,7 @@ class GameScene: SKScene {
             }
         } else if chargeBar.bar.position.x > 0 && !stormMode {
             let decrease = SKAction.moveBy(CGVector(dx: -5 * timeSinceLastUpdate, dy: 0), duration: timeSinceLastUpdate)
-//            chargeBar.bar.runAction(decrease)
+            chargeBar.bar.runAction(decrease)
             
             if !stormMode && !chargeBar.flashing {
                 chargeBar.barFlash.alpha = 0.0
@@ -763,7 +753,7 @@ class GameScene: SKScene {
                             
                             coin.body.zPosition = 90000
                             coin.body.runAction(rise, completion: {
-                                self.generateCoinParticles(coin)
+                                coin.generateCoinParticles(self.cam)
                                 
                                 let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
                                 let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
@@ -802,31 +792,6 @@ class GameScene: SKScene {
                 }
             }
         }
-    }
-    
-    func generateCoinParticles(coin: Coin) {
-        //        if particles.isEmpty {
-        let numberOfParticles = random() % 2 + 3
-        
-        for _ in 1...numberOfParticles {
-            let particle = SKSpriteNode(color: SKColor.yellowColor(), size: CGSize(width: coin.size.width / 5, height: coin.size.width / 5))
-            //                let randomX = random() % Int(size.width) - Int(size.width / 2)
-            let randomX = Int( arc4random_uniform( UInt32(coin.size.width) ) ) - Int(coin.size.width / 2)
-            let randomY = Int( arc4random_uniform( UInt32(coin.size.height) ) ) - Int(coin.size.height / 2)
-            
-            let bodyPositionInScene = convertPoint(coin.body.position, fromNode: coin)
-            let bodyPositionInCam = cam.convertPoint(bodyPositionInScene, fromNode: self)
-            
-            
-            particle.position = CGPoint(x: bodyPositionInCam.x + CGFloat(randomX), y: bodyPositionInCam.y + CGFloat(randomY))
-            particle.zPosition = 200000
-            
-            coin.particles.append(particle)
-        }
-        for particle in coin.particles {
-            cam.addChild(particle)
-        }
-        //        }
     }
     
     func incrementWithCoinParticles(coin: Coin) {

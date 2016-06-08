@@ -270,9 +270,6 @@ class Iceberg: SKSpriteNode {
             shadowMaskReset.timingMode = .EaseInEaseOut
             
             berg.runAction(bergReset, completion: {
-                print("berg reset, now start bobbing")
-                print(self.stormMode)
-                print(bobDepth)
                 self.berg!.runAction(bob, withKey: bobActionKey)
             })
             underwater.runAction(underwaterReset, completion: {

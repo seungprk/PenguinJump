@@ -57,5 +57,30 @@ class Coin: SKSpriteNode {
         body.runAction(bob)
     }
     
+    
+    func generateCoinParticles(camera: SKCameraNode) {
+        
+        let numberOfParticles = random() % 2 + 3
+        
+        for _ in 1...numberOfParticles {
+            let particle = SKSpriteNode(color: SKColor.yellowColor(), size: CGSize(width: size.width / 5, height: size.width / 5))
+            //                let randomX = random() % Int(size.width) - Int(size.width / 2)
+            let randomX = Int( arc4random_uniform( UInt32(size.width) ) ) - Int(size.width / 2)
+            let randomY = Int( arc4random_uniform( UInt32(size.height) ) ) - Int(size.height / 2)
+            
+            let bodyPositionInScene = convertPoint(body.position, toNode: scene!)
+            let bodyPositionInCam = camera.convertPoint(bodyPositionInScene, fromNode: scene!)
+            
+            
+            particle.position = CGPoint(x: bodyPositionInCam.x + CGFloat(randomX), y: bodyPositionInCam.y + CGFloat(randomY))
+            particle.zPosition = 200000
+            
+            particles.append(particle)
+        }
+        for particle in particles {
+            camera.addChild(particle)
+        }
+        
+    }
 
 }

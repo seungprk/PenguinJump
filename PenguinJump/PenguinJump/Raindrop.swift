@@ -29,33 +29,30 @@ class Raindrop: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func testRotation(point: CGPoint, windSpeed: Double) {
-        position = point
-        
-        let beginningDistance = 20.0
-        let dropDuration = 1.0
-        let dropRate = beginningDistance / dropDuration
-
-        let angle = -asin(windSpeed / 500)
-        
-        print(raindrop.zRotation)
-        
-        raindrop.zRotation = CGFloat(angle)
-//        print(angle)
-        
-        let startingX = sin(-angle) * beginningDistance
-        let startingY = cos(-angle) * beginningDistance
-//        let xFromCenter = sin(randomAngleInSection) * radius
-//        let yFromCenter = cos(randomAngleInSection) * radius
-
-        raindrop.position = CGPoint(x: startingX, y: startingY)
-        
-        addChild(raindrop)
-        
-        ripple.xScale = 0.25
-        ripple.yScale = 0.25
-        addChild(ripple)
-    }
+//    func testRotation(point: CGPoint, windSpeed: Double) {
+//        position = point
+//        
+//        let beginningDistance = 20.0
+//        let dropDuration = 1.0
+////        let dropRate = beginningDistance / dropDuration
+//
+//        let angle = -asin(windSpeed / 500)
+//        
+//        print(raindrop.zRotation)
+//        
+//        raindrop.zRotation = CGFloat(angle)
+//        
+//        let startingX = sin(-angle) * beginningDistance
+//        let startingY = cos(-angle) * beginningDistance
+//
+//        raindrop.position = CGPoint(x: startingX, y: startingY)
+//        
+//        addChild(raindrop)
+//        
+//        ripple.xScale = 0.25
+//        ripple.yScale = 0.25
+//        addChild(ripple)
+//    }
     
     func drop(point: CGPoint, windSpeed: Double, scene: SKScene) {
         position = point
