@@ -57,11 +57,13 @@ class GameScene: SKScene {
     var timeSinceLastUpdate: NSTimeInterval = 0.0
     var stormTimeElapsed: NSTimeInterval = 0.0
     var stormIntensity = 0.0
-    var stormDuration = 10.0
+    var stormDuration = 15.0
+    var stormTransitionDuration = 2.0
     var stormMode = false
     let bgColorValues = ColorValues(red: 0/255, green: 151/255, blue: 255/255, alpha: 1)
     var windSpeed = 0.0
-    var windEnabled = false
+    var windEnabled = true
+    var windDirectionRight = true
     
     // Information bar
     var intScore = 0
@@ -75,7 +77,7 @@ class GameScene: SKScene {
     
     // Debug
     var testZoomed = false
-    var presentationMode = false
+    var presentationMode = true
     var viewFrame: SKShapeNode!
     var debugMode = false
     
@@ -137,6 +139,17 @@ class GameScene: SKScene {
 //        zoomButton.position.x += zoomButton.frame.width
         zoomButton.position.y -= zoomButton.frame.height * 2
         cam.addChild(zoomButton)
+
+        let rainButton = SKLabelNode(text: "RAIN")
+        rainButton.name = "rainButton"
+        rainButton.fontName = "Helvetica Neue Condensed Black"
+        rainButton.fontSize = 24
+        rainButton.alpha = 0.5
+        rainButton.zPosition = 200000
+        rainButton.fontColor = UIColor.blackColor()
+        rainButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height)
+        rainButton.position.y -= rainButton.frame.height * 2
+        cam.addChild(rainButton)
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
@@ -258,6 +271,14 @@ class GameScene: SKScene {
                         testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
                         testZoomed = testZoomed ? false : true
                     }
+                    if touchedNode.name == "rainButton" {
+                        let raindrop = Raindrop()
+                        addChild(raindrop)
+//                        raindrop.testRotation(view!.center, windSpeed: windSpeed)
+                        raindrop.zPosition = 100000
+                        raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
+                    }
+                    
                     if touchedNode.name == "pauseButton" {
                         if gamePaused == false {
                             gamePaused = true
@@ -505,6 +526,7 @@ class GameScene: SKScene {
             }
             
             updateStorm()
+            updateRain()
             
             centerCamera()
         } else {
@@ -517,9 +539,62 @@ class GameScene: SKScene {
         
     }
     
+    func updateRain() {
+        if stormMode {
+            let maxRaindropsPerSecond = 80.0
+
+            // Storm start ease in
+            var raindropsPerSecond = 0.1 * pow(5.3, stormTimeElapsed) - 0.1
+            
+            // Cap at 80 maximum
+            if raindropsPerSecond > maxRaindropsPerSecond {
+                raindropsPerSecond = maxRaindropsPerSecond
+            }
+            
+            // Storm ending rain ease out
+            if stormTimeElapsed > stormDuration - 2 {
+                //                abs(stormTimeElapsed - stormDuration)
+                raindropsPerSecond = 0.1 * pow(5.3, abs(stormTimeElapsed - stormDuration)) - 0.1
+            }
+            
+            let numberOfRainDrops = Int(timeSinceLastUpdate * raindropsPerSecond /* * stormIntensity */) + 1// + randomRaindrops
+            
+            for drop in 0..<numberOfRainDrops {
+                
+                let randomX = 1.5 * CGFloat(random()) % view!.frame.width - view!.frame.width / 2
+                let randomY = 2.0 * CGFloat(random()) % view!.frame.height - view!.frame.height / 4
+                
+
+                let raindrop = Raindrop()
+
+                raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2, scene: self)
+                
+                
+                for child in stage.children {
+                    let berg = child as! Iceberg
+                    if berg.containsPoint(convertPoint(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), toNode: stage)) {
+                        raindrop.zPosition = 0
+                        
+                    } else {
+                        raindrop.zPosition = 24000
+                    }
+                }
+                
+                
+                addChild(raindrop)
+            }
+        }
+    }
+    
     func updateWinds() {
         if windEnabled {
-            let push = SKAction.moveBy(CGVector(dx: 50.0 * timeSinceLastUpdate * stormIntensity * difficulty, dy: 0), duration: timeSinceLastUpdate)
+            print(stormIntensity)
+            windSpeed = windDirectionRight ? stormIntensity * 50 : -stormIntensity * 50
+            
+            let deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
+            
+            
+            let push = SKAction.moveBy(CGVector(dx: deltaX, dy: 0), duration: timeSinceLastUpdate)
             penguin.runAction(push)
         }
 
@@ -528,40 +603,63 @@ class GameScene: SKScene {
     func updateStorm() {
 
         if stormMode {
+            updateWinds()
             
-            if stormTimeElapsed < stormDuration {
+            if stormTimeElapsed < stormDuration - stormTransitionDuration {
                 stormTimeElapsed += timeSinceLastUpdate
                 
                 if stormIntensity < 0.99 {
-                    stormIntensity += 1.0 * (timeSinceLastUpdate / 2.0)
+                    stormIntensity += 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
                 } else {
                     stormIntensity = 1.0
                     
                 }
                 
             } else {
-                // End storm mode.
-                stormTimeElapsed = 0.0
-                stormMode = false
-                
-                waves.stormMode = self.stormMode
-                waves.bob()
-                
-                for child in stage.children {
-                    let berg = child as! Iceberg
-                    berg.stormMode = self.stormMode
-                    berg.bob()
+                if stormIntensity > 0.01 {
+                    stormIntensity -= 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
+                } else {
+                    stormIntensity = 0.0
+                    
+                    // End storm mode.
+                    stormTimeElapsed = 0.0
+                    stormMode = false
+                    
+                    waves.stormMode = self.stormMode
+                    waves.bob()
+                    
+                    for child in stage.children {
+                        let berg = child as! Iceberg
+                        berg.stormMode = self.stormMode
+                        berg.bob()
+                    }
+                    
+                    chargeBar.barFlash.removeAllActions()
+
                 }
-                
-                chargeBar.barFlash.removeAllActions()
+
+//                // End storm mode.
+//                stormTimeElapsed = 0.0
+//                stormMode = false
+//                
+//                waves.stormMode = self.stormMode
+//                waves.bob()
+//                
+//                for child in stage.children {
+//                    let berg = child as! Iceberg
+//                    berg.stormMode = self.stormMode
+//                    berg.bob()
+//                }
+//                
+//                chargeBar.barFlash.removeAllActions()
             }
             
         } else {
-            if stormIntensity > 0.01 {
-                stormIntensity -= 1.0 * (timeSinceLastUpdate / 2.0)
-            } else {
-                stormIntensity = 0.0
-            }
+//            if stormIntensity > 0.01 {
+//                stormIntensity -= 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
+//            } else {
+//                stormIntensity = 0.0
+//            }
         }
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green - CGFloat(40 / 255 * stormIntensity), blue: bgColorValues.blue - CGFloat(120 / 255 * stormIntensity), alpha: bgColorValues.alpha)
     }
@@ -572,7 +670,6 @@ class GameScene: SKScene {
             
             if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
                 // Penguin landed on an iceberg if check is true
-                penguin.land()
                 landingSound?.play()
                 
                 berg.land()
@@ -581,12 +678,18 @@ class GameScene: SKScene {
                 
                 let sinkDuration = 7.0 - (3.0 * difficulty)
                 berg.sink(sinkDuration, completion: nil)
-
+                penguin.land(sinkDuration)
+                
                 intScore += 1
                 
                 let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
                 let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
                 scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                
+            } else if penguin.shadow.intersectsNode(berg) && !penguin.inAir {
+                // Penguin landed on an iceberg that is sinking.
+                // Needs fix. Constantly bumps right now.
+//                berg.bump()
             }
         }
     }
@@ -595,7 +698,6 @@ class GameScene: SKScene {
 //        print(chargeBar.bar.position.x)
 //        print(chargeBar.size.width)
         chargeBar.mask.size.width = scoreLabel.frame.width * 0.95
-        print(scoreLabel.frame.width)
         
 //        if !stormMode {
 //            chargeBar.barFlash.alpha = 0.0
@@ -669,7 +771,8 @@ class GameScene: SKScene {
     func generateCoinParticles(coin: Coin) {
         //        if particles.isEmpty {
         let numberOfParticles = random() % 2 + 3
-        for _ in 1...3 {
+        
+        for _ in 1...numberOfParticles {
             let particle = SKSpriteNode(color: SKColor.yellowColor(), size: CGSize(width: coin.size.width / 5, height: coin.size.width / 5))
             //                let randomX = random() % Int(size.width) - Int(size.width / 2)
             let randomX = Int( arc4random_uniform( UInt32(coin.size.width) ) ) - Int(coin.size.width / 2)
@@ -748,6 +851,8 @@ class GameScene: SKScene {
     func beginStorm() {
         stormMode = true
         
+        windDirectionRight = random() % 2 == 0 ? true : false
+        
         waves.stormMode = self.stormMode
         waves.bob()
         
@@ -780,9 +885,9 @@ class GameScene: SKScene {
     func centerCamera() {
         if !freezeCamera {
             let cameraFinalDestX = penguin.position.x
-            let cameraFinalDestY = penguin.position.y + frame.height / 4
+            let cameraFinalDestY = penguin.position.y + frame.height / 6
             
-            let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.25)
+            let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.125)
             pan.timingMode = .EaseInEaseOut
             
             cam.runAction(pan)

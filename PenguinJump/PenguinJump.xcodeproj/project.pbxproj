@@ -32,6 +32,9 @@
 		7F9177D91D0604300089D4A7 /* ChargeBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F9177D81D0604300089D4A7 /* ChargeBar.swift */; };
 		7FA32AA51CFFB28400000D6A /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA32AA41CFFB28400000D6A /* Background.swift */; };
 		7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */; };
+		7FB4C5171D0699AF00C6E680 /* CoinBurst.sks in Resources */ = {isa = PBXBuildFile; fileRef = 7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */; };
+		7FB4C5191D069BCB00C6E680 /* RainGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB4C5181D069BCB00C6E680 /* RainGenerator.swift */; };
+		7FB4C51B1D069EE100C6E680 /* Raindrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB4C51A1D069EE100C6E680 /* Raindrop.swift */; };
 		7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */; };
 		7FB95AD71CF7B7B2005875DF /* Lightning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD61CF7B7B2005875DF /* Lightning.swift */; };
 /* End PBXBuildFile section */
@@ -64,6 +67,9 @@
 		7F9177D81D0604300089D4A7 /* ChargeBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChargeBar.swift; sourceTree = "<group>"; };
 		7FA32AA41CFFB28400000D6A /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Waves.swift; sourceTree = "<group>"; };
+		7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = CoinBurst.sks; sourceTree = "<group>"; };
+		7FB4C5181D069BCB00C6E680 /* RainGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RainGenerator.swift; sourceTree = "<group>"; };
+		7FB4C51A1D069EE100C6E680 /* Raindrop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Raindrop.swift; sourceTree = "<group>"; };
 		7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreScene.swift; sourceTree = "<group>"; };
 		7FB95AD61CF7B7B2005875DF /* Lightning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Lightning.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,9 +142,12 @@
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
 				7F9177D61D05F1830089D4A7 /* Coin.swift */,
+				7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */,
 				7F506B401D0620E300E8FD2C /* Wind.sks */,
 				7F506B411D0620E300E8FD2C /* spark.png */,
 				7F9177D81D0604300089D4A7 /* ChargeBar.swift */,
+				7FB4C5181D069BCB00C6E680 /* RainGenerator.swift */,
+				7FB4C51A1D069EE100C6E680 /* Raindrop.swift */,
 				7FA32AA41CFFB28400000D6A /* Background.swift */,
 				7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */,
 				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
@@ -205,6 +214,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FB4C5171D0699AF00C6E680 /* CoinBurst.sks in Resources */,
 				7F887CF61D00225D0070B9F4 /* landing.m4a in Resources */,
 				7F506B431D0620E300E8FD2C /* spark.png in Resources */,
 				7F7FB38C1CE5B80C0067FC9B /* LaunchScreen.storyboard in Resources */,
@@ -232,6 +242,7 @@
 				7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */,
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
 				7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */,
+				7FB4C51B1D069EE100C6E680 /* Raindrop.swift in Sources */,
 				7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */,
 				7F9177D71D05F1830089D4A7 /* Coin.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
@@ -242,6 +253,7 @@
 				7F9177D91D0604300089D4A7 /* ChargeBar.swift in Sources */,
 				7FA32AA51CFFB28400000D6A /* Background.swift in Sources */,
 				7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */,
+				7FB4C5191D069BCB00C6E680 /* RainGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
