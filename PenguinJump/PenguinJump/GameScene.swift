@@ -257,14 +257,6 @@ class GameScene: SKScene {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if name == "restartButton" {
-                        restart()
-                        gameRunning = true
-                    }
-                    if touchedNode.name == "playButton" {
-                        beginGame()
-                        buttonPressSound?.play()
-                    }
                     if touchedNode.name == "testZoom" {
                         let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
                         let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
@@ -315,6 +307,8 @@ class GameScene: SKScene {
                     }
                 }
             }
+            //http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
+            // use above for swipe double jump
             if penguin.inAir && !penguin.doubleJumped {
                 penguin.doubleJumped = true
                 
@@ -360,6 +354,7 @@ class GameScene: SKScene {
     // MARK: - Game state
     
     func beginGame() {
+        penguin.body.texture = SKTexture(imageNamed: "penguintemp")
         let zoomOut = SKAction.scaleTo(1.0, duration: 2.0)
         
         let cameraFinalDestX = penguin.position.x
