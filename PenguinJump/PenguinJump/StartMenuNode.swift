@@ -11,10 +11,10 @@ import SpriteKit
 class StartMenuNode: SKNode {
     
     let title = SKSpriteNode(texture: nil)
-    let playButton = SKLabelNode(text: "Play")
-    let highScoreButton = SKLabelNode(text: "High Scores")
-    let aboutButton = SKLabelNode(text: "About")
-    let settingsButton = SKLabelNode(text: "Settings")
+    var playButton : SKLabelNode!
+    var highScoreButton : SimpleButton!
+    var aboutButton : SimpleButton!
+    var settingsButton : SimpleButton!
     
     init(frame: CGRect) {
         super.init()
@@ -36,10 +36,11 @@ class StartMenuNode: SKNode {
         subtitleLabel.position.y -= subtitleLabel.frame.height
         
         // Button "Play"
+        playButton = SKLabelNode(text: "Play")
         playButton.name = "playButton"
         playButton.fontName = "Helvetica Neue Condensed Black"
         playButton.fontSize = 60
-        playButton.fontColor = SKColor.blackColor()
+        playButton.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         playButton.position = CGPointZero
         playButton.position.y -= frame.height * 0.20
         playButton.zPosition = 10000
@@ -52,28 +53,22 @@ class StartMenuNode: SKNode {
         playButton.runAction(SKAction.repeatActionForever(bump))
         
         // Button "Settings"
+        settingsButton = SimpleButton(text: "Settings")
         settingsButton.name = "settingsButton"
-        settingsButton.fontName = "Helvetica Neue Condensed Black"
-        settingsButton.fontSize = 30
-        settingsButton.fontColor = SKColor.blackColor()
         settingsButton.position = CGPointZero
         settingsButton.position.y = playButton.position.y - playButton.frame.height
         settingsButton.zPosition = 10000
         
         // Button "High Scores"
+        highScoreButton = SimpleButton(text: "High Scores")
         highScoreButton.name = "highScoreButton"
-        highScoreButton.fontName = "Helvetica Neue Condensed Black"
-        highScoreButton.fontSize = 30
-        highScoreButton.fontColor = SKColor.blackColor()
         highScoreButton.position = CGPointZero
         highScoreButton.position.y = settingsButton.position.y - playButton.frame.height
         highScoreButton.zPosition = 10000
         
         // Button "About"
+        aboutButton = SimpleButton(text: "About")
         aboutButton.name = "aboutButton"
-        aboutButton.fontName = "Helvetica Neue Condensed Black"
-        aboutButton.fontSize = 40
-        aboutButton.fontColor = SKColor.blackColor()
         aboutButton.position = CGPointZero
         aboutButton.position.y = highScoreButton.position.y - playButton.frame.height
         aboutButton.zPosition = 10000
@@ -82,25 +77,20 @@ class StartMenuNode: SKNode {
         title.addChild(titleLabel)
         title.addChild(subtitleLabel)
         addChild(title)
+        addChild(playButton)
         addChild(settingsButton)
         addChild(highScoreButton)
         addChild(aboutButton)
-        addChild(playButton)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         let parentScene = scene as! GameScene
-        
         for touch in touches {
             let positionInScene = touch.locationInNode(self)
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if name == "restartButton" {
-                        parentScene.restart()
-                        parentScene.gameRunning = true
-                    }
                     if touchedNode.name == "playButton" {
                         let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
                         titleUp.timingMode = .EaseIn
@@ -125,31 +115,71 @@ class StartMenuNode: SKNode {
                         parentScene.buttonPressSound?.play()
                     }
                     if touchedNode.name == "highScoreButton" {
-                        (scene as! GameScene).fadeMusic()
-                        
-                        let scoreScene = ScoreScene(size: scene!.size)
-                        let parentScene = scene as! GameScene
-                        scoreScene.score = parentScene.intScore
-                        
-                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
-                        scoreScene.scaleMode = SKSceneScaleMode.AspectFill
-                        self.scene!.view?.presentScene(scoreScene, transition: transition)
+                        highScoreButton.buttonPress()
                     }
                     if touchedNode.name == "settingsButton" {
-                        let settingsScene = SettingsScene(size: scene!.size)
-                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
-                        settingsScene.scaleMode = SKSceneScaleMode.AspectFill
-                        self.scene!.view?.presentScene(settingsScene, transition: transition)
+                        settingsButton.buttonPress()
                     }
                     if touchedNode.name == "aboutButton" {
-                        let aboutScene = AboutScene(size: scene!.size)
-                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
-                        aboutScene.scaleMode = SKSceneScaleMode.AspectFill
-                        self.scene!.view?.presentScene(aboutScene, transition: transition)
+                        aboutButton.buttonPress()
                     }
                 }
             }
         }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            let positionInScene = touch.locationInNode(self)
+            let touchedNodes = self.nodesAtPoint(positionInScene)
+            for touchedNode in touchedNodes {
+                if let name = touchedNode.name
+                {
+                    if touchedNode.name == "highScoreButton" {
+                        if highScoreButton.pressed == true {
+                            highScoreButton.buttonRelease()
+                            
+                            (scene as! GameScene).fadeMusic()
+                            
+                            let scoreScene = ScoreScene(size: scene!.size)
+                            let parentScene = scene as! GameScene
+                            scoreScene.score = parentScene.intScore
+
+                            let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                            scoreScene.scaleMode = SKSceneScaleMode.AspectFill
+                            self.scene!.view?.presentScene(scoreScene, transition: transition)
+                        }
+                    }
+                    if touchedNode.name == "settingsButton" {
+                        if settingsButton.pressed == true {
+                            settingsButton.buttonRelease()
+                            
+                            (scene as! GameScene).fadeMusic()
+                            
+                            let settingsScene = SettingsScene(size: scene!.size)
+                            let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                            settingsScene.scaleMode = SKSceneScaleMode.AspectFill
+                            self.scene!.view?.presentScene(settingsScene, transition: transition)
+                        }
+                    }
+                    if touchedNode.name == "aboutButton" {
+                        if aboutButton.pressed == true {
+                            aboutButton.buttonRelease()
+                            
+                            (scene as! GameScene).fadeMusic()
+                            
+                            let aboutScene = AboutScene(size: scene!.size)
+                            let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                            aboutScene.scaleMode = SKSceneScaleMode.AspectFill
+                            self.scene!.view?.presentScene(aboutScene, transition: transition)
+                        }
+                    }
+                }
+            }
+        }
+        highScoreButton.buttonRelease()
+        settingsButton.buttonRelease()
+        aboutButton.buttonRelease()
     }
     
     required init?(coder aDecoder: NSCoder) {

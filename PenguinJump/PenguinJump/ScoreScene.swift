@@ -14,8 +14,10 @@ class ScoreScene: SKScene {
     var highScore: Int!
     var score: Int!
     
+    var button : SimpleButton!
+    
     override func didMoveToView(view: SKView) {
-        backgroundColor = SKColor.whiteColor()
+        backgroundColor = SKColor(red: 220/255, green: 230/255, blue: 236/255, alpha: 1.0)
         
         fetchHighscore()
         
@@ -24,7 +26,7 @@ class ScoreScene: SKScene {
         highScoreTitle.fontSize = 24
         highScoreTitle.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))
         highScoreTitle.position.y += 200
-        highScoreTitle.fontColor = SKColor.blackColor()
+        highScoreTitle.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         addChild(highScoreTitle)
         
         let highScoreLabel = SKLabelNode(text: "\(highScore)")
@@ -32,14 +34,14 @@ class ScoreScene: SKScene {
         highScoreLabel.fontSize = 120
         highScoreLabel.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))
         highScoreLabel.position.y += 100
-        highScoreLabel.fontColor = SKColor.blackColor()
+        highScoreLabel.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         addChild(highScoreLabel)
         
         let scoreTitle = SKLabelNode(text: "Last Run")
         scoreTitle.fontName = "Helvetica Neue Condensed Black"
         scoreTitle.fontSize = 24
         scoreTitle.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))
-        scoreTitle.fontColor = SKColor.blackColor()
+        scoreTitle.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         addChild(scoreTitle)
         
         let scoreLabel = SKLabelNode(text: "\(score)")
@@ -47,34 +49,45 @@ class ScoreScene: SKScene {
         scoreLabel.fontSize = 120
         scoreLabel.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))
         scoreLabel.position.y -= 100
-        scoreLabel.fontColor = SKColor.blackColor()
+        scoreLabel.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         addChild(scoreLabel)
         
-        let button = SKLabelNode(text: "Again")
-        button.fontName = "Helvetica Neue Condensed Black"
-        button.fontSize = 48
+        button = SimpleButton(text: "Back")
+        button.name = "restartButton"
         button.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))
         button.position.y -= 200
-        button.fontColor = SKColor.blackColor()
-        button.name = "restartButton"
         addChild(button)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        let touch = touches
-        let location = touch.first!.locationInNode(self)
-        let node = self.nodeAtPoint(location)
-        
-        // If previous button is touched, start transition to previous scene
-        if (node.name == "restartButton") {
-            runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
-            
-            let gameScene = GameScene(size: self.size)
-            
-            let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
-            gameScene.scaleMode = SKSceneScaleMode.AspectFill
-            self.scene!.view?.presentScene(gameScene, transition: transition)
+        for touch in touches {
+            let positionInScene = touch.locationInNode(self)
+            let touchedNodes = self.nodesAtPoint(positionInScene)
+            for touchedNode in touchedNodes {
+                if (touchedNode.name == "restartButton") {
+                    button.buttonPress()
+                }
+            }
         }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            let positionInScene = touch.locationInNode(self)
+            let touchedNodes = self.nodesAtPoint(positionInScene)
+            for touchedNode in touchedNodes {
+                // If previous button is touched, start transition to previous scene
+                if (touchedNode.name == "restartButton" && button.pressed == true) {
+                    button.buttonRelease()
+                    
+                    let gameScene = GameScene(size: self.size)
+                    let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
+                    gameScene.scaleMode = SKSceneScaleMode.AspectFill
+                    self.scene!.view?.presentScene(gameScene, transition: transition)
+                }
+            }
+        }
+        button.buttonRelease()
     }
     
     func fetchHighscore() {
