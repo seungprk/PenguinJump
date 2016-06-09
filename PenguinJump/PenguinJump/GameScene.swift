@@ -73,7 +73,7 @@ class GameScene: SKScene {
     var shouldFlash = false
     
     // Audio settings -> fetched from CoreData?
-    var musicVolume:Float = 1.0
+    var musicVolume:Float = 0.0
     var soundVolume:Float = 1.0
     
     // Debug
@@ -151,6 +151,17 @@ class GameScene: SKScene {
         rainButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height)
         rainButton.position.y -= rainButton.frame.height * 2
         cam.addChild(rainButton)
+        
+        let lightningButton = SKLabelNode(text: "LIGHTNING")
+        lightningButton.name = "lightningButton"
+        lightningButton.fontName = "Helvetica Neue Condensed Black"
+        lightningButton.fontSize = 24
+        lightningButton.alpha = 0.5
+        lightningButton.zPosition = 200000
+        lightningButton.fontColor = UIColor.blackColor()
+        lightningButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height * 2)
+        lightningButton.position.y -= lightningButton.frame.height * 2
+        cam.addChild(lightningButton)
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
@@ -278,6 +289,12 @@ class GameScene: SKScene {
 //                        raindrop.testRotation(view!.center, windSpeed: windSpeed)
                         raindrop.zPosition = 100000
                         raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
+                    }
+                    if touchedNode.name == "lightningButton" {
+                        let lightning = Lightning(view: view!)
+                        addChild(lightning)
+                        lightning.position = penguin.position // view!.center
+                        lightning.zPosition = 100000
                     }
                     
                     if touchedNode.name == "pauseButton" {
@@ -640,29 +657,10 @@ class GameScene: SKScene {
                     chargeBar.barFlash.removeAllActions()
 
                 }
-
-//                // End storm mode.
-//                stormTimeElapsed = 0.0
-//                stormMode = false
-//                
-//                waves.stormMode = self.stormMode
-//                waves.bob()
-//                
-//                for child in stage.children {
-//                    let berg = child as! Iceberg
-//                    berg.stormMode = self.stormMode
-//                    berg.bob()
-//                }
-//                
-//                chargeBar.barFlash.removeAllActions()
             }
             
         } else {
-//            if stormIntensity > 0.01 {
-//                stormIntensity -= 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
-//            } else {
-//                stormIntensity = 0.0
-//            }
+
         }
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green - CGFloat(40 / 255 * stormIntensity), blue: bgColorValues.blue - CGFloat(120 / 255 * stormIntensity), alpha: bgColorValues.alpha)
     }
@@ -695,6 +693,48 @@ class GameScene: SKScene {
 //                berg.bump()
             }
         }
+        
+        if !penguin.hitByLightning {
+            for child in children {
+                if child.name == "lightning" {
+                    let lightning = child as! Lightning
+        
+                    if lightning.activated {
+                        if lightning.shadow.intersectsNode(penguin.shadow) {
+                            // Penguin hit!
+                            print("penguin hit!")
+                            penguin.hitByLightning = true
+                            
+                            let lightningShadowPositionInScene = convertPoint(lightning.shadow.position, fromNode: lightning)
+                            let penguinShadowPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
+                            
+                            let maxPushDistance = penguin.size.height * 2
+                            
+                            let deltaX = penguinShadowPositionInScene.x - lightningShadowPositionInScene.x
+                            let deltaY = penguinShadowPositionInScene.y - lightningShadowPositionInScene.y
+                            
+                            let distanceFromLightningCenter = sqrt(deltaX * deltaX + deltaY * deltaY)
+                            let pushDistance = -distanceFromLightningCenter + maxPushDistance
+                            
+                            let angle = atan(deltaY / deltaX)
+                            
+                            let pushX = cos(angle) * pushDistance
+                            let pushY = sin(angle) * pushDistance
+                            
+                            print(CGVector(dx: pushX, dy: pushY))
+                            let push = SKAction.moveBy(CGVector(dx: pushX, dy: pushY), duration: 1.0)
+                            penguin.removeAllActions()
+                            penguin.runAction(push, completion:  {
+                            self.penguin.hitByLightning = false
+                            })
+                        }
+                    }
+        
+                }
+            }
+        }
+        
+        
     }
     
     func chargeBarUpdate() {
