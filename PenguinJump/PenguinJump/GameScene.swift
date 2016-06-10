@@ -17,7 +17,7 @@ struct ColorValues {
     var alpha: CGFloat!
 }
 
-class GameScene: SKScene {
+class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Game options
     var enableScreenShake = true
@@ -40,6 +40,8 @@ class GameScene: SKScene {
     var landingSound: AVAudioPlayer?
     var buttonPressSound: AVAudioPlayer?
     var coinSound: AVAudioPlayer?
+    
+    var coinLayer: SKNode?
 
     // Labels
     var startMenu : StartMenuNode!
@@ -82,7 +84,20 @@ class GameScene: SKScene {
     var viewFrame: SKShapeNode!
     var debugMode = false
     
-
+    // MARK: - Iceberg Generator Delegate method
+    
+    func didGenerateIceberg(generatedIceberg: Iceberg) {
+        
+        let coin = Coin()
+        coin.zPosition = 500
+        coin.position = generatedIceberg.position // += coin.size.height / 3
+        coinLayer?.addChild(coin)
+        
+        if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
+            // Can put in a shark
+        }
+    }
+    
     // MARK: - Scene setup
     
     override func didMoveToView(view: SKView) {
@@ -199,7 +214,12 @@ class GameScene: SKScene {
         stage = IcebergGenerator(view: view!, camera: cam)
         stage.position = view!.center
         stage.zPosition = 10
+        stage.delegate = self
         addChild(stage)
+        
+        coinLayer = SKNode()
+        coinLayer?.position = view!.center
+        addChild(coinLayer!)
         
 //        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green, blue: bgColorValues.blue, alpha: bgColorValues.alpha)
@@ -767,66 +787,51 @@ class GameScene: SKScene {
     }
     
     func coinUpdate() {
-        for child in stage.children {
-            for icebergChild in child.children {
-                if icebergChild.name == "coin" {
-                    let coin = icebergChild as! Coin
-                    
-                    if !coin.collected {
-                        if penguin.intersectsNode(coin.body) {
-                            // Run coin hit collision
-                            intScore += stormMode ? 4 : 2
+        if let coinLayer = coinLayer {
+            for child in coinLayer.children {
+                let coin = child as! Coin
+                
+                if !coin.collected {
+                    if penguin.intersectsNode(coin.body) {
+                        // Run coin hit collision
+                        intScore += stormMode ? 4 : 2
+                        coin.collected = true
 
-                            let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                            let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                            scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                        let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
+                        let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
+                        scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                        
+                        coinSound?.currentTime = 0
+                        coinSound?.play()
+                        
+                        let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
+                        rise.timingMode = .EaseOut
+                        
+                        coin.body.zPosition = 90000
+                        coin.body.runAction(rise, completion: {
+                            coin.generateCoinParticles(self.cam)
                             
-                            coin.collected = true
+                            let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
+                            let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
                             
-                            coinSound?.currentTime = 0
-                            coinSound?.play()
+                            coinBurst.zPosition = 240000
+                            coinBurst.numParticlesToEmit = 100
+                            coinBurst.targetNode = self.scene
                             
-                            let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
-                            rise.timingMode = .EaseOut
+                            let coinBurstEffectNode = SKEffectNode()
+                            coinBurstEffectNode.addChild(coinBurst)
+                            coinBurstEffectNode.zPosition = 240000
                             
-                            coin.body.zPosition = 90000
-                            coin.body.runAction(rise, completion: {
-                                coin.generateCoinParticles(self.cam)
-                                
-                                let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
-                                let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
-                                
-//                                coinBurst.position = self.convertPoint(coin.body.position, fromNode: coin)
-                                coinBurst.zPosition = 240000
-//                                coinBurst.position = coin.body.position
-                                coinBurst.numParticlesToEmit = 100
-                                coinBurst.targetNode = self.scene
-                                
-                                let coinBurstEffectNode = SKEffectNode()
-                                coinBurstEffectNode.addChild(coinBurst)
-                                coinBurstEffectNode.zPosition = 240000
-                                
-                                coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
-                                coinBurstEffectNode.blendMode = .Replace
-                                
-                                self.addChild(coinBurstEffectNode)
-                                
-                                
-//                                let bodyPositionInScene = self.convertPoint(coin.body.position, fromNode: coin)
-//                                let bodyPositionInCam = self.cam.convertPoint(bodyPositionInScene, fromNode: self)
-//                                coinBurst.position = bodyPositionInCam
-                                
-//                                self.addChild(coinBurst)
-//                                coin.addChild(coinBurst)
-                                
-                                coin.body.removeFromParent()
-                                coin.shadow.removeFromParent()
-                                self.incrementWithCoinParticles(coin)
-//                                icebergChild.removeFromParent()
-                            })
-                        }
+                            coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
+                            coinBurstEffectNode.blendMode = .Replace
+                            
+                            self.addChild(coinBurstEffectNode)
+
+                            coin.body.removeFromParent()
+                            coin.shadow.removeFromParent()
+                            self.incrementWithCoinParticles(coin)
+                        })
                     }
-                    
                 }
             }
         }
@@ -841,8 +846,6 @@ class GameScene: SKScene {
             let move = SKAction.moveTo(CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
             move.timingMode = .EaseOut
             
-//            var delaySequence = [SKAction]()
-            
             let wait = SKAction.waitForDuration(0.2 * Double(coin.particles.indexOf(particle)!))
             
             particle.runAction(wait, completion: {
@@ -855,6 +858,7 @@ class GameScene: SKScene {
                         incrementAction.timingMode = .EaseOut
                         self.chargeBar.bar.runAction(incrementAction)
                     } else {
+                        // Coin collected during storm mode.
                         // Increment bar but add to time elapsed too.
                     }
                     
