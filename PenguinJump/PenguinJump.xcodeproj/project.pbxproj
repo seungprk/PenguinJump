@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		241087AB1D090A26009055D6 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241087AA1D090A26009055D6 /* SimpleButton.swift */; };
 		246206EA1D065A9600FE92EF /* AboutScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246206E91D065A9600FE92EF /* AboutScene.swift */; };
 		246206EC1D065AEE00FE92EF /* SettingsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246206EB1D065AEE00FE92EF /* SettingsScene.swift */; };
 		2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		241087AA1D090A26009055D6 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		246206E91D065A9600FE92EF /* AboutScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutScene.swift; sourceTree = "<group>"; };
 		246206EB1D065AEE00FE92EF /* SettingsScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsScene.swift; sourceTree = "<group>"; };
 		2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartMenuNode.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */,
+				241087AA1D090A26009055D6 /* SimpleButton.swift */,
 				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
@@ -248,6 +251,7 @@
 				7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */,
 				7FB4C51B1D069EE100C6E680 /* Raindrop.swift in Sources */,
 				7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */,
+				241087AB1D090A26009055D6 /* SimpleButton.swift in Sources */,
 				7F9177D71D05F1830089D4A7 /* Coin.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
