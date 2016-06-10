@@ -38,26 +38,36 @@ class Lightning: SKNode {
         
         shadow.alpha = 0.1
         
-        let path = NSBundle.mainBundle().pathForResource("Lightning", ofType: "sks")
-        lightning = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
-        lightning.position.y += cloudHeight / 2
+//        let path = NSBundle.mainBundle().pathForResource("Lightning", ofType: "sks")
+//        lightning = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
+//        lightning.position.y += cloudHeight / 2
         
-        lightningEffectNode = SKEffectNode()
+        if let lightning = SKEmitterNode(fileNamed: "Lightning.sks") {
+            self.lightning = lightning
+            
+            let trashNode = SKSpriteNode(color: SKColor.clearColor(), size: CGSize(width: 500, height: 3000))
+            trashNode.addChild(self.lightning)
+            
+            lightningCropNode = SKCropNode()
+            let lightningMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: cloud.size.width, height: cloudHeight))
+            lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+            lightning.particleAction = SKAction.moveTo(CGPointZero, duration: 0.1)
+            
+            lightningCropNode.maskNode = lightningMask
+            lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+//            lightningMask.position.y -= cloudHeight * 0.1
+            
+            lightningCropNode.addChild(trashNode)
+        }
         
-        lightningCropNode = SKCropNode()
-        let lightningMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: cloud.size.width, height: cloudHeight))
-        lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        lightning.particleAction = SKAction.moveTo(CGPointZero, duration: 0.1)
+//        lightningEffectNode = SKEffectNode()
         
-        lightningCropNode.maskNode = lightningMask
-        lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        lightningMask.position.y -= cloudHeight * 0.1
+
         
 //        let lightningTarget = SKNode()
         
         
 //        lightningEffectNode.addChild(lightning)
-        lightningCropNode.addChild(lightning)
 //        lightningCropNode.addChild(lightningTarget)
 //        lightningCropNode.addChild(lightningEffectNode)
         
