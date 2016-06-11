@@ -618,7 +618,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
         newGameData.highScore = 0
         newGameData.totalCoins = 0
-        
+        newGameData.musicOn = true
+        newGameData.soundEffectsOn = true
         do {
             try managedObjectContext.save()
         } catch { print(error) }
