@@ -618,6 +618,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
         newGameData.highScore = 0
         newGameData.totalCoins = 0
+        newGameData.selectedPenguin = "normal"
         
         do {
             try managedObjectContext.save()

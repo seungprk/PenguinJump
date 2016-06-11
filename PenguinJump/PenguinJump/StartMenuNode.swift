@@ -15,6 +15,7 @@ class StartMenuNode: SKNode {
     var highScoreButton : SimpleButton!
     var aboutButton : SimpleButton!
     var settingsButton : SimpleButton!
+    var wardrobeButton : SKSpriteNode!
     
     init(frame: CGRect) {
         super.init()
@@ -73,6 +74,13 @@ class StartMenuNode: SKNode {
         aboutButton.position.y = highScoreButton.position.y - playButton.frame.height
         aboutButton.zPosition = 10000
         
+        // Button "Wardrobe"
+        wardrobeButton = SKSpriteNode(imageNamed: "wardrobe_icon")
+        wardrobeButton.name = "wardrobeButton"
+        wardrobeButton.position.x += playButton.frame.width
+        wardrobeButton.position.y -= frame.height * 0.175
+        wardrobeButton.zPosition = 10000
+        
         // Add to screen
         title.addChild(titleLabel)
         title.addChild(subtitleLabel)
@@ -81,6 +89,7 @@ class StartMenuNode: SKNode {
         addChild(settingsButton)
         addChild(highScoreButton)
         addChild(aboutButton)
+        addChild(wardrobeButton)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -173,6 +182,13 @@ class StartMenuNode: SKNode {
                             aboutScene.scaleMode = SKSceneScaleMode.AspectFill
                             self.scene!.view?.presentScene(aboutScene, transition: transition)
                         }
+                    }
+                    if touchedNode.name == "wardrobeButton" {
+                        (scene as! GameScene).fadeMusic()
+                        
+                        let wardrobeScene = ItemSelectionScene(size: scene!.size)
+                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                        self.scene!.view?.presentScene(wardrobeScene, transition: transition)
                     }
                 }
             }

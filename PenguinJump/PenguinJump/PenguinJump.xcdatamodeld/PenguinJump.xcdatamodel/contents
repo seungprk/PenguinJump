@@ -2,9 +2,15 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15C50" minimumToolsVersion="Xcode 7.0">
     <entity name="GameData" representedClassName=".GameData" syncable="YES">
         <attribute name="highScore" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="selectedPenguin" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="totalCoins" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>
+    <entity name="UnlockedPenguins" representedClassName=".UnlockedPenguins" syncable="YES">
+        <attribute name="penguinNormal" optional="YES" attributeType="Boolean" defaultValueString="0" syncable="YES"/>
+        <attribute name="penguinParasol" optional="YES" attributeType="Boolean" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="GameData" positionX="-63" positionY="-18" width="128" height="75"/>
+        <element name="GameData" positionX="-63" positionY="-18" width="128" height="90"/>
+        <element name="UnlockedPenguins" positionX="-63" positionY="9" width="128" height="75"/>
     </elements>
 </model>

@@ -12,4 +12,5 @@ import CoreData
 class GameData: NSManagedObject {
     @NSManaged var highScore: NSNumber!
     @NSManaged var totalCoins: NSNumber!
+    @NSManaged var selectedPenguin: String!
 }
