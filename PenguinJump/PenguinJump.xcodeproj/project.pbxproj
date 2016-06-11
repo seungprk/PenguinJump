@@ -114,12 +114,12 @@
 				7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */,
 				246206E91D065A9600FE92EF /* AboutScene.swift */,
 				246206EB1D065AEE00FE92EF /* SettingsScene.swift */,
-				7F61263E1CFE4329006BE5DA /* GameData.swift */,
 				7F887CEB1D00107A0070B9F4 /* Audio */,
 				7FA6BCDE1CFF78AF003C7CDA /* Nodes */,
 				7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */,
 				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
 				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
+				7F61263E1CFE4329006BE5DA /* GameData.swift */,
 				7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */,
 				7F7FB38D1CE5B80C0067FC9B /* Info.plist */,
 			);

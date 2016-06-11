@@ -19,6 +19,10 @@ struct ColorValues {
 
 class GameScene: SKScene, IcebergGeneratorDelegate {
     
+    // Framework Objects
+    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    let fetchRequest = NSFetchRequest(entityName: "GameData")
+    
     // Game options
     var enableScreenShake = true
     var musicOn = true
@@ -72,8 +76,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // Information bar
     var intScore = 0
     var scoreLabel: SKLabelNode!
+    var coinLabel: SKLabelNode!
     var chargeBar: ChargeBar!
     var shouldFlash = false
+    
+    var totalCoins = 0
     
     // Audio settings -> fetched from CoreData?
     var musicVolume:Float = 0.0
@@ -135,7 +142,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // MARK: - Scene setup
     
     override func didMoveToView(view: SKView) {
-
+        // Set up audio files
         if let backgroundMusic = audioPlayerWithFile("Reformat", type: "mp3") {
             self.backgroundMusic = backgroundMusic
         }
@@ -158,6 +165,27 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             self.coinSound = coinSound
         }
         
+        // Fetch total coins data
+        var fetchedData = [GameData]()
+        do {
+            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+            
+            if fetchedData.isEmpty {
+                // Create initial game data
+                initializeGameData()
+                
+                do {
+                    fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+                } catch { print(error) }
+            }
+        } catch {
+            print(error)
+        }
+        if let gameData = fetchedData.first {
+            totalCoins = gameData.totalCoins as Int
+        }
+        
+        // Set up Game Scene
         setupScene()
         
         // Start Menu Setup
@@ -295,6 +323,15 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
 //        chargeBar.position.x -= scoreLabel.frame.width / 2
         
 //        chargeBar.position = CGPoint(x: scoreLabel.position.x - scoreLabel.frame.width / 2, y: scoreLabel.position.y - scoreLabel.frame.height)
+        
+        coinLabel = SKLabelNode(text: "\(totalCoins) coins")
+        coinLabel.fontName = "Helvetica Neue Condensed Black"
+        coinLabel.fontSize = 24
+        coinLabel.fontColor = SKColor.blackColor()
+        coinLabel.position = CGPoint(x: view!.frame.width * 0.45, y: view!.frame.height * 0.45)
+        coinLabel.zPosition = 30000
+        coinLabel.horizontalAlignmentMode = .Right
+        cam.addChild(coinLabel)
         
         // Wrap penguin around a cropnode for death animation
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
@@ -529,8 +566,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             splashSound?.play()
             
-            let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-            let fetchRequest = NSFetchRequest(entityName: "GameData")
+            // Save high score
+//            let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+//            let fetchRequest = NSFetchRequest(entityName: "GameData")
             var fetchedData = [GameData]()
             
             do {
@@ -538,12 +576,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 
                 if fetchedData.isEmpty {
                     // Create initial game data
-                    let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
-                    newGameData.highScore = 0
-                    
-                    do {
-                        try managedObjectContext.save()
-                    } catch { print(error) }
+                    initializeGameData()
                     
                     do {
                         fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
@@ -581,6 +614,16 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
     }
     
+    func initializeGameData() {
+        let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
+        newGameData.highScore = 0
+        newGameData.totalCoins = 0
+        
+        do {
+            try managedObjectContext.save()
+        } catch { print(error) }
+    }
+    
     func fadeMusic() {
         fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
             self.backgroundMusic?.stop()
@@ -615,6 +658,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             penguin.userInteractionEnabled = true
 
             scoreLabel.text = "Score: " + String(intScore)
+            coinLabel.text = "\(totalCoins) coins"
             
             penguinUpdate()
             coinUpdate()
@@ -890,6 +934,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 if !coin.collected {
                     if penguin.intersectsNode(coin.body) {
                         // Run coin hit collision
+                        incrementTotalCoins()
+                        
                         intScore += stormMode ? 4 : 2
                         coin.collected = true
 
@@ -925,7 +971,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
 
                             coin.body.removeFromParent()
                             coin.shadow.removeFromParent()
-                            self.incrementWithCoinParticles(coin)
+                            self.incrementBarWithCoinParticles(coin)
                         })
                     }
                 }
@@ -933,7 +979,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
     }
     
-    func incrementWithCoinParticles(coin: Coin) {
+    func incrementBarWithCoinParticles(coin: Coin) {
         for particle in coin.particles {
             let chargeBarPositionInCam = cam.convertPoint(chargeBar.position, fromNode: scoreLabel)
             
@@ -963,10 +1009,29 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                     }
                 })
             })
-            
-
         }
-
+    }
+    
+    func incrementTotalCoins() {
+        totalCoins += 1
+        
+        // Increment coin total in game data
+        var fetchedData = [GameData]()
+        do {
+            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+        } catch {
+            print(error)
+        }
+        if let gameData = fetchedData.first {
+            let totalCoins = gameData.totalCoins as Int
+            gameData.totalCoins = totalCoins + 1
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                print(error)
+            }
+        }
     }
     
     func checkGameOver() {
