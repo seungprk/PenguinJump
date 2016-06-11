@@ -17,7 +17,7 @@ struct ColorValues {
     var alpha: CGFloat!
 }
 
-class GameScene: SKScene {
+class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Game options
     var enableScreenShake = true
@@ -40,6 +40,9 @@ class GameScene: SKScene {
     var landingSound: AVAudioPlayer?
     var buttonPressSound: AVAudioPlayer?
     var coinSound: AVAudioPlayer?
+    
+    var coinLayer: SKNode?
+    var lightningLayer: SKNode?
 
     // Labels
     var startMenu : StartMenuNode!
@@ -73,7 +76,7 @@ class GameScene: SKScene {
     var shouldFlash = false
     
     // Audio settings -> fetched from CoreData?
-    var musicVolume:Float = 1.0
+    var musicVolume:Float = 0.0
     var soundVolume:Float = 1.0
     
     // Debug
@@ -82,7 +85,40 @@ class GameScene: SKScene {
     var viewFrame: SKShapeNode!
     var debugMode = false
     
+    // MARK: - Iceberg Generator Delegate method
+    
+    func didGenerateIceberg(generatedIceberg: Iceberg) {
+        let berg = generatedIceberg
+        
+        let coinRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let coinRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let coinPosition = CGPoint(x: berg.position.x + coinRandomX, y: berg.position.y + coinRandomY)
+        
+        let coinRandom = random() % 3
+        if coinRandom == 0 {
+            let coin = Coin()
+            coin.position = coinPosition
+            coinLayer?.addChild(coin)
+        }
+        
+        let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
 
+        let stormIntensityInverseModifier = (2 * stormIntensity + 1)
+        let lightningProbability = (-95 * difficulty + 100)
+        let lightningRandom: Int = random() % Int(lightningProbability / stormIntensityInverseModifier)
+        if lightningRandom == 0 {
+            let lightning = Lightning(view: view!)
+            lightning.position = lightningPosition
+            lightningLayer?.addChild(lightning)
+        }
+        
+        if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
+            // Can put in a shark
+        }
+    }
+    
     // MARK: - Scene setup
     
     override func didMoveToView(view: SKView) {
@@ -152,6 +188,17 @@ class GameScene: SKScene {
         rainButton.position.y -= rainButton.frame.height * 2
         cam.addChild(rainButton)
         
+        let lightningButton = SKLabelNode(text: "LIGHTNING")
+        lightningButton.name = "lightningButton"
+        lightningButton.fontName = "Helvetica Neue Condensed Black"
+        lightningButton.fontSize = 24
+        lightningButton.alpha = 0.5
+        lightningButton.zPosition = 200000
+        lightningButton.fontColor = UIColor.blackColor()
+        lightningButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height * 2)
+        lightningButton.position.y -= lightningButton.frame.height * 2
+        cam.addChild(lightningButton)
+        
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
         pauseButton.fontName = "Helvetica Neue Condensed Black"
@@ -188,7 +235,18 @@ class GameScene: SKScene {
         stage = IcebergGenerator(view: view!, camera: cam)
         stage.position = view!.center
         stage.zPosition = 10
+        stage.delegate = self
         addChild(stage)
+        
+        coinLayer = SKNode()
+        coinLayer?.position = view!.center
+        coinLayer?.zPosition = 500 // above stage
+        addChild(coinLayer!)
+        
+        lightningLayer = SKNode()
+        lightningLayer?.position = view!.center
+        lightningLayer?.zPosition = 500 // same level as coins (for shadow)
+        addChild(lightningLayer!)
         
 //        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green, blue: bgColorValues.blue, alpha: bgColorValues.alpha)
@@ -271,6 +329,12 @@ class GameScene: SKScene {
                         raindrop.zPosition = 100000
                         raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
                     }
+                    if touchedNode.name == "lightningButton" {
+                        let lightning = Lightning(view: view!)
+                        addChild(lightning)
+                        lightning.position = penguin.position // view!.center
+                        lightning.zPosition = 100000
+                    }
                     
                     if touchedNode.name == "pauseButton" {
                         if gamePaused == false {
@@ -307,7 +371,7 @@ class GameScene: SKScene {
                     }
                 }
             }
-            //http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
+            // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
             // use above for swipe double jump
             if penguin.inAir && !penguin.doubleJumped {
                 penguin.doubleJumped = true
@@ -529,6 +593,7 @@ class GameScene: SKScene {
             
             updateStorm()
             updateRain()
+            updateLightning()
             
             centerCamera()
         } else {
@@ -539,6 +604,22 @@ class GameScene: SKScene {
             }
         }
         
+    }
+    
+    func updateLightning() {
+        if let lightningLayer = lightningLayer{
+            for child in lightningLayer.children {
+                let lightning = child as! Lightning
+                
+                let difference = lightning.position.y - penguin.position.y
+                if difference < 120 {
+                    if !lightning.didBeginStriking {
+                        lightning.didBeginStriking = true
+                        lightning.beginStrike()
+                    }
+                }
+            }
+        }
     }
     
     func updateRain() {
@@ -635,29 +716,10 @@ class GameScene: SKScene {
                     chargeBar.barFlash.removeAllActions()
 
                 }
-
-//                // End storm mode.
-//                stormTimeElapsed = 0.0
-//                stormMode = false
-//                
-//                waves.stormMode = self.stormMode
-//                waves.bob()
-//                
-//                for child in stage.children {
-//                    let berg = child as! Iceberg
-//                    berg.stormMode = self.stormMode
-//                    berg.bob()
-//                }
-//                
-//                chargeBar.barFlash.removeAllActions()
             }
             
         } else {
-//            if stormIntensity > 0.01 {
-//                stormIntensity -= 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
-//            } else {
-//                stormIntensity = 0.0
-//            }
+
         }
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green - CGFloat(40 / 255 * stormIntensity), blue: bgColorValues.blue - CGFloat(120 / 255 * stormIntensity), alpha: bgColorValues.alpha)
     }
@@ -690,6 +752,48 @@ class GameScene: SKScene {
 //                berg.bump()
             }
         }
+        
+        if !penguin.hitByLightning {
+            if let lightningLayer = lightningLayer {
+                for child in lightningLayer.children {
+                    let lightning = child as! Lightning
+                    
+                    if lightning.activated {
+                        if lightning.shadow.intersectsNode(penguin.shadow) {
+                            // Penguin hit!
+
+                            penguin.hitByLightning = true
+                            
+                            let lightningShadowPositionInScene = convertPoint(lightning.shadow.position, fromNode: lightning)
+                            let penguinShadowPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
+                            
+                            let maxPushDistance = penguin.size.height * 2
+                            
+                            let deltaX = penguinShadowPositionInScene.x - lightningShadowPositionInScene.x
+                            let deltaY = penguinShadowPositionInScene.y - lightningShadowPositionInScene.y
+                            
+                            let distanceFromLightningCenter = sqrt(deltaX * deltaX + deltaY * deltaY)
+                            let pushDistance = -distanceFromLightningCenter + maxPushDistance
+                            
+                            let angle = atan(deltaY / deltaX)
+                            
+                            let pushX = cos(angle) * pushDistance
+                            let pushY = sin(angle) * pushDistance
+                            
+                            print(CGVector(dx: pushX, dy: pushY))
+                            let push = SKAction.moveBy(CGVector(dx: pushX, dy: pushY), duration: 1.0)
+                            push.timingMode = .EaseOut
+                            penguin.removeAllActions()
+                            penguin.runAction(push, completion:  {
+                                self.penguin.hitByLightning = false
+                            })
+                        }
+                    }
+                }
+            }
+        }
+        
+        
     }
     
     func chargeBarUpdate() {
@@ -722,66 +826,51 @@ class GameScene: SKScene {
     }
     
     func coinUpdate() {
-        for child in stage.children {
-            for icebergChild in child.children {
-                if icebergChild.name == "coin" {
-                    let coin = icebergChild as! Coin
-                    
-                    if !coin.collected {
-                        if penguin.intersectsNode(coin.body) {
-                            // Run coin hit collision
-                            intScore += stormMode ? 4 : 2
+        if let coinLayer = coinLayer {
+            for child in coinLayer.children {
+                let coin = child as! Coin
+                
+                if !coin.collected {
+                    if penguin.intersectsNode(coin.body) {
+                        // Run coin hit collision
+                        intScore += stormMode ? 4 : 2
+                        coin.collected = true
 
-                            let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                            let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                            scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                        let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
+                        let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
+                        scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                        
+                        coinSound?.currentTime = 0
+                        coinSound?.play()
+                        
+                        let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
+                        rise.timingMode = .EaseOut
+                        
+                        coin.body.zPosition = 90000
+                        coin.body.runAction(rise, completion: {
+                            coin.generateCoinParticles(self.cam)
                             
-                            coin.collected = true
+                            let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
+                            let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
                             
-                            coinSound?.currentTime = 0
-                            coinSound?.play()
+                            coinBurst.zPosition = 240000
+                            coinBurst.numParticlesToEmit = 100
+                            coinBurst.targetNode = self.scene
                             
-                            let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
-                            rise.timingMode = .EaseOut
+                            let coinBurstEffectNode = SKEffectNode()
+                            coinBurstEffectNode.addChild(coinBurst)
+                            coinBurstEffectNode.zPosition = 240000
                             
-                            coin.body.zPosition = 90000
-                            coin.body.runAction(rise, completion: {
-                                coin.generateCoinParticles(self.cam)
-                                
-                                let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
-                                let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
-                                
-//                                coinBurst.position = self.convertPoint(coin.body.position, fromNode: coin)
-                                coinBurst.zPosition = 240000
-//                                coinBurst.position = coin.body.position
-                                coinBurst.numParticlesToEmit = 100
-                                coinBurst.targetNode = self.scene
-                                
-                                let coinBurstEffectNode = SKEffectNode()
-                                coinBurstEffectNode.addChild(coinBurst)
-                                coinBurstEffectNode.zPosition = 240000
-                                
-                                coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
-                                coinBurstEffectNode.blendMode = .Replace
-                                
-                                self.addChild(coinBurstEffectNode)
-                                
-                                
-//                                let bodyPositionInScene = self.convertPoint(coin.body.position, fromNode: coin)
-//                                let bodyPositionInCam = self.cam.convertPoint(bodyPositionInScene, fromNode: self)
-//                                coinBurst.position = bodyPositionInCam
-                                
-//                                self.addChild(coinBurst)
-//                                coin.addChild(coinBurst)
-                                
-                                coin.body.removeFromParent()
-                                coin.shadow.removeFromParent()
-                                self.incrementWithCoinParticles(coin)
-//                                icebergChild.removeFromParent()
-                            })
-                        }
+                            coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
+                            coinBurstEffectNode.blendMode = .Replace
+                            
+                            self.addChild(coinBurstEffectNode)
+
+                            coin.body.removeFromParent()
+                            coin.shadow.removeFromParent()
+                            self.incrementWithCoinParticles(coin)
+                        })
                     }
-                    
                 }
             }
         }
@@ -796,8 +885,6 @@ class GameScene: SKScene {
             let move = SKAction.moveTo(CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
             move.timingMode = .EaseOut
             
-//            var delaySequence = [SKAction]()
-            
             let wait = SKAction.waitForDuration(0.2 * Double(coin.particles.indexOf(particle)!))
             
             particle.runAction(wait, completion: {
@@ -810,6 +897,7 @@ class GameScene: SKScene {
                         incrementAction.timingMode = .EaseOut
                         self.chargeBar.bar.runAction(incrementAction)
                     } else {
+                        // Coin collected during storm mode.
                         // Increment bar but add to time elapsed too.
                     }
                     

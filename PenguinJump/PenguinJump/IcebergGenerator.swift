@@ -13,7 +13,13 @@ enum pathingMode {
     case straight
 }
 
+protocol IcebergGeneratorDelegate {
+    func didGenerateIceberg(generatedIceberg: Iceberg)
+}
+
 class IcebergGenerator: SKSpriteNode {
+    
+    var delegate: IcebergGeneratorDelegate?
     
     var camera:SKCameraNode!
     
@@ -129,6 +135,8 @@ class IcebergGenerator: SKSpriteNode {
                 highestLeftBerg = berg
                 
                 insertChild(berg, atIndex: 0)
+                
+                delegate?.didGenerateIceberg(berg)
             }
             for _ in 1...3 {
                 let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
@@ -144,6 +152,8 @@ class IcebergGenerator: SKSpriteNode {
                 highestRightBerg = berg
                 
                 insertChild(berg, atIndex: 0)
+                
+                delegate?.didGenerateIceberg(berg)
             }
             
             // doesn't really matter since they are equal
@@ -154,12 +164,7 @@ class IcebergGenerator: SKSpriteNode {
         } else {
             while shouldGenerate() {
                 let berg = Iceberg(size: CGSize(width: bergSize, height: bergSize), stormMode: (scene as! GameScene).stormMode)
-                
-                let coin = Coin()
-                coin.zPosition = 500
-                coin.position.y += coin.size.height / 3
-                berg.addChild(coin)
-                
+                                
 //                let deltaX = CGFloat(random()) % frame.width * 0.8 - frame.width * 0.4
                 
                 let xPosition = highestBerg!.position.x // + deltaX * 0.2
@@ -187,6 +192,8 @@ class IcebergGenerator: SKSpriteNode {
                 }
                 
                 insertChild(berg, atIndex: 0)
+                
+                delegate?.didGenerateIceberg(berg)
                 
                 if shouldMove {
                     berg.beginMoving()

@@ -23,6 +23,7 @@
 		7F7FB3871CE5B80C0067FC9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB3851CE5B80C0067FC9B /* Main.storyboard */; };
 		7F7FB3891CE5B80C0067FC9B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */; };
 		7F7FB38C1CE5B80C0067FC9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */; };
+		7F854CDB1D081781005C5024 /* Lightning.sks in Resources */ = {isa = PBXBuildFile; fileRef = 7F854CD91D081781005C5024 /* Lightning.sks */; };
 		7F887CEA1D00106F0070B9F4 /* Reformat.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CE91D00106F0070B9F4 /* Reformat.mp3 */; };
 		7F887CED1D001B430070B9F4 /* jump.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CEC1D001B430070B9F4 /* jump.m4a */; };
 		7F887CF01D0021240070B9F4 /* button_press.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CEF1D0021240070B9F4 /* button_press.m4a */; };
@@ -58,6 +59,7 @@
 		7F7FB3881CE5B80C0067FC9B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7F7FB38B1CE5B80C0067FC9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7F7FB38D1CE5B80C0067FC9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7F854CD91D081781005C5024 /* Lightning.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Lightning.sks; sourceTree = "<group>"; };
 		7F887CE91D00106F0070B9F4 /* Reformat.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Reformat.mp3; sourceTree = "<group>"; };
 		7F887CEC1D001B430070B9F4 /* jump.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = jump.m4a; sourceTree = "<group>"; };
 		7F887CEF1D0021240070B9F4 /* button_press.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = button_press.m4a; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				7FA32AA41CFFB28400000D6A /* Background.swift */,
 				7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */,
 				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
+				7F854CD91D081781005C5024 /* Lightning.sks */,
 				7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */,
 			);
 			name = Nodes;
@@ -214,6 +217,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F854CDB1D081781005C5024 /* Lightning.sks in Resources */,
 				7FB4C5171D0699AF00C6E680 /* CoinBurst.sks in Resources */,
 				7F887CF61D00225D0070B9F4 /* landing.m4a in Resources */,
 				7F7FB38C1CE5B80C0067FC9B /* LaunchScreen.storyboard in Resources */,

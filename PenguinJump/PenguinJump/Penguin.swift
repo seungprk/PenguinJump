@@ -25,6 +25,8 @@ class Penguin: SKSpriteNode {
     var doubleJumped = false
     var inAir = false
     var onBerg = false
+    
+    var hitByLightning = false
         
     init() {
         super.init(texture: nil, color: UIColor.clearColor(), size: body.size)
@@ -154,6 +156,7 @@ class Penguin: SKSpriteNode {
     
     
     func jump(velocity: CGVector) {
+        hitByLightning = false
         removeAllActions()
         inAir = true
         onBerg = false
@@ -207,6 +210,8 @@ class Penguin: SKSpriteNode {
     }
     
     func land(sinkDuration: NSTimeInterval) {
+        hitByLightning = false
+
         onBerg = true
         let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: sinkDuration)
         self.runAction(penguinSinking)
