@@ -31,6 +31,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
     var background: Background!
+    var coinLayer: SKNode?
+    var lightningLayer: SKNode?
+    var sharkLayer: SKNode?
     
     var backgroundMusic: AVAudioPlayer?
     var backgroundOcean: AVAudioPlayer?
@@ -41,9 +44,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var buttonPressSound: AVAudioPlayer?
     var coinSound: AVAudioPlayer?
     
-    var coinLayer: SKNode?
-    var lightningLayer: SKNode?
-
     // Labels
     var startMenu : StartMenuNode!
     
@@ -116,6 +116,19 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         
         if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
             // Can put in a shark
+            
+            // Reusing lightning RNG for test
+            if lightningRandom == 1 {
+                let sharkX = berg.position.x
+                let sharkY = berg.position.y + (350 / 4)
+                let sharkPosition = CGPoint(x: sharkX, y: sharkY)
+                
+                let shark = Shark()
+                shark.position = sharkPosition
+                shark.beginSwimming()
+                sharkLayer?.addChild(shark)
+
+            }
         }
     }
     
@@ -184,7 +197,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         rainButton.alpha = 0.5
         rainButton.zPosition = 200000
         rainButton.fontColor = UIColor.blackColor()
-        rainButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height)
+        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height)
         rainButton.position.y -= rainButton.frame.height * 2
         cam.addChild(rainButton)
         
@@ -195,9 +208,20 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         lightningButton.alpha = 0.5
         lightningButton.zPosition = 200000
         lightningButton.fontColor = UIColor.blackColor()
-        lightningButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height * 2)
+        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 2)
         lightningButton.position.y -= lightningButton.frame.height * 2
         cam.addChild(lightningButton)
+        
+        let sharkButton = SKLabelNode(text: "SHARK")
+        sharkButton.name = "sharkButton"
+        sharkButton.fontName = "Helvetica Neue Condensed Black"
+        sharkButton.fontSize = 24
+        sharkButton.alpha = 0.5
+        sharkButton.zPosition = 200000
+        sharkButton.fontColor = UIColor.blackColor()
+        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
+        sharkButton.position.y -= sharkButton.frame.height * 2
+        cam.addChild(sharkButton)
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
@@ -247,6 +271,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         lightningLayer?.position = view!.center
         lightningLayer?.zPosition = 500 // same level as coins (for shadow)
         addChild(lightningLayer!)
+        
+        sharkLayer = SKNode()
+        sharkLayer?.position = view!.center
+        sharkLayer?.zPosition = 0
+        addChild(sharkLayer!)
         
 //        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green, blue: bgColorValues.blue, alpha: bgColorValues.alpha)
@@ -334,6 +363,12 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         addChild(lightning)
                         lightning.position = penguin.position // view!.center
                         lightning.zPosition = 100000
+                    }
+                    if touchedNode.name == "sharkButton" {
+                        let shark = Shark()
+                        shark.position = view!.center
+                        addChild(shark)
+                        shark.beginSwimming()
                     }
                     
                     if touchedNode.name == "pauseButton" {
@@ -594,6 +629,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             updateStorm()
             updateRain()
             updateLightning()
+            updateShark()
             
             centerCamera()
         } else {
@@ -604,6 +640,27 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             }
         }
         
+    }
+    
+    func updateShark() {
+        if let sharkLayer = sharkLayer {
+            for child in sharkLayer.children {
+                let shark = child as! Shark
+                
+                if penguin.shadow.intersectsNode(shark.wave) {
+                    if !shark.didBeginKill {
+                        shark.didBeginKill = true
+                        
+                        penguin.removeAllActions()
+                        
+                        shark.kill(penguinMove: {
+                            let deathMove = SKAction.moveTo(shark.position, duration: 0.5)
+                            self.penguin.runAction(deathMove)
+                        })
+                    }
+                }
+            }
+        }
     }
     
     func updateLightning() {
