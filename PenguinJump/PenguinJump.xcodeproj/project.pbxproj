@@ -32,6 +32,7 @@
 		7F887CF81D00298B0070B9F4 /* ocean.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 7F887CF71D00298B0070B9F4 /* ocean.m4a */; };
 		7F9177D71D05F1830089D4A7 /* Coin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F9177D61D05F1830089D4A7 /* Coin.swift */; };
 		7F9177D91D0604300089D4A7 /* ChargeBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F9177D81D0604300089D4A7 /* ChargeBar.swift */; };
+		7F9558B51D0BA48A003B886D /* Shark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F9558B41D0BA48A003B886D /* Shark.swift */; };
 		7FA32AA51CFFB28400000D6A /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA32AA41CFFB28400000D6A /* Background.swift */; };
 		7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */; };
 		7FB4C5171D0699AF00C6E680 /* CoinBurst.sks in Resources */ = {isa = PBXBuildFile; fileRef = 7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */; };
@@ -68,6 +69,7 @@
 		7F887CF71D00298B0070B9F4 /* ocean.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = ocean.m4a; sourceTree = "<group>"; };
 		7F9177D61D05F1830089D4A7 /* Coin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coin.swift; sourceTree = "<group>"; };
 		7F9177D81D0604300089D4A7 /* ChargeBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChargeBar.swift; sourceTree = "<group>"; };
+		7F9558B41D0BA48A003B886D /* Shark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Shark.swift; sourceTree = "<group>"; };
 		7FA32AA41CFFB28400000D6A /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Waves.swift; sourceTree = "<group>"; };
 		7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = CoinBurst.sks; sourceTree = "<group>"; };
@@ -147,13 +149,14 @@
 				7F36CE651CF647E700EC559E /* IcebergGenerator.swift */,
 				7F36CE5B1CF5630300EC559E /* Iceberg.swift */,
 				7F9177D61D05F1830089D4A7 /* Coin.swift */,
+				7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */,
 				7F9177D81D0604300089D4A7 /* ChargeBar.swift */,
 				7FB4C51A1D069EE100C6E680 /* Raindrop.swift */,
 				7FA32AA41CFFB28400000D6A /* Background.swift */,
 				7FA6BCDC1CFF5B73003C7CDA /* Waves.swift */,
 				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
 				7F854CD91D081781005C5024 /* Lightning.sks */,
-				7FB4C5161D0699AF00C6E680 /* CoinBurst.sks */,
+				7F9558B41D0BA48A003B886D /* Shark.swift */,
 			);
 			name = Nodes;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				241087AB1D090A26009055D6 /* SimpleButton.swift in Sources */,
 				7F9177D71D05F1830089D4A7 /* Coin.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
+				7F9558B51D0BA48A003B886D /* Shark.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
 				2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */,
 				7FB95AD71CF7B7B2005875DF /* Lightning.swift in Sources */,
