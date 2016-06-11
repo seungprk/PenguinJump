@@ -30,7 +30,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Node Objects
     var cam:SKCameraNode!
-    let penguin = Penguin()
+    let penguin = Penguin(type: .normal)
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!

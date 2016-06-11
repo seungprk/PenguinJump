@@ -8,11 +8,17 @@
 
 import SpriteKit
 
+enum PenguinType {
+    case normal
+    case parasol
+}
+
 class Penguin: SKSpriteNode {
     
     let penguinCropNode = SKCropNode()
     let body = SKSpriteNode(imageNamed: "penguin")
     var shadow: SKShapeNode!
+    var item: SKNode?
     
     let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
@@ -22,13 +28,15 @@ class Penguin: SKSpriteNode {
     var targeting = false
     var playerTouched = false
     
+    var type: PenguinType!
+    
+    // Game session logic
     var doubleJumped = false
     var inAir = false
     var onBerg = false
-    
     var hitByLightning = false
         
-    init() {
+    init(type: PenguinType) {
         super.init(texture: nil, color: UIColor.clearColor(), size: body.size)
         
         // Create penguin
@@ -74,6 +82,15 @@ class Penguin: SKSpriteNode {
         targetDot3.yScale = yScale
         targetDot3.zPosition = zPosition
         
+        self.type = type
+        
+        switch (type) {
+        case .normal:
+            break
+        case .parasol:
+            item = Item_Parasol()
+            addChild(item!)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
