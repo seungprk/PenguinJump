@@ -120,6 +120,9 @@ class StartMenuNode: SKNode {
                         aboutButton.runAction(playButtonDown, completion: {
                             self.aboutButton.removeFromParent()
                         })
+                        wardrobeButton.runAction(playButtonDown, completion: {
+                            self.wardrobeButton.removeFromParent()
+                        })
                         parentScene.beginGame()
                         parentScene.buttonPressSound?.play()
                     }

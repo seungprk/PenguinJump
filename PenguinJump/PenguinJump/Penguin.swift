@@ -263,7 +263,7 @@ class Penguin: SKSpriteNode {
             let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
             
             let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
-            let counterMove = SKAction.moveBy(CGVector(dx: -velocity.dx, dy: -velocity.dy * 2), duration: jumpDuration)
+//            let counterMove = SKAction.moveBy(CGVector(dx: -velocity.dx, dy: -velocity.dy * 2), duration: jumpDuration)
             
             let itemDelay = SKAction.waitForDuration(0.005)
             
