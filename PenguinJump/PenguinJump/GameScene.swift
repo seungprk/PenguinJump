@@ -42,6 +42,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var coinSound: AVAudioPlayer?
     
     var coinLayer: SKNode?
+    var lightningLayer: SKNode?
 
     // Labels
     var startMenu : StartMenuNode!
@@ -87,11 +88,31 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // MARK: - Iceberg Generator Delegate method
     
     func didGenerateIceberg(generatedIceberg: Iceberg) {
+        let berg = generatedIceberg
         
-        let coin = Coin()
-        coin.zPosition = 500
-        coin.position = generatedIceberg.position // += coin.size.height / 3
-        coinLayer?.addChild(coin)
+        let coinRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let coinRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let coinPosition = CGPoint(x: berg.position.x + coinRandomX, y: berg.position.y + coinRandomY)
+        
+        let coinRandom = random() % 3
+        if coinRandom == 0 {
+            let coin = Coin()
+            coin.position = coinPosition
+            coinLayer?.addChild(coin)
+        }
+        
+        let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
+
+        let stormIntensityInverseModifier = (2 * stormIntensity + 1)
+        let lightningProbability = (-95 * difficulty + 100)
+        let lightningRandom: Int = random() % Int(lightningProbability / stormIntensityInverseModifier)
+        if lightningRandom == 0 {
+            let lightning = Lightning(view: view!)
+            lightning.position = lightningPosition
+            lightningLayer?.addChild(lightning)
+        }
         
         if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
             // Can put in a shark
@@ -219,7 +240,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         
         coinLayer = SKNode()
         coinLayer?.position = view!.center
+        coinLayer?.zPosition = 500 // above stage
         addChild(coinLayer!)
+        
+        lightningLayer = SKNode()
+        lightningLayer?.position = view!.center
+        lightningLayer?.zPosition = 500 // same level as coins (for shadow)
+        addChild(lightningLayer!)
         
 //        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green, blue: bgColorValues.blue, alpha: bgColorValues.alpha)
@@ -344,7 +371,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                     }
                 }
             }
-            //http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
+            // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
             // use above for swipe double jump
             if penguin.inAir && !penguin.doubleJumped {
                 penguin.doubleJumped = true
@@ -566,6 +593,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             updateStorm()
             updateRain()
+            updateLightning()
             
             centerCamera()
         } else {
@@ -576,6 +604,22 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             }
         }
         
+    }
+    
+    func updateLightning() {
+        if let lightningLayer = lightningLayer{
+            for child in lightningLayer.children {
+                let lightning = child as! Lightning
+                
+                let difference = lightning.position.y - penguin.position.y
+                if difference < 120 {
+                    if !lightning.didBeginStriking {
+                        lightning.didBeginStriking = true
+                        lightning.beginStrike()
+                    }
+                }
+            }
+        }
     }
     
     func updateRain() {
@@ -710,14 +754,14 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
         
         if !penguin.hitByLightning {
-            for child in children {
-                if child.name == "lightning" {
+            if let lightningLayer = lightningLayer {
+                for child in lightningLayer.children {
                     let lightning = child as! Lightning
-        
+                    
                     if lightning.activated {
                         if lightning.shadow.intersectsNode(penguin.shadow) {
                             // Penguin hit!
-                            print("penguin hit!")
+
                             penguin.hitByLightning = true
                             
                             let lightningShadowPositionInScene = convertPoint(lightning.shadow.position, fromNode: lightning)
@@ -738,13 +782,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                             
                             print(CGVector(dx: pushX, dy: pushY))
                             let push = SKAction.moveBy(CGVector(dx: pushX, dy: pushY), duration: 1.0)
+                            push.timingMode = .EaseOut
                             penguin.removeAllActions()
                             penguin.runAction(push, completion:  {
-                            self.penguin.hitByLightning = false
+                                self.penguin.hitByLightning = false
                             })
                         }
                     }
-        
                 }
             }
         }

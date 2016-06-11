@@ -24,7 +24,7 @@ class Coin: SKSpriteNode {
         name = "coin"
         
         body = SKSpriteNode(texture: coinTexture)
-        body.zPosition = 100
+        body.zPosition = 200
         body.name = "body"
         shadow = SKSpriteNode(imageNamed: "circle_shadow")
         shadow.alpha = 0.1

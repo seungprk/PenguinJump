@@ -10,7 +10,7 @@ import SpriteKit
 
 class Lightning: SKNode {
     
-    let strikeDuration = 5.0
+    let strikeDuration = 1.0
     
     var cloud: SKSpriteNode!
     var cloudOverlay: SKSpriteNode!
@@ -18,12 +18,10 @@ class Lightning: SKNode {
     var shadowOverlay: SKSpriteNode!
     
     var lightning: SKEmitterNode!
-    var lightningEffectNode: SKEffectNode!
     var lightningCropNode: SKCropNode!
     
     var activated = false
-    
-//    let lightningTexture = SKTexture(imageNamed: "lightning")
+    var didBeginStriking = false
     
     init(view: SKView) {
         super.init()
@@ -38,10 +36,6 @@ class Lightning: SKNode {
         
         shadow.alpha = 0.1
         
-//        let path = NSBundle.mainBundle().pathForResource("Lightning", ofType: "sks")
-//        lightning = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
-//        lightning.position.y += cloudHeight / 2
-        
         if let lightning = SKEmitterNode(fileNamed: "Lightning.sks") {
             self.lightning = lightning
             
@@ -49,36 +43,24 @@ class Lightning: SKNode {
             trashNode.addChild(self.lightning)
             
             lightningCropNode = SKCropNode()
-            let lightningMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: cloud.size.width, height: cloudHeight))
+            let lightningMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: cloud.size.width, height: cloudHeight - cloud.size.height / 2 + 3))
             lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
             lightning.particleAction = SKAction.moveTo(CGPointZero, duration: 0.1)
             
             lightningCropNode.maskNode = lightningMask
             lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-//            lightningMask.position.y -= cloudHeight * 0.1
-            
             lightningCropNode.addChild(trashNode)
-        }
-        
-//        lightningEffectNode = SKEffectNode()
-        
 
-        
-//        let lightningTarget = SKNode()
-        
-        
-//        lightningEffectNode.addChild(lightning)
-//        lightningCropNode.addChild(lightningTarget)
-//        lightningCropNode.addChild(lightningEffectNode)
+        }
+
         
         cloud.position.y += cloudHeight
         cloudOverlay.position.y += cloudHeight
         
-        
         cloudOverlay.alpha = 0.0
         shadowOverlay.alpha = 0.0
         
-        cloudOverlay.zPosition = 10
+//        cloudOverlay.zPosition = 10
         shadowOverlay.zPosition = 10
         
         addChild(cloudOverlay)
@@ -89,13 +71,11 @@ class Lightning: SKNode {
         
         self.addChild(self.lightningCropNode)
         lightningCropNode.alpha = 0.0
-//        addChild(lightning)
-//        addChild(lightningCropNode)
-        
-//        lightning.numParticlesToEmit = 1000
-//        lightning.targetNode = lightningTarget
-//        lightning.targetNode = lightningEffectNode
-        beginStrike()
+
+        cloud.zPosition = 30000
+        cloudOverlay.zPosition = 30001
+        lightningCropNode.zPosition = 500
+        lightning.zPosition = 500
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -142,7 +122,6 @@ class Lightning: SKNode {
         cloudOverlay.alpha = 1.0
         self.activated = true
         self.lightningCropNode.alpha = 1.0
-//            self.addChild(self.lightningCropNode)
         self.lightning.numParticlesToEmit = 1000
         
         self.runAction(wait, completion: {
