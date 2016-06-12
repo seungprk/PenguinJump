@@ -47,6 +47,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var buttonPressSound: AVAudioPlayer?
     var coinSound: AVAudioPlayer?
     
+    var musicInitialized = false
+    
     // Labels
     var startMenu : StartMenuNode!
     
@@ -142,8 +144,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     override func didMoveToView(view: SKView) {
         // Set up audio files
-        if let backgroundMusic = audioPlayerWithFile("Reformat", type: "mp3") {
-            self.backgroundMusic = backgroundMusic
+        if musicInitialized == false {
+            musicInitialized = true
+            if let backgroundMusic = audioPlayerWithFile("Reformat", type: "mp3") {
+                self.backgroundMusic = backgroundMusic
+            }
         }
         if let backgroundOcean = audioPlayerWithFile("ocean", type: "m4a") {
             self.backgroundOcean = backgroundOcean
@@ -331,15 +336,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         var penguinType: PenguinType!
         do {
             fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-            
-            if fetchedData.isEmpty {
-                // Create initial game data
-                initializeGameData()
                 
-                do {
-                    fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-                } catch { print(error) }
-            }
+            do {
+                fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+            } catch { print(error) }
+            
         } catch {
             print(error)
         }
@@ -648,6 +649,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 self.backgroundOcean?.stop()
             })
             gameData.musicOn = false
+            gameData.musicPlaying = false
             do { try managedObjectContext.save() } catch { print(error) }
         }
     }

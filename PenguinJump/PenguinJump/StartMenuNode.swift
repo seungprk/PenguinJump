@@ -165,6 +165,7 @@ class StartMenuNode: SKNode {
                             settingsButton.buttonRelease()
                             
                             let settingsScene = SettingsScene(size: scene!.size)
+                            settingsScene.backgroundMusic = (scene as! GameScene).backgroundMusic
                             let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
                             settingsScene.scaleMode = SKSceneScaleMode.AspectFill
                             self.scene!.view?.presentScene(settingsScene, transition: transition)
