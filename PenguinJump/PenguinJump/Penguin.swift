@@ -104,8 +104,6 @@ class Penguin: SKSpriteNode {
             item = SKSpriteNode(imageNamed: "shark_clothing")
             item?.zPosition = 22000
             addChild(item!)
-        default:
-            break
         }
     }
     

@@ -343,8 +343,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         } catch {
             print(error)
         }
+        
         if let gameData = fetchedData.first {
-            switch (gameData.selectedPenguin) {
+            switch (gameData.selectedPenguin as String) {
             case "normal":
                 penguinType = .normal
             case "parasol":
@@ -396,34 +397,34 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if touchedNode.name == "testZoom" {
+                    if name == "testZoom" {
                         let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
                         let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
                         
                         testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
                         testZoomed = testZoomed ? false : true
                     }
-                    if touchedNode.name == "rainButton" {
+                    if name == "rainButton" {
                         let raindrop = Raindrop()
                         addChild(raindrop)
 //                        raindrop.testRotation(view!.center, windSpeed: windSpeed)
                         raindrop.zPosition = 100000
                         raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
                     }
-                    if touchedNode.name == "lightningButton" {
+                    if name == "lightningButton" {
                         let lightning = Lightning(view: view!)
                         addChild(lightning)
                         lightning.position = penguin.position // view!.center
                         lightning.zPosition = 100000
                     }
-                    if touchedNode.name == "sharkButton" {
+                    if name == "sharkButton" {
                         let shark = Shark()
                         shark.position = view!.center
                         addChild(shark)
                         shark.beginSwimming()
                     }
                     
-                    if touchedNode.name == "pauseButton" {
+                    if name == "pauseButton" {
                         if gamePaused == false {
                             shouldCorrectAfterPause = true
                             gamePaused = true
@@ -612,6 +613,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         newGameData.selectedPenguin = "normal"
         newGameData.musicOn = true
         newGameData.soundEffectsOn = true
+        newGameData.musicPlaying = false
+        
         do {
             try managedObjectContext.save()
         } catch { print(error) }
@@ -787,7 +790,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             var deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
             
             if penguin.type == PenguinType.shark {
-                deltaX = deltaX / 2
+                deltaX = deltaX * 0.75
             }
             
             let push = SKAction.moveBy(CGVector(dx: deltaX, dy: 0), duration: timeSinceLastUpdate)

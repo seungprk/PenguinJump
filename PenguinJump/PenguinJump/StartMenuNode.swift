@@ -100,7 +100,7 @@ class StartMenuNode: SKNode {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if touchedNode.name == "playButton" {
+                    if name == "playButton" {
                         let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
                         titleUp.timingMode = .EaseIn
                         title.runAction(titleUp, completion: {
@@ -126,13 +126,13 @@ class StartMenuNode: SKNode {
                         parentScene.beginGame()
                         parentScene.buttonPressSound?.play()
                     }
-                    if touchedNode.name == "highScoreButton" {
+                    if name == "highScoreButton" {
                         highScoreButton.buttonPress()
                     }
-                    if touchedNode.name == "settingsButton" {
+                    if name == "settingsButton" {
                         settingsButton.buttonPress()
                     }
-                    if touchedNode.name == "aboutButton" {
+                    if name == "aboutButton" {
                         aboutButton.buttonPress()
                     }
                 }
@@ -147,7 +147,7 @@ class StartMenuNode: SKNode {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if touchedNode.name == "highScoreButton" {
+                    if name == "highScoreButton" {
                         if highScoreButton.pressed == true {
                             highScoreButton.buttonRelease()
                             
@@ -160,7 +160,7 @@ class StartMenuNode: SKNode {
                             self.scene!.view?.presentScene(scoreScene, transition: transition)
                         }
                     }
-                    if touchedNode.name == "settingsButton" {
+                    if name == "settingsButton" {
                         if settingsButton.pressed == true {
                             settingsButton.buttonRelease()
                             
@@ -170,7 +170,7 @@ class StartMenuNode: SKNode {
                             self.scene!.view?.presentScene(settingsScene, transition: transition)
                         }
                     }
-                    if touchedNode.name == "aboutButton" {
+                    if name == "aboutButton" {
                         if aboutButton.pressed == true {
                             aboutButton.buttonRelease()
                             
@@ -180,9 +180,7 @@ class StartMenuNode: SKNode {
                             self.scene!.view?.presentScene(aboutScene, transition: transition)
                         }
                     }
-                    if touchedNode.name == "wardrobeButton" {
-                        (scene as! GameScene).fadeMusic()
-                        
+                    if name == "wardrobeButton" {
                         let wardrobeScene = ItemSelectionScene(size: scene!.size)
                         let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
                         self.scene!.view?.presentScene(wardrobeScene, transition: transition)
