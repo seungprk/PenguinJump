@@ -11,6 +11,8 @@ import SpriteKit
 enum PenguinType {
     case normal
     case parasol
+    case tinfoil
+    case shark
 }
 
 class Penguin: SKSpriteNode {
@@ -93,6 +95,17 @@ class Penguin: SKSpriteNode {
             item?.position.y -= (item as! Item_Parasol).parasol_closed.size.width
             item?.zPosition = 20500
             addChild(item!)
+        case .tinfoil:
+            item = SKSpriteNode(imageNamed: "tinfoil_hat")
+            item?.zPosition = 22000
+            item?.position.y += body.size.height / 3
+            addChild(item!)
+        case .shark:
+            item = SKSpriteNode(imageNamed: "shark_clothing")
+            item?.zPosition = 22000
+            addChild(item!)
+        default:
+            break
         }
     }
     
@@ -177,6 +190,10 @@ class Penguin: SKSpriteNode {
     
     func jump(velocity: CGVector) {
         switch (type!) {
+        case .shark:
+            fallthrough
+        case .tinfoil:
+            fallthrough
         case .normal:
             hitByLightning = false
             removeAllActions()
@@ -189,7 +206,8 @@ class Penguin: SKSpriteNode {
             //        let jumpDuration = Double(distance / jumpRate)
             
             // Fixed jump duration
-            let jumpDuration = 1.0
+//            let jumpDuration = 1.0
+            let jumpDuration = type == .shark ? 0.7 : 1.0
             let jumpHeight = body.frame.height * 2
             
             
@@ -217,10 +235,16 @@ class Penguin: SKSpriteNode {
             
             let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
             
-            shadow.runAction(shadowEnlargeSequence)
-            
-            penguinCropNode.runAction(enlargeSequence)
             runAction(move)
+            
+            if type == .tinfoil {
+                item?.runAction(jumpSequence)
+            }
+            item?.runAction(jumpSequence)
+            item?.runAction(enlargeSequence)
+            
+            shadow.runAction(shadowEnlargeSequence)
+            penguinCropNode.runAction(enlargeSequence)
             penguinCropNode.runAction(jumpSequence, completion: { () -> Void in
                 self.inAir = false
                 self.doubleJumped = false
@@ -297,7 +321,6 @@ class Penguin: SKSpriteNode {
             
             (scene as! GameScene).jumpSound?.currentTime = 0
             (scene as! GameScene).jumpSound?.play()
-            
         }
         /*
         hitByLightning = false

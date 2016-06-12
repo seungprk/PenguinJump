@@ -16,18 +16,14 @@ class ItemSelectionScene: SKScene {
     let gameDataFetchRequest = NSFetchRequest(entityName: "GameData")
     let unlockedPenguinsFetchRequest = NSFetchRequest(entityName: "UnlockedPenguins")
     
-    let penguinScrollNode = SKNode()
-    
+    // Scrolling selection objects
     var scrollNodes = [SKNode]()
-    //    var penguins = [Penguin]()
-    var penguinOffset: CGFloat!
-    
-//    var selectedPenguin: PenguinType?
     var selectedNode: SKNode?
     
+    var penguinOffset: CGFloat!
+    let penguinScrollNode = SKNode()
     var penguinTitle: SKLabelNode!
     var penguinButton: SKLabelNode!
-    
     var penguinObjectsData = [(type: PenguinType, name: String, cost: Int, unlocked: Bool)]()
     
     var coinLabel = SKLabelNode(text: "0 coins")
@@ -40,8 +36,6 @@ class ItemSelectionScene: SKScene {
         let unlockedPenguins = fetchUnlockedPenguins()
         let gameData = fetchGameData()
         
-        //        let unlockedNormal = Bool(unlockedPenguins.penguinNormal as NSNumber)
-        //        let unlockedParasol = Bool(unlockedPenguins.penguinParasol as NSNumber)
         let totalCoins = Int(gameData.totalCoins)
         
         // Set up scene UI
@@ -86,10 +80,12 @@ class ItemSelectionScene: SKScene {
         // Create array of scroll node objects
         penguinObjectsData = [
             (type: PenguinType.normal, name: "Penguin", cost: 0, unlocked: true),
-            (type: PenguinType.parasol, name: "Parasol Penguin", cost: 10, unlocked: Bool(unlockedPenguins.penguinParasol as NSNumber)),
-            (type: PenguinType.normal, name: "Penguin", cost: 20, unlocked: false),
-            (type: PenguinType.normal, name: "Penguin", cost: 20, unlocked: false),
-            (type: PenguinType.normal, name: "Penguin", cost: 20, unlocked: false),
+            (type: PenguinType.tinfoil, name: "Paranoid Penguin", cost: 10, unlocked: Bool(unlockedPenguins.penguinTinfoil as NSNumber)),
+            (type: PenguinType.parasol, name: "Parasol Penguin", cost: 30, unlocked: Bool(unlockedPenguins.penguinParasol as NSNumber)),
+            (type: PenguinType.shark, name: "A Penguin in Shark's Clothing", cost: 50, unlocked: Bool(unlockedPenguins.penguinShark as NSNumber)),
+            (type: PenguinType.normal, name: "Filler Penguin 1", cost: 100, unlocked: false),
+            (type: PenguinType.normal, name: "Filler Penguin 2", cost: 200, unlocked: false),
+            (type: PenguinType.normal, name: "Filler Penguin 3", cost: 300, unlocked: false),
         ]
         
         // Create array of scroll nodes
@@ -104,15 +100,11 @@ class ItemSelectionScene: SKScene {
                 scrollNode.addChild(penguin)
             } else {
                 let penguin = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: 22, height: 40))
-                
                 penguin.name = "penguin"
                 
                 scrollNode.addChild(penguin)
             }
-//            let penguin = Penguin(type: penguinObjectsData[index].type)
-//            penguin.name = "penguin"
-//            scrollNode.addChild(penguin)
-            
+
             scrollNodes.append(scrollNode)
         }
         
@@ -124,8 +116,6 @@ class ItemSelectionScene: SKScene {
             scrollNodes[node].position.x += CGFloat(node) * penguinOffset
             penguinScrollNode.addChild(scrollNodes[node])
         }
-        
-        
     }
     
     
@@ -177,46 +167,10 @@ class ItemSelectionScene: SKScene {
                         let pan = SKAction.moveBy(CGVector(dx: translation.x / 2, dy: 0), duration: 0.2)
                         pan.timingMode = .EaseOut
                         penguinScrollNode.runAction(pan)
-                        
-                        let panCounter = SKAction.moveBy(CGVector(dx: -translation.x / 2, dy: 0), duration: 0.2)
-                        panCounter.timingMode = .EaseOut
-                        selectedNode?.childNodeWithName("penguin")?.runAction(panCounter)
                     }
-                        
-                    else {
-                        
-                        if firstNodePositionInScene.x > view!.center.x + 0.1 {
-                            let leftResist = SKAction.moveTo(CGPoint(x: view!.center.x, y: view!.center.y), duration: 0.1)
-                            leftResist.timingMode = .EaseOut
-                            
-                            penguinScrollNode.runAction(leftResist)
-                        }
-                        
-                        
-                        
-                        if lastNodePositionInScene.x < view!.center.x - 0.1 {
-                            let rightResist = SKAction.moveTo(CGPoint(x: view!.center.x - penguinOffset * CGFloat(penguinObjectsData.count - 1), y: view!.center.y), duration: 0.1)
-                            rightResist.timingMode = .EaseOut
-                            
-                            penguinScrollNode.runAction(rightResist)
-                        }
-                        
-                    }
-                    
-                    
-                    
                 }
             }
-            
-            
         }
-    }
-    
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-    }
-    
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        
     }
     
     override func update(currentTime: NSTimeInterval) {
@@ -234,7 +188,7 @@ class ItemSelectionScene: SKScene {
             let lastNodePositionInScene = convertPoint(lastNode.position, fromNode: penguinScrollNode)
             
             if lastNodePositionInScene.x < view!.center.x - 0.1 {
-                let rightResist = SKAction.moveTo(CGPoint(x: view!.center.x + penguinOffset * CGFloat(penguinObjectsData.count - 1), y: view!.center.y), duration: 0.1)
+                let rightResist = SKAction.moveTo(CGPoint(x: view!.center.x - penguinOffset * CGFloat(scrollNodes.count - 1), y: view!.center.y), duration: 0.1)
                 rightResist.timingMode = .EaseOut
                 
                 penguinScrollNode.runAction(rightResist)
@@ -268,19 +222,15 @@ class ItemSelectionScene: SKScene {
         
         // Scale selected penguin larger
         if middleNode.childNodeWithName("penguin")?.xScale < 2 {
-            
-            
             let selectedScale = SKAction.scaleTo(3, duration: 0.2)
             selectedScale.timingMode = .EaseOut
             middleNode.childNodeWithName("penguin")?.runAction(selectedScale)
-            
-            //            let viewCenterInScrollNode = penguinScrollNode.convertPoint(view!.center, fromNode: self)
-            
         }
-        middleNode.childNodeWithName("penguin")?.position.x = -closestX// CGPoint(x: 0 - closestX, y: 0)
+        
+//        middleNode.childNodeWithName("penguin")?.position.x = -closestX
+        middleNode.childNodeWithName("penguin")?.position = convertPoint(view!.center, toNode: middleNode)
         
         selectedNode = middleNode
-        
         
         if let index = Int(middleNode.name!) {
             penguinTitle.text = penguinObjectsData[index].name
@@ -332,6 +282,8 @@ class ItemSelectionScene: SKScene {
                 let newPenguinData = NSEntityDescription.insertNewObjectForEntityForName("UnlockedPenguins", inManagedObjectContext: managedObjectContext) as! UnlockedPenguins
                 newPenguinData.penguinNormal = NSNumber(bool: true)
                 newPenguinData.penguinParasol = NSNumber(bool: false)
+                newPenguinData.penguinTinfoil = NSNumber(bool: false)
+                newPenguinData.penguinShark = NSNumber(bool: false)
                 
                 do {
                     try managedObjectContext.save()
@@ -359,6 +311,10 @@ class ItemSelectionScene: SKScene {
                 selectedPenguinString = "normal"
             case .parasol:
                 selectedPenguinString = "parasol"
+            case .tinfoil:
+                selectedPenguinString = "tinfoil"
+            case .shark:
+                selectedPenguinString = "shark"
             }
             
             let gameData = fetchGameData()
@@ -370,30 +326,6 @@ class ItemSelectionScene: SKScene {
                 print(error)
             }
         }
-//        
-//        if let selectedPenguin = selectedPenguin {
-//            
-//            var selectedPenguinString = ""
-//            if let selectedIndex = Int(selectedNode!.name!) {
-//                let type = penguinObjectsData[selectedIndex].type
-//                
-//                switch (type) {
-//                case .normal:
-//                    selectedPenguinString = "normal"
-//                case .parasol:
-//                    selectedPenguinString = "parasol"
-//                }
-//            }
-//            
-//            let gameData = fetchGameData()
-//            gameData.selectedPenguin = selectedPenguinString
-//            
-//            do {
-//                try managedObjectContext.save()
-//            } catch {
-//                print(error)
-//            }
-//        }
     }
     
     func tryUnlockingPenguin() {
@@ -412,18 +344,20 @@ class ItemSelectionScene: SKScene {
                     print(error)
                 }
                 
-                // Save the penguin unlocked
+                // Save the penguin unlock
                 let unlockedPenguins = fetchUnlockedPenguins()
                 
-                if let selectedIndex = Int(selectedNode!.name!) {
-                    let type = penguinObjectsData[index].type
-                    
-                    switch (type) {
-                    case .normal:
-                        unlockedPenguins.penguinNormal = NSNumber(bool: true)
-                    case .parasol:
-                        unlockedPenguins.penguinParasol = NSNumber(bool: true)
-                    }
+                // Switch chooses which penguin type to unlock
+                let type = penguinObjectsData[index].type
+                switch (type) {
+                case .normal:
+                    unlockedPenguins.penguinNormal = NSNumber(bool: true)
+                case .parasol:
+                    unlockedPenguins.penguinParasol = NSNumber(bool: true)
+                case .tinfoil:
+                    unlockedPenguins.penguinTinfoil = NSNumber(bool: true)
+                case .shark:
+                    unlockedPenguins.penguinShark = NSNumber(bool: true)
                 }
                 
                 do {

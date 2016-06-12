@@ -12,4 +12,6 @@ import CoreData
 class UnlockedPenguins: NSManagedObject {
     @NSManaged var penguinNormal: NSNumber!
     @NSManaged var penguinParasol: NSNumber!
+    @NSManaged var penguinTinfoil: NSNumber!
+    @NSManaged var penguinShark: NSNumber!
 }

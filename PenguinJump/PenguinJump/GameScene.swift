@@ -31,7 +31,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // Node Objects
     var cam:SKCameraNode!
     var penguin: Penguin!
-//    let penguin = Penguin(type: .parasol)
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
@@ -206,7 +205,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
         
-        // Zoom out button for debugging
+        /*
+        // Debug mode buttons
         let zoomButton = SKLabelNode(text: "ZOOM")
         zoomButton.name = "testZoom"
         zoomButton.fontName = "Helvetica Neue Condensed Black"
@@ -251,6 +251,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
         sharkButton.position.y -= sharkButton.frame.height * 2
         cam.addChild(sharkButton)
+        */
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
@@ -358,6 +359,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 penguinType = .normal
             case "parasol":
                 penguinType = .parasol
+            case "tinfoil":
+                penguinType = .tinfoil
+            case "shark":
+                penguinType = .shark
             default:
                 penguinType = .normal
             }
@@ -650,13 +655,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
         newGameData.highScore = 0
         newGameData.totalCoins = 0
-<<<<<<< HEAD
         newGameData.selectedPenguin = "normal"
-        
-=======
         newGameData.musicOn = true
         newGameData.soundEffectsOn = true
->>>>>>> master
         do {
             try managedObjectContext.save()
         } catch { print(error) }
@@ -807,10 +808,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     func updateWinds() {
         if windEnabled {
-            windSpeed = windDirectionRight ? stormIntensity * 50 : -stormIntensity * 50
+            windSpeed = windDirectionRight ? stormIntensity * 70 : -stormIntensity * 70
             
-            let deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
+            var deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
             
+            if penguin.type == PenguinType.shark {
+                deltaX = deltaX / 2
+            }
             
             let push = SKAction.moveBy(CGVector(dx: deltaX, dy: 0), duration: timeSinceLastUpdate)
             penguin.runAction(push)
