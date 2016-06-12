@@ -8,18 +8,21 @@
 
 import SpriteKit
 import CoreData
+import AVFoundation
 
 class SettingsScene: SKScene {
     var managedObjectContext : NSManagedObjectContext!
     var fetchRequest : NSFetchRequest!
+    var gameData : GameData!
     
     var fetchedData = [GameData]()
-    var musicOn : NSNumber!
-    var soundEffectsOn : NSNumber!
     
     var musicButton : SimpleButton!
     var soundsButton : SimpleButton!
     var backButton : SimpleButton!
+    
+    var backgroundMusic: AVAudioPlayer?
+    var backgroundOcean: AVAudioPlayer?
     
     override func didMoveToView(view: SKView) {
         
@@ -32,9 +35,7 @@ class SettingsScene: SKScene {
         } catch {
             print(error)
         }
-        
-        musicOn = fetchedData.first?.musicOn
-        soundEffectsOn = fetchedData.first?.soundEffectsOn
+        gameData = fetchedData.first
         
         // Build Interface
         let logo = SKSpriteNode(imageNamed: "logo")
@@ -49,7 +50,11 @@ class SettingsScene: SKScene {
         musicLabel.zPosition = 100
         addChild(musicLabel)
         
-        musicButton = SimpleButton(text: "On")
+        if gameData.musicOn == true {
+            musicButton = SimpleButton(text: "On")
+        } else {
+            musicButton = SimpleButton(text: "Off")
+        }
         musicButton.name = "musicButton"
         musicButton.position = musicLabel.position
         musicButton.position.x += 50
@@ -61,7 +66,11 @@ class SettingsScene: SKScene {
         soundsLabel.zPosition = 100
         addChild(soundsLabel)
         
-        soundsButton = SimpleButton(text: "On")
+        if gameData.soundEffectsOn == true {
+            soundsButton = SimpleButton(text: "On")
+        } else {
+            soundsButton = SimpleButton(text: "Off")
+        }
         soundsButton.name = "soundsButton"
         soundsButton.position = soundsLabel.position
         soundsButton.position.x += 50
@@ -98,21 +107,27 @@ class SettingsScene: SKScene {
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
                 if touchedNode.name == "musicButton" && musicButton.pressed == true {
-                    if musicOn == true {
-                        musicOn = false
+                    if gameData.musicOn == true {
+                        fadeMusic()
+                        gameData.musicOn = false
+                        gameData.musicPlaying = false
+                        do { try managedObjectContext.save() } catch { print(error) }
                         musicButton.label.text = "Off"
-                    } else {
-                        musicOn = true
+                    } else if gameData.musicOn == false {
+                        playMusic()
+                        gameData.musicOn = true
+                        gameData.musicPlaying = true
+                        do { try managedObjectContext.save() } catch { print(error) }
                         musicButton.label.text = "On"
                     }
                     musicButton.buttonRelease()
                 }
                 if touchedNode.name == "soundsButton" && soundsButton.pressed == true {
-                    if soundEffectsOn == true {
-                        soundEffectsOn = false
+                    if gameData.soundEffectsOn == true {
+                        gameData.soundEffectsOn = false
                         soundsButton.label.text = "Off"
                     } else {
-                        soundEffectsOn = true
+                        gameData.soundEffectsOn = true
                         soundsButton.label.text = "On"
                     }
                     soundsButton.buttonRelease()
@@ -123,6 +138,8 @@ class SettingsScene: SKScene {
                     
                     // Present Main Game Scene
                     let gameScene = GameScene(size: self.size)
+                    gameScene.backgroundMusic = backgroundMusic
+                    gameScene.musicInitialized = true
                     let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
                     gameScene.scaleMode = SKSceneScaleMode.AspectFill
                     self.scene!.view?.presentScene(gameScene, transition: transition)
@@ -135,16 +152,99 @@ class SettingsScene: SKScene {
     }
     
     func saveSettings() {
-        if let firstGameData = fetchedData.first {
-
-            firstGameData.musicOn = musicOn
-            firstGameData.soundEffectsOn = soundEffectsOn
-            
+        if gameData != nil {
             do {
                 try managedObjectContext.save()
             } catch {
                 print(error)
             }
         }
+    }
+    
+    func playMusic() {
+        if gameData.musicOn == false && gameData.musicPlaying == false {
+            if let backgroundMusic = backgroundMusic {
+                backgroundMusic.volume = 0.0
+                backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
+                backgroundMusic.play()
+                fadeAudioPlayer(backgroundMusic, fadeTo: 0.5, duration: 1, completion: nil)
+            }
+        }
+    }
+    
+    func fadeMusic() {
+        if gameData.musicOn == true {
+            fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
+                self.backgroundMusic?.stop()
+            })
+        }
+    }
+    
+    // MARK: - Audio
+    
+    func audioPlayerWithFile(file: String, type: String) -> AVAudioPlayer? {
+        let path = NSBundle.mainBundle().pathForResource(file, ofType: type)
+        let url = NSURL.fileURLWithPath(path!)
+        
+        var audioPlayer: AVAudioPlayer?
+        
+        do {
+            try audioPlayer = AVAudioPlayer(contentsOfURL: url)
+        } catch {
+            print("Audio player not available")
+        }
+        
+        return audioPlayer
+    }
+    
+    func fadeVolumeDown(player: AVAudioPlayer) {
+        player.volume -= 0.01
+        if player.volume < 0.01 {
+            player.stop()
+        } else {
+            // Use afterDelay value to change duration.
+            performSelector("fadeVolumeDown:", withObject: player, afterDelay: 0.02)
+        }
+    }
+    
+    func fadeVolumeUp(player: AVAudioPlayer ) {
+        player.volume += 0.01
+        if player.volume < 1.0 {
+            performSelector("fadeVolumeUp:", withObject: player, afterDelay: 0.02)
+        }
+    }
+    
+    func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
+        let amount:Float = 0.1
+        let incrementDelay = duration * Double(amount)// * amount)
+        
+        if player.volume > fadeTo + amount {
+            player.volume -= amount
+            
+            delay(incrementDelay) {
+                self.fadeAudioPlayer(player, fadeTo: fadeTo, duration: duration, completion: block)
+            }
+        } else if player.volume < fadeTo - amount {
+            player.volume += amount
+            
+            delay(incrementDelay) {
+                self.fadeAudioPlayer(player, fadeTo: fadeTo, duration: duration, completion: block)
+            }
+        } else {
+            // Execute when desired volume reached.
+            block?()
+        }
+        
+    }
+    
+    // MARK: - Utilities
+    
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
     }
 }
