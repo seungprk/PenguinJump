@@ -29,7 +29,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Node Objects
     var cam:SKCameraNode!
-    let penguin = Penguin()
+    var penguin: Penguin!
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
@@ -195,7 +195,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
         
-        // Zoom out button for debugging
+        /*
+        // Debug mode buttons
         let zoomButton = SKLabelNode(text: "ZOOM")
         zoomButton.name = "testZoom"
         zoomButton.fontName = "Helvetica Neue Condensed Black"
@@ -240,6 +241,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
         sharkButton.position.y -= sharkButton.frame.height * 2
         cam.addChild(sharkButton)
+        */
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
@@ -323,9 +325,45 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         coinLabel.horizontalAlignmentMode = .Right
         cam.addChild(coinLabel)
         
+        
+        // Fetch penguin type
+        var fetchedData = [GameData]()
+        var penguinType: PenguinType!
+        do {
+            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+            
+            if fetchedData.isEmpty {
+                // Create initial game data
+                initializeGameData()
+                
+                do {
+                    fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+                } catch { print(error) }
+            }
+        } catch {
+            print(error)
+        }
+        
+        if let gameData = fetchedData.first {
+            switch (gameData.selectedPenguin as String) {
+            case "normal":
+                penguinType = .normal
+            case "parasol":
+                penguinType = .parasol
+            case "tinfoil":
+                penguinType = .tinfoil
+            case "shark":
+                penguinType = .shark
+            default:
+                penguinType = .normal
+            }
+        }
+        
         // Wrap penguin around a cropnode for death animation
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
         
+        penguin = Penguin(type: penguinType)
+
         penguin.position = penguinPositionInScene
         penguin.zPosition = 2100
         penguin.userInteractionEnabled = true
@@ -359,34 +397,34 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if touchedNode.name == "testZoom" {
+                    if name == "testZoom" {
                         let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
                         let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
                         
                         testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
                         testZoomed = testZoomed ? false : true
                     }
-                    if touchedNode.name == "rainButton" {
+                    if name == "rainButton" {
                         let raindrop = Raindrop()
                         addChild(raindrop)
 //                        raindrop.testRotation(view!.center, windSpeed: windSpeed)
                         raindrop.zPosition = 100000
                         raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
                     }
-                    if touchedNode.name == "lightningButton" {
+                    if name == "lightningButton" {
                         let lightning = Lightning(view: view!)
                         addChild(lightning)
                         lightning.position = penguin.position // view!.center
                         lightning.zPosition = 100000
                     }
-                    if touchedNode.name == "sharkButton" {
+                    if name == "sharkButton" {
                         let shark = Shark()
                         shark.position = view!.center
                         addChild(shark)
                         shark.beginSwimming()
                     }
                     
-                    if touchedNode.name == "pauseButton" {
+                    if name == "pauseButton" {
                         if gamePaused == false {
                             shouldCorrectAfterPause = true
                             gamePaused = true
@@ -568,6 +606,20 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
     }
     
+    func initializeGameData() {
+        let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
+        newGameData.highScore = 0
+        newGameData.totalCoins = 0
+        newGameData.selectedPenguin = "normal"
+        newGameData.musicOn = true
+        newGameData.soundEffectsOn = true
+        newGameData.musicPlaying = false
+        
+        do {
+            try managedObjectContext.save()
+        } catch { print(error) }
+    }
+
     func playMusic() {
         if gameData.musicOn == true && gameData.musicPlaying == false {
             if let backgroundMusic = backgroundMusic {
@@ -733,10 +785,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     func updateWinds() {
         if windEnabled {
-            windSpeed = windDirectionRight ? stormIntensity * 50 : -stormIntensity * 50
+            windSpeed = windDirectionRight ? stormIntensity * 70 : -stormIntensity * 70
             
-            let deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
+            var deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
             
+            if penguin.type == PenguinType.shark {
+                deltaX = deltaX * 0.75
+            }
             
             let push = SKAction.moveBy(CGVector(dx: deltaX, dy: 0), duration: timeSinceLastUpdate)
             penguin.runAction(push)

@@ -15,6 +15,7 @@ class StartMenuNode: SKNode {
     var highScoreButton : SimpleButton!
     var aboutButton : SimpleButton!
     var settingsButton : SimpleButton!
+    var wardrobeButton : SKSpriteNode!
     
     init(frame: CGRect) {
         super.init()
@@ -73,6 +74,13 @@ class StartMenuNode: SKNode {
         aboutButton.position.y = highScoreButton.position.y - playButton.frame.height
         aboutButton.zPosition = 10000
         
+        // Button "Wardrobe"
+        wardrobeButton = SKSpriteNode(imageNamed: "wardrobe_icon")
+        wardrobeButton.name = "wardrobeButton"
+        wardrobeButton.position.x += playButton.frame.width
+        wardrobeButton.position.y -= frame.height * 0.175
+        wardrobeButton.zPosition = 10000
+        
         // Add to screen
         title.addChild(titleLabel)
         title.addChild(subtitleLabel)
@@ -81,6 +89,7 @@ class StartMenuNode: SKNode {
         addChild(settingsButton)
         addChild(highScoreButton)
         addChild(aboutButton)
+        addChild(wardrobeButton)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -91,7 +100,7 @@ class StartMenuNode: SKNode {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if touchedNode.name == "playButton" {
+                    if name == "playButton" {
                         let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
                         titleUp.timingMode = .EaseIn
                         title.runAction(titleUp, completion: {
@@ -111,16 +120,19 @@ class StartMenuNode: SKNode {
                         aboutButton.runAction(playButtonDown, completion: {
                             self.aboutButton.removeFromParent()
                         })
+                        wardrobeButton.runAction(playButtonDown, completion: {
+                            self.wardrobeButton.removeFromParent()
+                        })
                         parentScene.beginGame()
                         parentScene.buttonPressSound?.play()
                     }
-                    if touchedNode.name == "highScoreButton" {
+                    if name == "highScoreButton" {
                         highScoreButton.buttonPress()
                     }
-                    if touchedNode.name == "settingsButton" {
+                    if name == "settingsButton" {
                         settingsButton.buttonPress()
                     }
-                    if touchedNode.name == "aboutButton" {
+                    if name == "aboutButton" {
                         aboutButton.buttonPress()
                     }
                 }
@@ -135,7 +147,7 @@ class StartMenuNode: SKNode {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
-                    if touchedNode.name == "highScoreButton" {
+                    if name == "highScoreButton" {
                         if highScoreButton.pressed == true {
                             highScoreButton.buttonRelease()
                             
@@ -148,7 +160,7 @@ class StartMenuNode: SKNode {
                             self.scene!.view?.presentScene(scoreScene, transition: transition)
                         }
                     }
-                    if touchedNode.name == "settingsButton" {
+                    if name == "settingsButton" {
                         if settingsButton.pressed == true {
                             settingsButton.buttonRelease()
                             
@@ -158,7 +170,7 @@ class StartMenuNode: SKNode {
                             self.scene!.view?.presentScene(settingsScene, transition: transition)
                         }
                     }
-                    if touchedNode.name == "aboutButton" {
+                    if name == "aboutButton" {
                         if aboutButton.pressed == true {
                             aboutButton.buttonRelease()
                             
@@ -167,6 +179,11 @@ class StartMenuNode: SKNode {
                             aboutScene.scaleMode = SKSceneScaleMode.AspectFill
                             self.scene!.view?.presentScene(aboutScene, transition: transition)
                         }
+                    }
+                    if name == "wardrobeButton" {
+                        let wardrobeScene = ItemSelectionScene(size: scene!.size)
+                        let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
+                        self.scene!.view?.presentScene(wardrobeScene, transition: transition)
                     }
                 }
             }

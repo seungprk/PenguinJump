@@ -59,6 +59,7 @@ class GameViewController: UIViewController {
         newGameData.musicOn = true
         newGameData.musicPlaying = false
         newGameData.soundEffectsOn = true
+        newGameData.selectedPenguin = "normal"
         do { try managedObjectContext.save() } catch { print(error) }
     }
 }
