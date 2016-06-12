@@ -435,7 +435,7 @@ class ItemSelectionScene: SKScene {
                 // Update scene data
                 penguinObjectsData[index].unlocked = true
                 
-                // Update scene UI
+                // Update scene UI .. perhaps have a particle burst behind the character?
                 coinLabel.text = "\(totalCoinsAfterUnlock) coins"
                 
                 scrollNodes[index].childNodeWithName("penguin")?.removeFromParent()
