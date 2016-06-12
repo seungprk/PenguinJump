@@ -139,8 +139,6 @@ class StartMenuNode: SKNode {
                         if highScoreButton.pressed == true {
                             highScoreButton.buttonRelease()
                             
-                            (scene as! GameScene).fadeMusic()
-                            
                             let scoreScene = ScoreScene(size: scene!.size)
                             let parentScene = scene as! GameScene
                             scoreScene.score = parentScene.intScore
@@ -154,8 +152,6 @@ class StartMenuNode: SKNode {
                         if settingsButton.pressed == true {
                             settingsButton.buttonRelease()
                             
-                            (scene as! GameScene).fadeMusic()
-                            
                             let settingsScene = SettingsScene(size: scene!.size)
                             let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
                             settingsScene.scaleMode = SKSceneScaleMode.AspectFill
@@ -165,8 +161,6 @@ class StartMenuNode: SKNode {
                     if touchedNode.name == "aboutButton" {
                         if aboutButton.pressed == true {
                             aboutButton.buttonRelease()
-                            
-                            (scene as! GameScene).fadeMusic()
                             
                             let aboutScene = AboutScene(size: scene!.size)
                             let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)

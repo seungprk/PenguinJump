@@ -14,4 +14,5 @@ class GameData: NSManagedObject {
     @NSManaged var totalCoins: NSNumber!
     @NSManaged var musicOn: NSNumber!
     @NSManaged var soundEffectsOn: NSNumber!
+    @NSManaged var musicPlaying: NSNumber!
 }

@@ -3,10 +3,11 @@
     <entity name="GameData" representedClassName=".GameData" syncable="YES">
         <attribute name="highScore" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="musicOn" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="musicPlaying" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="soundEffectsOn" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="totalCoins" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>
     <elements>
-        <element name="GameData" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="GameData" positionX="-63" positionY="-18" width="128" height="120"/>
     </elements>
 </model>
