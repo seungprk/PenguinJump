@@ -22,7 +22,7 @@ class ItemSelectionScene: SKScene {
     //    var penguins = [Penguin]()
     var penguinOffset: CGFloat!
     
-    var selectedPenguin: PenguinType?
+//    var selectedPenguin: PenguinType?
     var selectedNode: SKNode?
     
     var penguinTitle: SKLabelNode!
@@ -140,13 +140,19 @@ class ItemSelectionScene: SKScene {
                     gameScene.scaleMode = SKSceneScaleMode.AspectFill
                     self.scene!.view?.presentScene(gameScene, transition: transition)
                 }
-                if touchedNode.name == "playButton" {
-                    saveSelectedPenguin()
+                if touchedNode.name == "penguinButton" {
+                    let label = touchedNode as! SKLabelNode
+                    if label.text == "Play" {
+                        saveSelectedPenguin()
+                        
+                        let gameScene = GameScene(size: self.size)
+                        let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
+                        gameScene.scaleMode = SKSceneScaleMode.AspectFill
+                        self.scene!.view?.presentScene(gameScene, transition: transition)
+                    } else {
+                        tryUnlockingPenguin()
+                    }
                     
-                    let gameScene = GameScene(size: self.size)
-                    let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
-                    gameScene.scaleMode = SKSceneScaleMode.AspectFill
-                    self.scene!.view?.presentScene(gameScene, transition: transition)
                 }
             }
         }
@@ -342,20 +348,17 @@ class ItemSelectionScene: SKScene {
         return fetchedData.first!
     }
     
-    
     func saveSelectedPenguin() {
-        if let selectedPenguin = selectedPenguin {
-            
+        if let index = Int(selectedNode!.name!) {
             var selectedPenguinString = ""
-            if let selectedIndex = Int(selectedNode!.name!) {
-                let type = penguinObjectsData[selectedIndex].type
-                
-                switch (type) {
-                case .normal:
-                    selectedPenguinString = "normal"
-                case .parasol:
-                    selectedPenguinString = "parasol"
-                }
+
+            let type = penguinObjectsData[index].type
+            
+            switch (type) {
+            case .normal:
+                selectedPenguinString = "normal"
+            case .parasol:
+                selectedPenguinString = "parasol"
             }
             
             let gameData = fetchGameData()
@@ -366,6 +369,84 @@ class ItemSelectionScene: SKScene {
             } catch {
                 print(error)
             }
+        }
+//        
+//        if let selectedPenguin = selectedPenguin {
+//            
+//            var selectedPenguinString = ""
+//            if let selectedIndex = Int(selectedNode!.name!) {
+//                let type = penguinObjectsData[selectedIndex].type
+//                
+//                switch (type) {
+//                case .normal:
+//                    selectedPenguinString = "normal"
+//                case .parasol:
+//                    selectedPenguinString = "parasol"
+//                }
+//            }
+//            
+//            let gameData = fetchGameData()
+//            gameData.selectedPenguin = selectedPenguinString
+//            
+//            do {
+//                try managedObjectContext.save()
+//            } catch {
+//                print(error)
+//            }
+//        }
+    }
+    
+    func tryUnlockingPenguin() {
+        if let index = Int(selectedNode!.name!) {
+            let gameData = fetchGameData()
+            let cost = penguinObjectsData[index].cost
+            
+            if cost <= gameData.totalCoins as Int {
+                // Save the total coins after the unlock in game data
+                let totalCoinsAfterUnlock = (gameData.totalCoins as Int) - cost
+                gameData.totalCoins = totalCoinsAfterUnlock
+                
+                do {
+                    try managedObjectContext.save()
+                } catch {
+                    print(error)
+                }
+                
+                // Save the penguin unlocked
+                let unlockedPenguins = fetchUnlockedPenguins()
+                
+                if let selectedIndex = Int(selectedNode!.name!) {
+                    let type = penguinObjectsData[index].type
+                    
+                    switch (type) {
+                    case .normal:
+                        unlockedPenguins.penguinNormal = NSNumber(bool: true)
+                    case .parasol:
+                        unlockedPenguins.penguinParasol = NSNumber(bool: true)
+                    }
+                }
+                
+                do {
+                    try managedObjectContext.save()
+                } catch {
+                    print(error)
+                }
+                
+                // Update scene data
+                penguinObjectsData[index].unlocked = true
+                
+                // Update scene UI
+                coinLabel.text = "\(totalCoinsAfterUnlock) coins"
+                
+                scrollNodes[index].childNodeWithName("penguin")?.removeFromParent()
+                
+                let penguin = Penguin(type: penguinObjectsData[index].type)
+                penguin.name = "penguin"
+                scrollNodes[index].addChild(penguin)
+            } else {
+                // Not enough coins to unlock
+            }
+            
         }
     }
 }
