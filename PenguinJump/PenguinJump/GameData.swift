@@ -15,4 +15,5 @@ class GameData: NSManagedObject {
     @NSManaged var selectedPenguin: String!
     @NSManaged var musicOn: NSNumber!
     @NSManaged var soundEffectsOn: NSNumber!
+    @NSManaged var musicPlaying: NSNumber!
 }

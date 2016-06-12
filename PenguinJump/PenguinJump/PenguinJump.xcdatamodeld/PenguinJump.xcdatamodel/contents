@@ -4,6 +4,7 @@
         <attribute name="highScore" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="musicOn" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="selectedPenguin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="musicPlaying" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="soundEffectsOn" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="totalCoins" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>

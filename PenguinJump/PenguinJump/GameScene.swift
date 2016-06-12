@@ -22,11 +22,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // Framework Objects
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     let fetchRequest = NSFetchRequest(entityName: "GameData")
+    var gameData : GameData!
     
     // Game options
     var enableScreenShake = true
-    var musicOn = true
-    var soundOn = true
     
     // Node Objects
     var cam:SKCameraNode!
@@ -83,7 +82,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var totalCoins = 0
     
     // Audio settings -> fetched from CoreData?
-    var musicVolume:Float = 0.0
+    var musicVolume:Float = 1.0
     var soundVolume:Float = 1.0
     
     // Debug
@@ -165,24 +164,15 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             self.coinSound = coinSound
         }
         
-        // Fetch total coins data
+        // Fetch total coins data and sound settings
         var fetchedData = [GameData]()
         do {
             fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-            
-            if fetchedData.isEmpty {
-                // Create initial game data
-                initializeGameData()
-                
-                do {
-                    fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-                } catch { print(error) }
-            }
         } catch {
             print(error)
         }
-        if let gameData = fetchedData.first {
-            totalCoins = gameData.totalCoins as Int
+        if fetchedData.first != nil {
+            gameData = fetchedData.first
         }
         
         // Set up Game Scene
@@ -393,19 +383,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         background.zPosition = -1000
         addChild(background)
         
-        if let backgroundMusic = backgroundMusic {
-            backgroundMusic.volume = 0.0
-            backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
-            backgroundMusic.play()
-            fadeAudioPlayer(backgroundMusic, fadeTo: musicVolume * 0.5, duration: 1, completion: nil)
-        }
-        if let backgroundOcean = backgroundOcean {
-            backgroundOcean.volume = 0.0
-            backgroundOcean.numberOfLoops = -1 // Negative integer to loop indefinitely
-            backgroundOcean.play()
-            fadeAudioPlayer(backgroundOcean, fadeTo: musicVolume * 0.1, duration: 1, completion: nil)
-        }
-        
+        playMusic()
     }
     
     // MARK: - Scene Controls
@@ -603,37 +581,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             splashSound?.play()
             
-            // Save high score
-//            let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-//            let fetchRequest = NSFetchRequest(entityName: "GameData")
-            var fetchedData = [GameData]()
-            
-            do {
-                fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-                
-                if fetchedData.isEmpty {
-                    // Create initial game data
-                    initializeGameData()
-                    
-                    do {
-                        fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-                    } catch { print(error) }
-                }
-            } catch {
-                print(error)
-            }
-            
-            if let firstGameData = fetchedData.first {
-                let highScore = firstGameData.highScore as Int
+            if gameData != nil {
+                let highScore = gameData.highScore as Int
                 
                 if intScore > highScore {
-                    firstGameData.highScore = intScore
+                    gameData.highScore = intScore
                     
-                    do {
-                        try managedObjectContext.save()
-                    } catch {
-                        print(error)
-                    }
+                    do { try managedObjectContext.save() } catch { print(error) }
                 }
             }
             
@@ -662,17 +616,38 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             try managedObjectContext.save()
         } catch { print(error) }
     }
-    
-    func fadeMusic() {
-        fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
-            self.backgroundMusic?.stop()
-        })
-        fadeAudioPlayer(backgroundOcean!, fadeTo: 0.0, duration: 1.0, completion: {() in
-            self.backgroundOcean?.stop()
-        })
-        
+
+    func playMusic() {
+        if gameData.musicOn == true && gameData.musicPlaying == false {
+            if let backgroundMusic = backgroundMusic {
+                backgroundMusic.volume = 0.0
+                backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
+                backgroundMusic.play()
+                fadeAudioPlayer(backgroundMusic, fadeTo: musicVolume * 0.5, duration: 1, completion: nil)
+            }
+            if let backgroundOcean = backgroundOcean {
+                backgroundOcean.volume = 0.0
+                backgroundOcean.numberOfLoops = -1 // Negative integer to loop indefinitely
+                backgroundOcean.play()
+                fadeAudioPlayer(backgroundOcean, fadeTo: musicVolume * 0.1, duration: 1, completion: nil)
+            }
+            gameData.musicPlaying = true
+            do { try managedObjectContext.save() } catch { print(error) }
+        }
     }
     
+    func fadeMusic() {
+        if gameData.musicOn == true {
+            fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
+                self.backgroundMusic?.stop()
+            })
+            fadeAudioPlayer(backgroundOcean!, fadeTo: 0.0, duration: 1.0, completion: {() in
+                self.backgroundOcean?.stop()
+            })
+            gameData.musicOn = false
+            do { try managedObjectContext.save() } catch { print(error) }
+        }
+    }
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
@@ -688,7 +663,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 self.previousTime = currentTime
             }
         }
-        
         
         stage.update()
         waves.update()
@@ -1058,21 +1032,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         totalCoins += 1
         
         // Increment coin total in game data
-        var fetchedData = [GameData]()
-        do {
-            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-        } catch {
-            print(error)
-        }
-        if let gameData = fetchedData.first {
+        if gameData != nil {
             let totalCoins = gameData.totalCoins as Int
             gameData.totalCoins = totalCoins + 1
             
-            do {
-                try managedObjectContext.save()
-            } catch {
-                print(error)
-            }
+            do { try managedObjectContext.save() } catch { print(error) }
         }
     }
     
