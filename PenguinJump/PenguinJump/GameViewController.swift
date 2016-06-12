@@ -36,6 +36,17 @@ class GameViewController: UIViewController {
         fetchedData.first!.musicPlaying = false
         do { try managedObjectContext.save() } catch { print(error) }
         
+        
+        let scene = CutScene(size: view.bounds.size)
+        let skView = view as! SKView
+        skView.showsFPS = true
+        skView.showsNodeCount = true
+        skView.showsPhysics = true
+        skView.ignoresSiblingOrder = true
+        scene.scaleMode = .ResizeFill
+        
+        skView.presentScene(scene)
+        /*
         // Set Up and Present Main Game Scene
         let scene = GameScene(size: view.bounds.size)
         let skView = view as! SKView
@@ -46,6 +57,7 @@ class GameViewController: UIViewController {
         scene.scaleMode = .ResizeFill
         
         skView.presentScene(scene)
+        */
     }
     
     override func prefersStatusBarHidden() -> Bool {
