@@ -30,7 +30,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Node Objects
     var cam:SKCameraNode!
-    let penguin = Penguin(type: .parasol)
+    var penguin: Penguin!
+//    let penguin = Penguin(type: .parasol)
     var stage: IcebergGenerator!
     let jumpAir = SKShapeNode(circleOfRadius: 20.0)
     var waves: Waves!
@@ -333,9 +334,40 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         coinLabel.horizontalAlignmentMode = .Right
         cam.addChild(coinLabel)
         
+        
+        // Fetch penguin type
+        var fetchedData = [GameData]()
+        var penguinType: PenguinType!
+        do {
+            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+            
+            if fetchedData.isEmpty {
+                // Create initial game data
+                initializeGameData()
+                
+                do {
+                    fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+                } catch { print(error) }
+            }
+        } catch {
+            print(error)
+        }
+        if let gameData = fetchedData.first {
+            switch (gameData.selectedPenguin) {
+            case "normal":
+                penguinType = .normal
+            case "parasol":
+                penguinType = .parasol
+            default:
+                penguinType = .normal
+            }
+        }
+        
         // Wrap penguin around a cropnode for death animation
         let penguinPositionInScene = CGPoint(x: size.width * 0.5, y: size.height * 0.3)
         
+        penguin = Penguin(type: penguinType)
+
         penguin.position = penguinPositionInScene
         penguin.zPosition = 2100
         penguin.userInteractionEnabled = true

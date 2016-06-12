@@ -9,8 +9,8 @@
 import SpriteKit
 import CoreData
 
-class ItemSelectionScene: SKScene, UIScrollViewDelegate {
-
+class ItemSelectionScene: SKScene {
+    
     // CoreData Objects
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     let gameDataFetchRequest = NSFetchRequest(entityName: "GameData")
@@ -18,25 +18,33 @@ class ItemSelectionScene: SKScene, UIScrollViewDelegate {
     
     let penguinScrollNode = SKNode()
     
-    var penguins = [Penguin]()
+    var scrollNodes = [SKNode]()
+    //    var penguins = [Penguin]()
     var penguinOffset: CGFloat!
     
+    var selectedPenguin: PenguinType?
+    var selectedNode: SKNode?
+    
+    var penguinTitle: SKLabelNode!
+    var penguinButton: SKLabelNode!
+    
+    var penguinObjectsData = [(type: PenguinType, name: String, cost: Int, unlocked: Bool)]()
+    
+    var coinLabel = SKLabelNode(text: "0 coins")
+    
     override func didMoveToView(view: SKView) {
+        scaleMode = SKSceneScaleMode.AspectFill
+        backgroundColor = SKColor(red: 0, green: 93/255, blue: 134/255, alpha: 1)
         
         // Fetch data
         let unlockedPenguins = fetchUnlockedPenguins()
         let gameData = fetchGameData()
         
-        let unlockedNormal = Bool(unlockedPenguins.penguinNormal as NSNumber)
-        let unlockedParasol = Bool(unlockedPenguins.penguinParasol as NSNumber)
+        //        let unlockedNormal = Bool(unlockedPenguins.penguinNormal as NSNumber)
+        //        let unlockedParasol = Bool(unlockedPenguins.penguinParasol as NSNumber)
         let totalCoins = Int(gameData.totalCoins)
-//        print("unlocks:\nnormal: \(unlockedNormal)\nparasol: \(unlockedParasol)\n\ntotal coins:\(totalCoins)")
         
         // Set up scene UI
-        scaleMode = SKSceneScaleMode.AspectFill
-        
-        backgroundColor = SKColor(red: 0, green: 93/255, blue: 134/255, alpha: 1)
-        
         let closeButton = SKLabelNode(text: "X")
         closeButton.name = "closeButton"
         closeButton.fontName = "Helvetica Neue Condensed Black"
@@ -44,73 +52,82 @@ class ItemSelectionScene: SKScene, UIScrollViewDelegate {
         closeButton.fontSize = 24
         closeButton.position = CGPoint(x: view.frame.width * 0.95, y: view.frame.height * 0.95)
         
-        let coinLabel = SKLabelNode(text: "\(totalCoins)coins")
+        coinLabel.text = "\(totalCoins) coins"
         coinLabel.name = "coinLabel"
         coinLabel.fontName = "Helvetica Neue Condensed Black"
         coinLabel.fontColor = SKColor.whiteColor()
         coinLabel.fontSize = 18
         coinLabel.horizontalAlignmentMode = .Right
         coinLabel.position = CGPoint(x: view.frame.width * 0.9, y: view.frame.height * 0.95)
-
+        
+        penguinTitle = SKLabelNode(text: "a")
+        penguinTitle.name = "penguinTitle"
+        penguinTitle.fontName = "Helvetica Neue Condensed Black"
+        penguinTitle.fontColor = SKColor.whiteColor()
+        penguinTitle.fontSize = 24
+        penguinTitle.horizontalAlignmentMode = .Center
+        penguinTitle.position = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.8)
+        
+        penguinButton = SKLabelNode(text: "a")
+        penguinButton.name = "penguinButton"
+        penguinButton.fontName = "Helvetica Neue Condensed Black"
+        penguinButton.fontColor = SKColor.whiteColor()
+        penguinButton.fontSize = 24
+        penguinButton.horizontalAlignmentMode = .Center
+        penguinButton.position = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.25)
+        
         addChild(closeButton)
         addChild(coinLabel)
         addChild(penguinScrollNode)
-
-        // Add penguins to scroll node
+        addChild(penguinTitle)
+        addChild(penguinButton)
         
         
-        let penguinNormal = Penguin(type: .normal)
-        let penguinParasol = Penguin(type: .parasol)
-        let penguinThird = Penguin(type: .normal)
+        // Create array of scroll node objects
+        penguinObjectsData = [
+            (type: PenguinType.normal, name: "Penguin", cost: 0, unlocked: true),
+            (type: PenguinType.parasol, name: "Parasol Penguin", cost: 10, unlocked: Bool(unlockedPenguins.penguinParasol as NSNumber)),
+            (type: PenguinType.normal, name: "Penguin", cost: 20, unlocked: false),
+            (type: PenguinType.normal, name: "Penguin", cost: 20, unlocked: false),
+            (type: PenguinType.normal, name: "Penguin", cost: 20, unlocked: false),
+        ]
         
-        penguins.append(penguinNormal)
-        penguins.append(penguinParasol)
-        penguins.append(penguinThird)
-
-        penguinOffset = penguinNormal.size.width
-        
-        penguinScrollNode.position = view.center
-        for penguin in 0..<penguins.count {
-            penguins[penguin].position.x += CGFloat(penguin) * penguinOffset
-            penguinScrollNode.addChild(penguins[penguin])
+        // Create array of scroll nodes
+        for index in 0..<penguinObjectsData.count {
+            let scrollNode = SKNode()
+            scrollNode.name = "\(index)"
+            
+            if penguinObjectsData[index].unlocked {
+                let penguin = Penguin(type: penguinObjectsData[index].type)
+                penguin.name = "penguin"
+                
+                scrollNode.addChild(penguin)
+            } else {
+                let penguin = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: 22, height: 40))
+                
+                penguin.name = "penguin"
+                
+                scrollNode.addChild(penguin)
+            }
+//            let penguin = Penguin(type: penguinObjectsData[index].type)
+//            penguin.name = "penguin"
+//            scrollNode.addChild(penguin)
+            
+            scrollNodes.append(scrollNode)
         }
         
-//        penguinParasol.position.x += penguinOffset
-
+        // Add scroll nodes to main scrolling node
+        penguinOffset = SKTexture(imageNamed: "penguintemp").size().width * 2
         
-//        let penguinScrollNode = SKNode()
-        
-//        penguinScrollNode.addChild(penguinNormal)
-//        penguinScrollNode.addChild(penguinParasol)
-        
-        
-        /*
-        let scrollView = UIScrollView(frame: CGRect(x: 0, y: 100, width: view.frame.width * 2, height: view.frame.height / 2))
-        scrollView.backgroundColor = UIColor.whiteColor()
-        view.addSubview(scrollView)
-        
-        let penguinNormal = Penguin(type: .normal)
-        let penguinParasol = Penguin(type: .parasol)
-
-        
-        let penguinOffset = penguinNormal.size.width
-        penguinParasol.position.x += penguinOffset
-        
-        let penguinScrollNode = SKNode()
-        penguinScrollNode.addChild(penguinNormal)
-        penguinScrollNode.addChild(penguinParasol)
+        penguinScrollNode.position = view.center
+        for node in 0..<scrollNodes.count {
+            scrollNodes[node].position.x += CGFloat(node) * penguinOffset
+            penguinScrollNode.addChild(scrollNodes[node])
+        }
         
         
-        let penguinScrollView = SKView(frame: CGRect(x: 10, y: 10, width: view.frame.width * 2, height: view.frame.height / 3))
-        scrollView.addSubview(penguinScrollView)
-        
-//        penguinScrollView
-        */
     }
     
-    override func willMoveFromView(view: SKView) {
-        
-    }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
@@ -118,6 +135,14 @@ class ItemSelectionScene: SKScene, UIScrollViewDelegate {
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
                 if touchedNode.name == "closeButton" {
+                    let gameScene = GameScene(size: self.size)
+                    let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
+                    gameScene.scaleMode = SKSceneScaleMode.AspectFill
+                    self.scene!.view?.presentScene(gameScene, transition: transition)
+                }
+                if touchedNode.name == "playButton" {
+                    saveSelectedPenguin()
+                    
                     let gameScene = GameScene(size: self.size)
                     let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
                     gameScene.scaleMode = SKSceneScaleMode.AspectFill
@@ -134,28 +159,49 @@ class ItemSelectionScene: SKScene, UIScrollViewDelegate {
             
             let translation = CGPoint(x: (positionInScene.x - previousPosition.x) * 2, y: (positionInScene.y - previousPosition.y) * 2)
             
-            if let lastPenguin = self.penguins.last {
-                let lastPenguinPositionInScene = convertPoint(lastPenguin.position, fromNode: penguinScrollNode)
+            
+            if let lastNode = scrollNodes.last {
+                let lastNodePositionInScene = convertPoint(lastNode.position, fromNode: penguinScrollNode)
                 
-
-                if !(lastPenguinPositionInScene.x < view!.center.x - 0.1) {
-                
-                    let pan = SKAction.moveBy(CGVector(dx: translation.x, dy: 0), duration: 0.5)
-                    pan.timingMode = .EaseOut
-                    penguinScrollNode.runAction(pan)
+                if let firstNode = scrollNodes.first {
+                    let firstNodePositionInScene = convertPoint(firstNode.position, fromNode: penguinScrollNode)
+                    
+                    if !(firstNodePositionInScene.x > view!.center.x + 0.1) && !(lastNodePositionInScene.x < view!.center.x - 0.1)  {
+                        
+                        let pan = SKAction.moveBy(CGVector(dx: translation.x / 2, dy: 0), duration: 0.2)
+                        pan.timingMode = .EaseOut
+                        penguinScrollNode.runAction(pan)
+                        
+                        let panCounter = SKAction.moveBy(CGVector(dx: -translation.x / 2, dy: 0), duration: 0.2)
+                        panCounter.timingMode = .EaseOut
+                        selectedNode?.childNodeWithName("penguin")?.runAction(panCounter)
+                    }
+                        
+                    else {
+                        
+                        if firstNodePositionInScene.x > view!.center.x + 0.1 {
+                            let leftResist = SKAction.moveTo(CGPoint(x: view!.center.x, y: view!.center.y), duration: 0.1)
+                            leftResist.timingMode = .EaseOut
+                            
+                            penguinScrollNode.runAction(leftResist)
+                        }
+                        
+                        
+                        
+                        if lastNodePositionInScene.x < view!.center.x - 0.1 {
+                            let rightResist = SKAction.moveTo(CGPoint(x: view!.center.x - penguinOffset * CGFloat(penguinObjectsData.count - 1), y: view!.center.y), duration: 0.1)
+                            rightResist.timingMode = .EaseOut
+                            
+                            penguinScrollNode.runAction(rightResist)
+                        }
+                        
+                    }
+                    
+                    
+                    
                 }
             }
             
-            if let firstPenguin = self.penguins.first {
-                let firstPenguinPositionInScene = convertPoint(firstPenguin.position, fromNode: penguinScrollNode)
-                
-                if !(firstPenguinPositionInScene.x > view!.center.x + 0.1) {
-                    
-                    let pan = SKAction.moveBy(CGVector(dx: translation.x, dy: 0), duration: 0.5)
-                    pan.timingMode = .EaseOut
-                    penguinScrollNode.runAction(pan)
-                }
-            }
             
         }
     }
@@ -163,28 +209,87 @@ class ItemSelectionScene: SKScene, UIScrollViewDelegate {
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
     }
     
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        
+    }
+    
     override func update(currentTime: NSTimeInterval) {
-        if let firstPenguin = self.penguins.first {
-            let firstPenguinPositionInScene = convertPoint(firstPenguin.position, fromNode: penguinScrollNode)
+        if let firstNode = scrollNodes.first {
+            let firstNodePositionInScene = convertPoint(firstNode.position, fromNode: penguinScrollNode)
             
-            if firstPenguinPositionInScene.x > view!.center.x + 0.1 {
-                let leftResist = SKAction.moveTo(CGPoint(x: view!.center.x, y: view!.center.y), duration: 0.2)
+            if firstNodePositionInScene.x > view!.center.x + 0.1 {
+                let leftResist = SKAction.moveTo(CGPoint(x: view!.center.x, y: view!.center.y), duration: 0.1)
                 leftResist.timingMode = .EaseOut
                 
                 penguinScrollNode.runAction(leftResist)
             }
         }
-        if let lastPenguin = self.penguins.last {
-            let lastPenguinPositionInScene = convertPoint(lastPenguin.position, fromNode: penguinScrollNode)
+        if let lastNode = scrollNodes.last {
+            let lastNodePositionInScene = convertPoint(lastNode.position, fromNode: penguinScrollNode)
             
-            if lastPenguinPositionInScene.x < view!.center.x - 0.1 {
-                let rightResist = SKAction.moveTo(CGPoint(x: view!.center.x - penguinOffset * CGFloat(penguins.count - 1), y: view!.center.y), duration: 0.2)
+            if lastNodePositionInScene.x < view!.center.x - 0.1 {
+                let rightResist = SKAction.moveTo(CGPoint(x: view!.center.x + penguinOffset * CGFloat(penguinObjectsData.count - 1), y: view!.center.y), duration: 0.1)
                 rightResist.timingMode = .EaseOut
                 
                 penguinScrollNode.runAction(rightResist)
             }
         }
+        
+        // Calculate which penguin is closest to the middle
+        var middleNode: SKNode!
+        var closestX = penguinOffset * 10
+        
+        for node in scrollNodes {
+            let nodePositionInScene = convertPoint(node.position, fromNode: penguinScrollNode)
+            let nodeDistanceFromCenter = nodePositionInScene.x - view!.center.x
+            if nodeDistanceFromCenter < abs(closestX) {
+                closestX = nodeDistanceFromCenter
+                middleNode = node
+            }
+        }
+        
+        // Scale unselected penguins smaller
+        for node in scrollNodes {
+            if node != middleNode && node.childNodeWithName("penguin")?.xScale > 2 {
+                let normalScale = SKAction.scaleTo(1, duration: 0.2)
+                normalScale.timingMode = .EaseOut
+                
+                let penguin = node.childNodeWithName("penguin") // as! Penguin
+                penguin?.runAction(normalScale)
+                penguin?.position = CGPointZero
+            }
+        }
+        
+        // Scale selected penguin larger
+        if middleNode.childNodeWithName("penguin")?.xScale < 2 {
+            
+            
+            let selectedScale = SKAction.scaleTo(3, duration: 0.2)
+            selectedScale.timingMode = .EaseOut
+            middleNode.childNodeWithName("penguin")?.runAction(selectedScale)
+            
+            //            let viewCenterInScrollNode = penguinScrollNode.convertPoint(view!.center, fromNode: self)
+            
+        }
+        middleNode.childNodeWithName("penguin")?.position.x = -closestX// CGPoint(x: 0 - closestX, y: 0)
+        
+        selectedNode = middleNode
+        
+        
+        if let index = Int(middleNode.name!) {
+            penguinTitle.text = penguinObjectsData[index].name
+            
+            if penguinObjectsData[index].unlocked {
+                penguinButton.text = "Play"
+            } else {
+                penguinButton.text = "Unlock with \(penguinObjectsData[index].cost) coins"
+            }
+            
+        }
+        
     }
+    
+    // MARK: - CoreData methods
     
     func fetchGameData() -> GameData {
         var fetchedData = [GameData]()
@@ -235,5 +340,32 @@ class ItemSelectionScene: SKScene, UIScrollViewDelegate {
         }
         
         return fetchedData.first!
+    }
+    
+    
+    func saveSelectedPenguin() {
+        if let selectedPenguin = selectedPenguin {
+            
+            var selectedPenguinString = ""
+            if let selectedIndex = Int(selectedNode!.name!) {
+                let type = penguinObjectsData[selectedIndex].type
+                
+                switch (type) {
+                case .normal:
+                    selectedPenguinString = "normal"
+                case .parasol:
+                    selectedPenguinString = "parasol"
+                }
+            }
+            
+            let gameData = fetchGameData()
+            gameData.selectedPenguin = selectedPenguinString
+            
+            do {
+                try managedObjectContext.save()
+            } catch {
+                print(error)
+            }
+        }
     }
 }
