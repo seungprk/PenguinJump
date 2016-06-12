@@ -46,18 +46,6 @@ class GameViewController: UIViewController {
         scene.scaleMode = .ResizeFill
         
         skView.presentScene(scene)
-        /*
-        // Set Up and Present Main Game Scene
-        let scene = GameScene(size: view.bounds.size)
-        let skView = view as! SKView
-        skView.showsFPS = true
-        skView.showsNodeCount = true
-        skView.showsPhysics = true
-        skView.ignoresSiblingOrder = true
-        scene.scaleMode = .ResizeFill
-        
-        skView.presentScene(scene)
-        */
     }
     
     override func prefersStatusBarHidden() -> Bool {
