@@ -357,6 +357,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             default:
                 penguinType = .normal
             }
+            totalCoins = gameData.totalCoins as Int
+            coinLabel.text = "\(totalCoins) coins"
         }
         
         // Wrap penguin around a cropnode for death animation
