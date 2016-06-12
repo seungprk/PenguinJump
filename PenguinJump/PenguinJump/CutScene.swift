@@ -25,7 +25,7 @@ class CutScene: SKScene {
         fadeIn.timingMode = .EaseOut
         moveInFromRight.timingMode = .EaseOut
         
-        let moveSlowly = SKAction.moveBy(CGVector(dx: -10, dy: 0), duration: 5)
+        let moveSlowly = SKAction.moveBy(CGVector(dx: -10, dy: 0), duration: 7)
 
         image.runAction(fadeIn)
         image.runAction(moveInFromRight, completion: {
