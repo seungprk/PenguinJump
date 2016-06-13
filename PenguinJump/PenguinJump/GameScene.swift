@@ -93,6 +93,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var viewFrame: SKShapeNode!
     var debugMode = false
     
+    let debugButton = SKLabelNode(text: "DEBUG")
+    let zoomButton = SKLabelNode(text: "ZOOM")
+    let rainButton = SKLabelNode(text: "RAINDROP")
+    let lightningButton = SKLabelNode(text: "LIGHTNING")
+    let sharkButton = SKLabelNode(text: "SHARK")
+    let stormButton = SKLabelNode(text: "STORM")
+    
     // MARK: - Iceberg Generator Delegate method
     
     func didGenerateIceberg(generatedIceberg: Iceberg) {
@@ -200,62 +207,77 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
         
-        /*
-        // Debug mode buttons
-        let zoomButton = SKLabelNode(text: "ZOOM")
+        
+        // Debug buttons
+        debugButton.name = "debugButton"
+        debugButton.fontName = "Helvetica Neue Condensed Black"
+        debugButton.fontSize = 24
+        debugButton.alpha = 0.5
+        debugButton.zPosition = 200000
+        debugButton.fontColor = UIColor.blackColor()
+        debugButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2)
+        debugButton.position.y -= debugButton.frame.height * 2
+        cam.addChild(debugButton)
+        
         zoomButton.name = "testZoom"
         zoomButton.fontName = "Helvetica Neue Condensed Black"
         zoomButton.fontSize = 24
         zoomButton.alpha = 0.5
         zoomButton.zPosition = 200000
         zoomButton.fontColor = UIColor.blackColor()
-        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2)
-//        zoomButton.position.x += zoomButton.frame.width
-        zoomButton.position.y -= zoomButton.frame.height * 2
+        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height * 2)
         cam.addChild(zoomButton)
 
-        let rainButton = SKLabelNode(text: "RAIN")
         rainButton.name = "rainButton"
         rainButton.fontName = "Helvetica Neue Condensed Black"
         rainButton.fontSize = 24
         rainButton.alpha = 0.5
         rainButton.zPosition = 200000
         rainButton.fontColor = UIColor.blackColor()
-        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height)
-        rainButton.position.y -= rainButton.frame.height * 2
+        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
         cam.addChild(rainButton)
         
-        let lightningButton = SKLabelNode(text: "LIGHTNING")
         lightningButton.name = "lightningButton"
         lightningButton.fontName = "Helvetica Neue Condensed Black"
         lightningButton.fontSize = 24
         lightningButton.alpha = 0.5
         lightningButton.zPosition = 200000
         lightningButton.fontColor = UIColor.blackColor()
-        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 2)
-        lightningButton.position.y -= lightningButton.frame.height * 2
+        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 4)
         cam.addChild(lightningButton)
         
-        let sharkButton = SKLabelNode(text: "SHARK")
         sharkButton.name = "sharkButton"
         sharkButton.fontName = "Helvetica Neue Condensed Black"
         sharkButton.fontSize = 24
         sharkButton.alpha = 0.5
         sharkButton.zPosition = 200000
         sharkButton.fontColor = UIColor.blackColor()
-        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
-        sharkButton.position.y -= sharkButton.frame.height * 2
+        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 5)
         cam.addChild(sharkButton)
-        */
+        
+        stormButton.name = "stormButton"
+        stormButton.fontName = "Helvetica Neue Condensed Black"
+        stormButton.fontSize = 24
+        stormButton.alpha = 0.5
+        stormButton.zPosition = 200000
+        stormButton.fontColor = UIColor.blackColor()
+        stormButton.position = CGPoint(x: 0, y: view.frame.height / 2 - stormButton.frame.height * 6)
+        cam.addChild(stormButton)
+        
+        zoomButton.hidden = true
+        rainButton.hidden = true
+        lightningButton.hidden = true
+        sharkButton.hidden = true
+        stormButton.hidden = true
+        
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
         pauseButton.fontName = "Helvetica Neue Condensed Black"
         pauseButton.fontSize = 24
-        pauseButton.alpha = 0.5
         pauseButton.zPosition = 200000
         pauseButton.fontColor = UIColor.blackColor()
-        pauseButton.position = CGPoint(x: view.frame.width / 2, y: view.frame.height / 2)
+        pauseButton.position = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.47)
         pauseButton.position.x -= pauseButton.frame.width * 1.5
         pauseButton.position.y -= pauseButton.frame.height * 2
         cam.addChild(pauseButton)
@@ -400,6 +422,22 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name
                 {
+                    if name == "debugButton" {
+                        debugButton.hidden = true
+                        zoomButton.hidden = false
+                        rainButton.hidden = false
+                        lightningButton.hidden = false
+                        sharkButton.hidden = false
+                        stormButton.hidden = false
+                    } else {
+                        debugButton.hidden = false
+                        zoomButton.hidden = true
+                        rainButton.hidden = true
+                        lightningButton.hidden = true
+                        sharkButton.hidden = true
+                        stormButton.hidden = true
+                    }
+                    
                     if name == "testZoom" {
                         let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
                         let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
@@ -425,6 +463,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         shark.position = view!.center
                         addChild(shark)
                         shark.beginSwimming()
+                    }
+                    if name == "stormButton" {
+                        beginStorm()
                     }
                     
                     if name == "pauseButton" {
