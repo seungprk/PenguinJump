@@ -124,16 +124,18 @@ class StartMenuNode: SKNode {
                             self.wardrobeButton.removeFromParent()
                         })
                         parentScene.beginGame()
-                        parentScene.buttonPressSound?.play()
+                        if parentScene.gameData.soundEffectsOn == true {
+                            parentScene.buttonPressSound?.play()
+                        }
                     }
                     if name == "highScoreButton" {
-                        highScoreButton.buttonPress()
+                        highScoreButton.buttonPress(parentScene.gameData.soundEffectsOn)
                     }
                     if name == "settingsButton" {
-                        settingsButton.buttonPress()
+                        settingsButton.buttonPress(parentScene.gameData.soundEffectsOn)
                     }
                     if name == "aboutButton" {
-                        aboutButton.buttonPress()
+                        aboutButton.buttonPress(parentScene.gameData.soundEffectsOn)
                     }
                 }
             }

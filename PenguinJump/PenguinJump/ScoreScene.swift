@@ -11,15 +11,33 @@ import CoreData
 
 class ScoreScene: SKScene {
     
-    var highScore: Int!
+    var managedObjectContext : NSManagedObjectContext!
+    var fetchRequest : NSFetchRequest!
+    var gameData : GameData!
+    
     var score: Int!
     
     var button : SimpleButton!
     
     override func didMoveToView(view: SKView) {
+        managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        fetchRequest = NSFetchRequest(entityName: "GameData")
+        var fetchedData = [GameData]()
+        do {
+            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
+        } catch {
+            print(error)
+        }
+        gameData = fetchedData.first
+        
         backgroundColor = SKColor(red: 220/255, green: 230/255, blue: 236/255, alpha: 1.0)
         
-        fetchHighscore()
+        let logo = SKSpriteNode(imageNamed: "logo")
+        logo.name = "logo"
+        logo.alpha = 0.2
+        logo.position = CGPoint(x: size.width/2, y: size.height/2)
+        logo.zPosition = -100
+        addChild(logo)
         
         let highScoreTitle = SKLabelNode(text: "Highscore")
         highScoreTitle.fontName = "Helvetica Neue Condensed Black"
@@ -29,7 +47,7 @@ class ScoreScene: SKScene {
         highScoreTitle.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         addChild(highScoreTitle)
         
-        let highScoreLabel = SKLabelNode(text: "\(highScore)")
+        let highScoreLabel = SKLabelNode(text: "\(gameData.highScore)")
         highScoreLabel.fontName = "Helvetica Neue Condensed Black"
         highScoreLabel.fontSize = 120
         highScoreLabel.position = CGPoint(x: CGRectGetMidX(view.frame), y: CGRectGetMidY(view.frame))
@@ -65,7 +83,7 @@ class ScoreScene: SKScene {
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
                 if (touchedNode.name == "restartButton") {
-                    button.buttonPress()
+                    button.buttonPress(gameData.soundEffectsOn)
                 }
             }
         }
@@ -88,23 +106,5 @@ class ScoreScene: SKScene {
             }
         }
         button.buttonRelease()
-    }
-    
-    func fetchHighscore() {
-        let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-        let fetchRequest = NSFetchRequest(entityName: "GameData")
-        
-        var fetchedData = [GameData]()
-        do {
-            fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]
-        } catch {
-            print(error)
-        }
-        
-        if fetchedData.isEmpty {
-            highScore = 0
-        } else {
-            highScore = fetchedData.first?.highScore as! Int
-        }
     }
 }

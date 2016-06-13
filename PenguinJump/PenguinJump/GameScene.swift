@@ -542,7 +542,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         let nudge = SKAction.moveBy(velocity, duration: nudgeDuration)
         penguin.runAction(nudge)
         jumpSound?.currentTime = 0
-        jumpSound?.play()
+        if gameData.soundEffectsOn == true { jumpSound?.play() }
     }
     
     // MARK: - Pause state
@@ -677,7 +677,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             penguin.runAction(slideUp)
             penguin.body.runAction(fall)
             
-            splashSound?.play()
+            if gameData.soundEffectsOn == true { splashSound?.play() }
             
             if gameData != nil {
                 let highScore = gameData.highScore as Int
@@ -1004,7 +1004,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
                 // Penguin landed on an iceberg if check is true
-                landingSound?.play()
+                if gameData.soundEffectsOn == true { landingSound?.play() }
                 
                 berg.land()
                 stage.updateCurrentBerg(berg)
@@ -1117,7 +1117,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
                         
                         coinSound?.currentTime = 0
-                        coinSound?.play()
+                        if gameData.soundEffectsOn == true { coinSound?.play() }
                         
                         let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
                         rise.timingMode = .EaseOut

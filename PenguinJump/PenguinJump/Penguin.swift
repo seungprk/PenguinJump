@@ -242,9 +242,6 @@ class Penguin: SKSpriteNode {
                 self.removeAllActions()
             })
             
-            (scene as! GameScene).jumpSound?.currentTime = 0
-            (scene as! GameScene).jumpSound?.play()
-            
             switch (type!) {
             case .tinfoil:
                 item?.runAction(jumpAction, completion: {
@@ -262,6 +259,11 @@ class Penguin: SKSpriteNode {
                 
             default:
                 break
+            }
+            
+            if (scene as! GameScene).gameData.soundEffectsOn == true {
+                (scene as! GameScene).jumpSound?.currentTime = 0
+                (scene as! GameScene).jumpSound?.play()
             }
             
         // Parasol jump action
@@ -323,7 +325,6 @@ class Penguin: SKSpriteNode {
                 item.runAction(enlargeSequence)
             }
             
-            
             penguinCropNode.runAction(enlargeSequence)
             penguinCropNode.runAction(jumpSequence, completion: { () -> Void in
                 self.inAir = false
@@ -331,8 +332,10 @@ class Penguin: SKSpriteNode {
                 self.removeAllActions()
             })
             
-            (scene as! GameScene).jumpSound?.currentTime = 0
-            (scene as! GameScene).jumpSound?.play()
+            if (scene as! GameScene).gameData.soundEffectsOn == true {
+                (scene as! GameScene).jumpSound?.currentTime = 0
+                (scene as! GameScene).jumpSound?.play()
+            }
         }
         
     }

@@ -245,7 +245,6 @@ class ItemSelectionScene: SKScene {
             middleNode.zPosition = 30000
         }
         
-//        middleNode.childNodeWithName("penguin")?.position.x = -closestX
         middleNode.childNodeWithName("penguin")?.position = convertPoint(view!.center, toNode: middleNode)
         
         if let index = Int(middleNode.name!) {
