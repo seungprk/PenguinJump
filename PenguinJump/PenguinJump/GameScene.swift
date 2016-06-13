@@ -101,53 +101,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     let stormButton = SKLabelNode(text: "STORM")
     let moneyButton = SKLabelNode(text: "MONEY")
     
-    // MARK: - Iceberg Generator Delegate method
-    
-    func didGenerateIceberg(generatedIceberg: Iceberg) {
-        let berg = generatedIceberg
-        
-        let coinRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
-        let coinRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
-        let coinPosition = CGPoint(x: berg.position.x + coinRandomX, y: berg.position.y + coinRandomY)
-        
-        let coinRandom = random() % 3
-        if coinRandom == 0 {
-            let coin = Coin()
-            coin.position = coinPosition
-            coinLayer?.addChild(coin)
-        }
-        
-        let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
-        let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
-        let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
-
-        let stormIntensityInverseModifier = (2 * stormIntensity + 1)
-        let lightningProbability = (-95 * difficulty + 100)
-        let lightningRandom: Int = random() % Int(lightningProbability / stormIntensityInverseModifier)
-        if lightningRandom == 0 {
-            let lightning = Lightning(view: view!)
-            lightning.position = lightningPosition
-            lightningLayer?.addChild(lightning)
-        }
-        
-        if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
-            // Can put in a shark
-            
-            // Reusing lightning RNG for test
-            if lightningRandom == 1 {
-                let sharkX = berg.position.x
-                let sharkY = berg.position.y + (350 / 4)
-                let sharkPosition = CGPoint(x: sharkX, y: sharkY)
-                
-                let shark = Shark()
-                shark.position = sharkPosition
-                shark.beginSwimming()
-                sharkLayer?.addChild(shark)
-
-            }
-        }
-    }
-    
     // MARK: - Scene setup
     
     override func didMoveToView(view: SKView) {
@@ -299,6 +252,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             viewFrame.fillColor = SKColor.clearColor()
             addChild(viewFrame)
         }
+        
+//        NSNotificationCenter
     }
     
     func setupScene() {
@@ -460,7 +415,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                     if name == "rainButton" {
                         let raindrop = Raindrop()
                         addChild(raindrop)
-//                        raindrop.testRotation(view!.center, windSpeed: windSpeed)
                         raindrop.zPosition = 100000
                         raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
                     }
@@ -486,37 +440,39 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                     }
                     
                     if name == "pauseButton" {
-                        if gamePaused == false {
-                            shouldCorrectAfterPause = true
-                            gamePaused = true
-                            penguin.userInteractionEnabled = false
-                            paused = true
-                            
-                            let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
-                            cover.name = "pauseCover"
-                            cover.position = cam.position
-                            cover.alpha = 0.5
-                            cover.zPosition = 1000000
-                            addChild(cover)
-                            
-                            let unPause = SKLabelNode(text: "Tap to Play")
-                            unPause.name = "pauseCover"
-                            unPause.position = cam.position
-                            unPause.fontColor = SKColor.whiteColor()
-                            unPause.fontName = "Helvetica Neue Condensed Black"
-                            unPause.zPosition = 1000001
-                            addChild(unPause)
-                        }
+                        enterPause()
+//                        if gamePaused == false {
+//                            shouldCorrectAfterPause = true
+//                            gamePaused = true
+//                            penguin.userInteractionEnabled = false
+//                            paused = true
+//                            
+//                            let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
+//                            cover.name = "pauseCover"
+//                            cover.position = cam.position
+//                            cover.alpha = 0.5
+//                            cover.zPosition = 1000000
+//                            addChild(cover)
+//                            
+//                            let unPause = SKLabelNode(text: "Tap to Play")
+//                            unPause.name = "pauseCover"
+//                            unPause.position = cam.position
+//                            unPause.fontColor = SKColor.whiteColor()
+//                            unPause.fontName = "Helvetica Neue Condensed Black"
+//                            unPause.zPosition = 1000001
+//                            addChild(unPause)
+//                        }
                     }
                     if touchedNode.name == "pauseCover" {
-                        for child in children {
-                            if child.name == "pauseCover" {
-                                child.removeFromParent()
-                            }
-                        }
-                        gamePaused = false
-                        penguin.userInteractionEnabled = true
-                        paused = false
+                        exitPause()
+//                        for child in children {
+//                            if child.name == "pauseCover" {
+//                                child.removeFromParent()
+//                            }
+//                        }
+//                        gamePaused = false
+//                        penguin.userInteractionEnabled = true
+//                        paused = false
                     }
                 }
             }
@@ -562,6 +518,41 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         penguin.runAction(nudge)
         jumpSound?.currentTime = 0
         jumpSound?.play()
+    }
+    
+    // MARK: - Pause state
+    
+    func enterPause() {
+        shouldCorrectAfterPause = true
+        gamePaused = true
+        penguin.userInteractionEnabled = false
+        paused = true
+        
+        let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
+        cover.name = "pauseCover"
+        cover.position = cam.position
+        cover.alpha = 0.5
+        cover.zPosition = 1000000
+        addChild(cover)
+        
+        let unPause = SKLabelNode(text: "Tap to Play")
+        unPause.name = "pauseCover"
+        unPause.position = cam.position
+        unPause.fontColor = SKColor.whiteColor()
+        unPause.fontName = "Helvetica Neue Condensed Black"
+        unPause.zPosition = 1000001
+        addChild(unPause)
+    }
+    
+    func exitPause() {
+        for child in children {
+            if child.name == "pauseCover" {
+                child.removeFromParent()
+            }
+        }
+        gamePaused = false
+        penguin.userInteractionEnabled = true
+        paused = false
     }
     
     // MARK: - Game state
@@ -713,6 +704,54 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             do { try managedObjectContext.save() } catch { print(error) }
         }
     }
+    
+    // MARK: - Iceberg Generator Delegate method
+    
+    func didGenerateIceberg(generatedIceberg: Iceberg) {
+        let berg = generatedIceberg
+        
+        let coinRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let coinRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let coinPosition = CGPoint(x: berg.position.x + coinRandomX, y: berg.position.y + coinRandomY)
+        
+        let coinRandom = random() % 3
+        if coinRandom == 0 {
+            let coin = Coin()
+            coin.position = coinPosition
+            coinLayer?.addChild(coin)
+        }
+        
+        let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
+        
+        let stormIntensityInverseModifier = (2 * stormIntensity + 1)
+        let lightningProbability = (-95 * difficulty + 100)
+        let lightningRandom: Int = random() % Int(lightningProbability / stormIntensityInverseModifier)
+        if lightningRandom == 0 {
+            let lightning = Lightning(view: view!)
+            lightning.position = lightningPosition
+            lightningLayer?.addChild(lightning)
+        }
+        
+        if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
+            // Can put in a shark
+            
+            // Reusing lightning RNG for test
+            if lightningRandom == 1 {
+                let sharkX = berg.position.x
+                let sharkY = berg.position.y + (350 / 4)
+                let sharkPosition = CGPoint(x: sharkX, y: sharkY)
+                
+                let shark = Shark()
+                shark.position = sharkPosition
+                shark.beginSwimming()
+                sharkLayer?.addChild(shark)
+                
+            }
+        }
+    }
+    
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
