@@ -20,8 +20,8 @@ class CutScene: SKScene {
         image.position.x += view.frame.width
         addChild(image)
         
-        let fadeIn = SKAction.fadeAlphaTo(1, duration: 0.5)
-        let moveInFromRight = SKAction.moveTo(CGPoint(x: view.center.x + 5, y: view.center.y), duration: 0.5)
+        let fadeIn = SKAction.fadeAlphaTo(1, duration: 1)
+        let moveInFromRight = SKAction.moveTo(CGPoint(x: view.center.x + 5, y: view.center.y), duration: 1)
         fadeIn.timingMode = .EaseOut
         moveInFromRight.timingMode = .EaseOut
         

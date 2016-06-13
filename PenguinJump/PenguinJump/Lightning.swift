@@ -83,6 +83,7 @@ class Lightning: SKNode {
     }
     
     func beginStrike() {
+        (scene as! GameScene).powerUpSound?.play()
         
         let wait = SKAction.waitForDuration(strikeDuration * 2)
         
@@ -116,7 +117,7 @@ class Lightning: SKNode {
     
     func strike() {
         
-        let wait = SKAction.waitForDuration(strikeDuration)
+        (scene as! GameScene).zapSound?.play()
         
         shadowOverlay.alpha = 1.0
         cloudOverlay.alpha = 1.0
@@ -124,6 +125,7 @@ class Lightning: SKNode {
         self.lightningCropNode.alpha = 1.0
         self.lightning.numParticlesToEmit = 1000
         
+        let wait = SKAction.waitForDuration(strikeDuration)
         self.runAction(wait, completion: {
             self.shadowOverlay.alpha = 0.0
             self.cloudOverlay.alpha = 0.0

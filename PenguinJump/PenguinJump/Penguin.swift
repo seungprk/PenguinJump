@@ -338,6 +338,7 @@ class Penguin: SKSpriteNode {
     }
     
     func land(sinkDuration: NSTimeInterval) {
+        doubleJumped = false
         hitByLightning = false
 
         onBerg = true

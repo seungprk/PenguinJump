@@ -29,6 +29,8 @@ class ItemSelectionScene: SKScene {
     var coinLabel = SKLabelNode(text: "0 coins")
     var totalCoins: Int?
     
+    var previousNode: SKNode?
+    
     override func didMoveToView(view: SKView) {
         scaleMode = SKSceneScaleMode.AspectFill
         backgroundColor = SKColor(red: 0, green: 93/255, blue: 134/255, alpha: 1)
@@ -206,9 +208,17 @@ class ItemSelectionScene: SKScene {
             let nodeDistanceFromCenter = nodePositionInScene.x - view!.center.x
             if nodeDistanceFromCenter < abs(closestX) {
                 closestX = nodeDistanceFromCenter
+                
                 middleNode = node
             }
         }
+        
+        if previousNode != middleNode {
+            previousNode = middleNode
+            
+            runAction(SKAction.playSoundFileNamed("dial.wav", waitForCompletion: false))
+        }
+        selectedNode = middleNode
         
         // Scale unselected penguins smaller
         for node in scrollNodes {
@@ -225,7 +235,7 @@ class ItemSelectionScene: SKScene {
         }
         
         // Scale selected penguin larger
-        if middleNode.childNodeWithName("penguin")?.xScale < 2 {
+        if middleNode.childNodeWithName("penguin")?.xScale < 1.001 {
             let selectedScale = SKAction.scaleTo(4, duration: 0.2)
             selectedScale.timingMode = .EaseOut
             
@@ -237,8 +247,6 @@ class ItemSelectionScene: SKScene {
         
 //        middleNode.childNodeWithName("penguin")?.position.x = -closestX
         middleNode.childNodeWithName("penguin")?.position = convertPoint(view!.center, toNode: middleNode)
-        
-        selectedNode = middleNode
         
         if let index = Int(middleNode.name!) {
             if penguinObjectsData[index].unlocked {
