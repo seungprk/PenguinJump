@@ -1,4 +1,6 @@
-# ![alt tag](https://raw.githubusercontent.com/seungprk/PenguinJump/master/Art/appicon/appicon64.png) PenguinJump 
+![alt tag](https://raw.githubusercontent.com/seungprk/PenguinJump/master/Art/appicon/appicon128.png) 
+
+PenguinJump 
 
 Group Project for CIS55
 
