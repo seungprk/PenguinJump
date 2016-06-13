@@ -91,6 +91,10 @@ class Shark: SKNode {
     }
     
     func beginSwimming() {
+        if (self.scene as! GameScene).gameData.soundEffectsOn as Bool {
+            (scene as! GameScene).lurkingSound?.play()
+        }
+        
         position.x += 100
         
         swimLeft()
@@ -129,6 +133,10 @@ class Shark: SKNode {
         let faceMoveDown = SKAction.moveBy(CGVector(dx: 0, dy: -face.size.height), duration: 0.5)
         faceMoveUp.timingMode = .EaseOut
         faceMoveDown.timingMode = .EaseIn
+
+        if (scene as! GameScene).gameData.soundEffectsOn as Bool {
+            (scene as! GameScene).alertSound?.play()
+        }
         
         removeAllActions()
         finMask.removeAllActions()
@@ -137,6 +145,10 @@ class Shark: SKNode {
         shadow.removeAllActions()
         
         runAction(reactionTime, completion: {
+            if (self.scene as! GameScene).gameData.soundEffectsOn as Bool {
+                (self.scene as! GameScene).sharkSound?.play()
+            }
+            
             self.fin.runAction(faceMoveDown, completion: {
                 self.wave.removeFromParent()
                 self.fin.removeFromParent()

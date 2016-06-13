@@ -38,6 +38,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var lightningLayer: SKNode?
     var sharkLayer: SKNode?
     
+    // Audio
+    
     var backgroundMusic: AVAudioPlayer?
     var backgroundOcean: AVAudioPlayer?
     
@@ -46,6 +48,14 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var landingSound: AVAudioPlayer?
     var buttonPressSound: AVAudioPlayer?
     var coinSound: AVAudioPlayer?
+    
+    var alertSound: AVAudioPlayer?
+    var sharkSound: AVAudioPlayer?
+    var lurkingSound: AVAudioPlayer?
+    var zapSound: AVAudioPlayer?
+    var thunderSound: AVAudioPlayer?
+    var powerUpSound: AVAudioPlayer?
+    var burstSound: AVAudioPlayer?
     
     var musicInitialized = false
     
@@ -80,6 +90,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var coinLabel: SKLabelNode!
     var chargeBar: ChargeBar!
     var shouldFlash = false
+    let pauseButton = SKLabelNode(text: "I I")
     
     var totalCoins = 0
     
@@ -89,9 +100,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Debug
     var testZoomed = false
-    var presentationMode = true
+    var viewOutlineOn = false
     var viewFrame: SKShapeNode!
-    var debugMode = false
     
     let debugButton = SKLabelNode(text: "DEBUG")
     let zoomButton = SKLabelNode(text: "ZOOM")
@@ -99,53 +109,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     let lightningButton = SKLabelNode(text: "LIGHTNING")
     let sharkButton = SKLabelNode(text: "SHARK")
     let stormButton = SKLabelNode(text: "STORM")
-    
-    // MARK: - Iceberg Generator Delegate method
-    
-    func didGenerateIceberg(generatedIceberg: Iceberg) {
-        let berg = generatedIceberg
-        
-        let coinRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
-        let coinRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
-        let coinPosition = CGPoint(x: berg.position.x + coinRandomX, y: berg.position.y + coinRandomY)
-        
-        let coinRandom = random() % 3
-        if coinRandom == 0 {
-            let coin = Coin()
-            coin.position = coinPosition
-            coinLayer?.addChild(coin)
-        }
-        
-        let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
-        let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
-        let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
-
-        let stormIntensityInverseModifier = (2 * stormIntensity + 1)
-        let lightningProbability = (-95 * difficulty + 100)
-        let lightningRandom: Int = random() % Int(lightningProbability / stormIntensityInverseModifier)
-        if lightningRandom == 0 {
-            let lightning = Lightning(view: view!)
-            lightning.position = lightningPosition
-            lightningLayer?.addChild(lightning)
-        }
-        
-        if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
-            // Can put in a shark
-            
-            // Reusing lightning RNG for test
-            if lightningRandom == 1 {
-                let sharkX = berg.position.x
-                let sharkY = berg.position.y + (350 / 4)
-                let sharkPosition = CGPoint(x: sharkX, y: sharkY)
-                
-                let shark = Shark()
-                shark.position = sharkPosition
-                shark.beginSwimming()
-                sharkLayer?.addChild(shark)
-
-            }
-        }
-    }
+    let moneyButton = SKLabelNode(text: "MONEY")
+    let viewOutlineButton = SKLabelNode(text: "OUTLINE VIEW")
     
     // MARK: - Scene setup
     
@@ -175,6 +140,29 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         if let coinSound = audioPlayerWithFile("coin", type: "wav") {
             self.coinSound = coinSound
         }
+        if let alertSound = audioPlayerWithFile("alert", type: "mp3") {
+            self.alertSound = alertSound
+        }
+        if let sharkSound = audioPlayerWithFile("roar", type: "wav") {
+            self.sharkSound = sharkSound
+        }
+        if let lurkingSound = audioPlayerWithFile("lurking", type: "mp3") {
+            lurkingSound.numberOfLoops = -1
+            self.lurkingSound = lurkingSound
+        }
+        if let zapSound = audioPlayerWithFile("zap", type: "mp3") {
+            self.zapSound = zapSound
+        }
+        if let thunderSound = audioPlayerWithFile("thunder", type: "wav") {
+            self.thunderSound = thunderSound
+        }
+        if let powerUpSound = audioPlayerWithFile("power_up", type: "mp3") {
+            self.powerUpSound = powerUpSound
+        }
+        if let burstSound = audioPlayerWithFile("balloon_pop", type: "mp3") {
+            self.burstSound = burstSound
+        }
+        
         
         // Fetch total coins data and sound settings
         var fetchedData = [GameData]()
@@ -213,7 +201,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         debugButton.fontName = "Helvetica Neue Condensed Black"
         debugButton.fontSize = 24
         debugButton.alpha = 0.5
-        debugButton.zPosition = 200000
+        debugButton.zPosition = 2000000
         debugButton.fontColor = UIColor.blackColor()
         debugButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2)
         debugButton.position.y -= debugButton.frame.height * 2
@@ -223,55 +211,73 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         zoomButton.fontName = "Helvetica Neue Condensed Black"
         zoomButton.fontSize = 24
         zoomButton.alpha = 0.5
-        zoomButton.zPosition = 200000
+        zoomButton.zPosition = 2000000
         zoomButton.fontColor = UIColor.blackColor()
-        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height * 2)
+        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - debugButton.frame.height * 2)
         cam.addChild(zoomButton)
 
         rainButton.name = "rainButton"
         rainButton.fontName = "Helvetica Neue Condensed Black"
         rainButton.fontSize = 24
         rainButton.alpha = 0.5
-        rainButton.zPosition = 200000
+        rainButton.zPosition = 2000000
         rainButton.fontColor = UIColor.blackColor()
-        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
+        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 3)
         cam.addChild(rainButton)
         
         lightningButton.name = "lightningButton"
         lightningButton.fontName = "Helvetica Neue Condensed Black"
         lightningButton.fontSize = 24
         lightningButton.alpha = 0.5
-        lightningButton.zPosition = 200000
+        lightningButton.zPosition = 2000000
         lightningButton.fontColor = UIColor.blackColor()
-        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 4)
+        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 4)
         cam.addChild(lightningButton)
         
         sharkButton.name = "sharkButton"
         sharkButton.fontName = "Helvetica Neue Condensed Black"
         sharkButton.fontSize = 24
         sharkButton.alpha = 0.5
-        sharkButton.zPosition = 200000
+        sharkButton.zPosition = 2000000
         sharkButton.fontColor = UIColor.blackColor()
-        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 5)
+        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 5)
         cam.addChild(sharkButton)
         
         stormButton.name = "stormButton"
         stormButton.fontName = "Helvetica Neue Condensed Black"
         stormButton.fontSize = 24
         stormButton.alpha = 0.5
-        stormButton.zPosition = 200000
+        stormButton.zPosition = 2000000
         stormButton.fontColor = UIColor.blackColor()
-        stormButton.position = CGPoint(x: 0, y: view.frame.height / 2 - stormButton.frame.height * 6)
+        stormButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 6)
         cam.addChild(stormButton)
+        
+        moneyButton.name = "moneyButton"
+        moneyButton.fontName = "Helvetica Neue Condensed Black"
+        moneyButton.fontSize = 24
+        moneyButton.alpha = 0.5
+        moneyButton.zPosition = 2000000
+        moneyButton.fontColor = UIColor.blackColor()
+        moneyButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 7)
+        cam.addChild(moneyButton)
+        
+        viewOutlineButton.name = "viewOutlineButton"
+        viewOutlineButton.fontName = "Helvetica Neue Condensed Black"
+        viewOutlineButton.fontSize = 24
+        viewOutlineButton.alpha = 0.5
+        viewOutlineButton.zPosition = 2000000
+        viewOutlineButton.fontColor = UIColor.blackColor()
+        viewOutlineButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 8)
+        cam.addChild(viewOutlineButton)
         
         zoomButton.hidden = true
         rainButton.hidden = true
         lightningButton.hidden = true
         sharkButton.hidden = true
         stormButton.hidden = true
+        moneyButton.hidden = true
+        viewOutlineButton.hidden = true
         
-        
-        let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
         pauseButton.fontName = "Helvetica Neue Condensed Black"
         pauseButton.fontSize = 24
@@ -280,15 +286,19 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pauseButton.position = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.47)
         pauseButton.position.x -= pauseButton.frame.width * 1.5
         pauseButton.position.y -= pauseButton.frame.height * 2
+        pauseButton.alpha = 0
         cam.addChild(pauseButton)
         
-        if presentationMode {
-            viewFrame = SKShapeNode(rectOfSize: view.frame.size)
-            viewFrame.position = cam.position
-            viewFrame.strokeColor = SKColor.redColor()
-            viewFrame.fillColor = SKColor.clearColor()
-            addChild(viewFrame)
-        }
+        viewFrame = SKShapeNode(rectOfSize: view.frame.size)
+        viewFrame.position = cam.position
+        viewFrame.strokeColor = SKColor.redColor()
+        viewFrame.fillColor = SKColor.clearColor()
+        viewFrame.hidden = viewOutlineOn ? false : true
+        addChild(viewFrame)
+        
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "enterPause", name: UIApplicationWillResignActiveNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "becomeActive", name: UIApplicationDidBecomeActiveNotification, object: nil)
     }
     
     func setupScene() {
@@ -429,6 +439,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         lightningButton.hidden = false
                         sharkButton.hidden = false
                         stormButton.hidden = false
+                        moneyButton.hidden = false
+                        viewOutlineButton.hidden = false
                     } else {
                         debugButton.hidden = false
                         zoomButton.hidden = true
@@ -436,102 +448,88 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         lightningButton.hidden = true
                         sharkButton.hidden = true
                         stormButton.hidden = true
-                    }
+                        moneyButton.hidden = true
+                        viewOutlineButton.hidden = true
                     
-                    if name == "testZoom" {
-                        let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
-                        let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
-                        
-                        testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
-                        testZoomed = testZoomed ? false : true
-                    }
-                    if name == "rainButton" {
-                        let raindrop = Raindrop()
-                        addChild(raindrop)
-//                        raindrop.testRotation(view!.center, windSpeed: windSpeed)
-                        raindrop.zPosition = 100000
-                        raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
-                    }
-                    if name == "lightningButton" {
-                        let lightning = Lightning(view: view!)
-                        addChild(lightning)
-                        lightning.position = penguin.position // view!.center
-                        lightning.zPosition = 100000
-                    }
-                    if name == "sharkButton" {
-                        let shark = Shark()
-                        shark.position = view!.center
-                        addChild(shark)
-                        shark.beginSwimming()
-                    }
-                    if name == "stormButton" {
-                        beginStorm()
-                    }
                     
-                    if name == "pauseButton" {
-                        if gamePaused == false {
-                            shouldCorrectAfterPause = true
-                            gamePaused = true
-                            penguin.userInteractionEnabled = false
-                            paused = true
+                        if name == "testZoom" {
+                            let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
+                            let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
                             
-                            let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
-                            cover.name = "pauseCover"
-                            cover.position = cam.position
-                            cover.alpha = 0.5
-                            cover.zPosition = 1000000
-                            addChild(cover)
-                            
-                            let unPause = SKLabelNode(text: "Tap to Play")
-                            unPause.name = "pauseCover"
-                            unPause.position = cam.position
-                            unPause.fontColor = SKColor.whiteColor()
-                            unPause.fontName = "Helvetica Neue Condensed Black"
-                            unPause.zPosition = 1000001
-                            addChild(unPause)
-                        }
-                    }
-                    if touchedNode.name == "pauseCover" {
-                        for child in children {
-                            if child.name == "pauseCover" {
-                                child.removeFromParent()
+                            testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
+                            testZoomed = testZoomed ? false : true
+                        } else if name == "rainButton" {
+                            let raindrop = Raindrop()
+                            addChild(raindrop)
+                            raindrop.zPosition = 100000
+                            raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
+                        } else if name == "lightningButton" {
+                            if let berg = (stage as IcebergGenerator).highestBerg {
+                                let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+                                let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+                                let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
+                                let lightning = Lightning(view: view!)
+                                lightning.position = lightningPosition
+                                lightningLayer?.addChild(lightning)
                             }
+                        } else if name == "sharkButton" {
+                            if let berg = (stage as IcebergGenerator).highestBerg {
+                                let sharkX = berg.position.x
+                                let sharkY = berg.position.y + (350 / 4)
+                                let sharkPosition = CGPoint(x: sharkX, y: sharkY)
+                                
+                                let shark = Shark()
+                                shark.position = sharkPosition
+                                sharkLayer?.addChild(shark)
+                                shark.beginSwimming()
+                            }
+                        } else if name == "stormButton" {
+                            beginStorm()
+                        } else if name == "moneyButton" {
+                            for _ in 1...100 {
+                                incrementTotalCoins()
+                            }
+                        } else if name == "viewOutlineButton" {
+                            viewOutlineOn = !viewOutlineOn
+                        } else if name == "pauseButton" {
+                            enterPause()
+                        } else if touchedNode.name == "pauseCover" {
+                            exitPause()
+                        } else if penguin.inAir && !penguin.doubleJumped {
+                            // IF A BUTTON WASN'T TOUCHED, IT'S A DOUBLE JUMP COMMAND
+                            // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
+                            // use above for swipe double jump
+                            
+                            penguin.doubleJumped = true
+                            
+                            let delta = positionInScene - penguin.position
+                            
+                            let jumpAir = SKShapeNode(circleOfRadius: 20.0)
+                            jumpAir.fillColor = SKColor.clearColor()
+                            jumpAir.strokeColor = SKColor.whiteColor()
+                            
+                            jumpAir.xScale = 1.0
+                            jumpAir.yScale = 1.0
+                            
+                            jumpAir.position = penguin.position
+                            addChild(jumpAir)
+                            
+                            let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
+                            let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
+                            
+                            airExpand.timingMode = .EaseOut
+                            airFade.timingMode = .EaseIn
+                            
+                            jumpAir.runAction(airExpand)
+                            jumpAir.runAction(airFade, completion: {
+                                self.jumpAir.removeFromParent()
+                            })
+                            
+                            doubleJump(CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5))
                         }
-                        gamePaused = false
-                        penguin.userInteractionEnabled = true
-                        paused = false
                     }
                 }
-            }
-            // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
-            // use above for swipe double jump
-            if penguin.inAir && !penguin.doubleJumped {
-                penguin.doubleJumped = true
-                
-                let delta = positionInScene - penguin.position
-                
-                let jumpAir = SKShapeNode(circleOfRadius: 20.0)
-                jumpAir.fillColor = SKColor.clearColor()
-                jumpAir.strokeColor = SKColor.whiteColor()
-                
-                jumpAir.xScale = 1.0
-                jumpAir.yScale = 1.0
-                
-                jumpAir.position = penguin.position
-                addChild(jumpAir)
-                
-                let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
-                let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
-                
-                airExpand.timingMode = .EaseOut
-                airFade.timingMode = .EaseIn
-                
-                jumpAir.runAction(airExpand)
-                jumpAir.runAction(airFade, completion: {
-                    self.jumpAir.removeFromParent()
-                })
-                
-                doubleJump(CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5))
+
             }
         }
     }
@@ -545,6 +543,59 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         penguin.runAction(nudge)
         jumpSound?.currentTime = 0
         if gameData.soundEffectsOn == true { jumpSound?.play() }
+    }
+    
+    // MARK: - Pause state
+    
+    func becomeActive() {
+        if gamePaused {
+            enterPause()
+        }
+    }
+    
+    func enterPause() {
+        print("enterPause")
+        if gameRunning {
+            shouldCorrectAfterPause = true
+            gamePaused = true
+            penguin.userInteractionEnabled = false
+            paused = true
+            
+            var needsPauseCover = true
+            for child in children {
+                if child.name == "pauseCover" {
+                    needsPauseCover = false
+                }
+            }
+            
+            if needsPauseCover {
+                let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
+                cover.name = "pauseCover"
+                cover.position = cam.position
+                cover.alpha = 0.5
+                cover.zPosition = 1000000
+                addChild(cover)
+                
+                let unPause = SKLabelNode(text: "Tap to Play")
+                unPause.name = "pauseCover"
+                unPause.position = cam.position
+                unPause.fontColor = SKColor.whiteColor()
+                unPause.fontName = "Helvetica Neue Condensed Black"
+                unPause.zPosition = 1000001
+                addChild(unPause)
+            }
+        }
+    }
+    
+    func exitPause() {
+        for child in children {
+            if child.name == "pauseCover" {
+                child.removeFromParent()
+            }
+        }
+        gamePaused = false
+        penguin.userInteractionEnabled = true
+        paused = false
     }
     
     // MARK: - Game state
@@ -569,6 +620,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             let scoreLabelDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
             scoreLabelDown.timingMode = .EaseOut
             self.scoreLabel.runAction(scoreLabelDown)
+            
+            self.pauseButton.alpha = 1
             
             self.gameBegin = true
             self.gameRunning = true
@@ -636,6 +689,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 }
             }
             
+            lurkingSound?.stop()
             fadeMusic()
             
             let wait = SKAction.waitForDuration(2.0)
@@ -696,6 +750,53 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             do { try managedObjectContext.save() } catch { print(error) }
         }
     }
+    
+    // MARK: - Iceberg Generator Delegate method
+    
+    func didGenerateIceberg(generatedIceberg: Iceberg) {
+        let berg = generatedIceberg
+        
+        let coinRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let coinRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let coinPosition = CGPoint(x: berg.position.x + coinRandomX, y: berg.position.y + coinRandomY)
+        
+        let coinRandom = random() % 3
+        if coinRandom == 0 {
+            let coin = Coin()
+            coin.position = coinPosition
+            coinLayer?.addChild(coin)
+        }
+        
+        let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
+        let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
+        let lightningPosition = CGPoint(x: berg.position.x + lightningRandomX, y: berg.position.y + lightningRandomY)
+        
+        let stormIntensityInverseModifier = (2 * stormIntensity + 1)
+        let lightningProbability = (-95 * difficulty + 100)
+        let lightningRandom: Int = random() % Int(lightningProbability / stormIntensityInverseModifier)
+        if lightningRandom == 0 {
+            let lightning = Lightning(view: view!)
+            lightning.position = lightningPosition
+            lightningLayer?.addChild(lightning)
+        }
+        
+        if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
+            // Can put in a shark
+            
+            // Reusing lightning RNG for test
+            if lightningRandom == 1 {
+                let sharkX = berg.position.x
+                let sharkY = berg.position.y + (350 / 4)
+                let sharkPosition = CGPoint(x: sharkX, y: sharkY)
+                
+                let shark = Shark()
+                shark.position = sharkPosition
+                sharkLayer?.addChild(shark)
+                shark.beginSwimming()
+            }
+        }
+    }
+    
     // MARK: - Updates
     
     override func update(currentTime: NSTimeInterval) {
@@ -714,12 +815,12 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         
         stage.update()
         waves.update()
+        coinLabel.text = "\(totalCoins) coins"
 
         if gameRunning {
             penguin.userInteractionEnabled = true
 
             scoreLabel.text = "Score: " + String(intScore)
-            coinLabel.text = "\(totalCoins) coins"
             
             penguinUpdate()
             coinUpdate()
@@ -764,6 +865,14 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         })
                     }
                 }
+                
+                if shark.position.y < cam.position.y - view!.frame.height * 1.2 {
+                    shark.removeFromParent()
+                    
+                    if sharkLayer.children.count < 1 {
+                        lurkingSound?.stop()
+                    }
+                }
             }
         }
     }
@@ -774,7 +883,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 let lightning = child as! Lightning
                 
                 let difference = lightning.position.y - penguin.position.y
-                if difference < 120 {
+                if difference < 40 {
                     if !lightning.didBeginStriking {
                         lightning.didBeginStriking = true
                         lightning.beginStrike()
@@ -805,7 +914,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             for _ in 0..<numberOfRainDrops {
                 
-                let randomX = 1.5 * CGFloat(random()) % view!.frame.width - view!.frame.width / 2
+                let randomX = 3.0 * CGFloat(random()) % view!.frame.width - view!.frame.width / 2
                 let randomY = 2.0 * CGFloat(random()) % view!.frame.height - view!.frame.height / 4
 
                 let raindrop = Raindrop()
@@ -1032,6 +1141,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                             coinBurstEffectNode.blendMode = .Replace
                             
                             self.addChild(coinBurstEffectNode)
+                            
+                            if self.gameData.soundEffectsOn as Bool {
+                                self.burstSound?.play()
+                            }
 
                             coin.body.removeFromParent()
                             coin.shadow.removeFromParent()
@@ -1057,6 +1170,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             particle.runAction(wait, completion: {
                 particle.runAction(move, completion: {
                     particle.removeFromParent()
+                    if self.gameData.soundEffectsOn as Bool {
+                        let charge = SKAction.playSoundFileNamed("charge.wav", waitForCompletion: false)
+                        self.runAction(charge)
+                    }
+                    
                     self.chargeBar.flashOnce()
                     
                     if !self.stormMode {
@@ -1109,6 +1227,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     func beginStorm() {
         stormMode = true
         
+        if self.gameData.soundEffectsOn as Bool {
+            thunderSound?.play()
+        }
+        
         windDirectionRight = random() % 2 == 0 ? true : false
         
         waves.stormMode = self.stormMode
@@ -1150,8 +1272,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             cam.runAction(pan)
             
-            if presentationMode {
+            if viewOutlineOn {
+                viewFrame.hidden = false
                 viewFrame.position = cam.position
+            } else {
+                viewFrame.hidden = true
             }
         } else {
             cam.removeAllActions()

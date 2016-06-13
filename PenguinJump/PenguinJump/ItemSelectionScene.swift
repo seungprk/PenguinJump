@@ -27,6 +27,10 @@ class ItemSelectionScene: SKScene {
     var penguinObjectsData = [(type: PenguinType, name: String, cost: Int, unlocked: Bool)]()
     
     var coinLabel = SKLabelNode(text: "0 coins")
+    var totalCoins: Int?
+    
+    var previousNode: SKNode?
+    var soundEffectsOn: Bool!
     
     override func didMoveToView(view: SKView) {
         scaleMode = SKSceneScaleMode.AspectFill
@@ -36,7 +40,8 @@ class ItemSelectionScene: SKScene {
         let unlockedPenguins = fetchUnlockedPenguins()
         let gameData = fetchGameData()
         
-        let totalCoins = Int(gameData.totalCoins)
+        totalCoins = Int(gameData.totalCoins)
+        soundEffectsOn = gameData.soundEffectsOn as Bool
         
         // Set up scene UI
         let closeButton = SKLabelNode(text: "X")
@@ -46,7 +51,7 @@ class ItemSelectionScene: SKScene {
         closeButton.fontSize = 24
         closeButton.position = CGPoint(x: view.frame.width * 0.95, y: view.frame.height * 0.95)
         
-        coinLabel.text = "\(totalCoins) coins"
+        coinLabel.text = "\(totalCoins!) coins"
         coinLabel.name = "coinLabel"
         coinLabel.fontName = "Helvetica Neue Condensed Black"
         coinLabel.fontColor = SKColor.whiteColor()
@@ -66,7 +71,7 @@ class ItemSelectionScene: SKScene {
         penguinButton.name = "penguinButton"
         penguinButton.fontName = "Helvetica Neue Condensed Black"
         penguinButton.fontColor = SKColor.whiteColor()
-        penguinButton.fontSize = 24
+        penguinButton.fontSize = 36
         penguinButton.horizontalAlignmentMode = .Center
         penguinButton.position = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.25)
         
@@ -99,7 +104,8 @@ class ItemSelectionScene: SKScene {
                 
                 scrollNode.addChild(penguin)
             } else {
-                let penguin = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: 22, height: 40))
+                let penguin = SKSpriteNode(imageNamed: "locked_penguin")
+                penguin.size = CGSize(width: 25, height: 44)
                 penguin.name = "penguin"
                 
                 scrollNode.addChild(penguin)
@@ -204,9 +210,19 @@ class ItemSelectionScene: SKScene {
             let nodeDistanceFromCenter = nodePositionInScene.x - view!.center.x
             if nodeDistanceFromCenter < abs(closestX) {
                 closestX = nodeDistanceFromCenter
+                
                 middleNode = node
             }
         }
+        
+        if previousNode != middleNode {
+            previousNode = middleNode
+            
+            if soundEffectsOn! {
+                runAction(SKAction.playSoundFileNamed("dial.wav", waitForCompletion: false))
+            }
+        }
+        selectedNode = middleNode
         
         // Scale unselected penguins smaller
         for node in scrollNodes {
@@ -214,33 +230,42 @@ class ItemSelectionScene: SKScene {
                 let normalScale = SKAction.scaleTo(1, duration: 0.2)
                 normalScale.timingMode = .EaseOut
                 
-                let penguin = node.childNodeWithName("penguin") // as! Penguin
+                let penguin = node.childNodeWithName("penguin")
                 penguin?.runAction(normalScale)
                 penguin?.position = CGPointZero
+                
+                node.zPosition = 0
             }
         }
         
         // Scale selected penguin larger
-        if middleNode.childNodeWithName("penguin")?.xScale < 2 {
-            let selectedScale = SKAction.scaleTo(3, duration: 0.2)
+        if middleNode.childNodeWithName("penguin")?.xScale < 1.001 {
+            let selectedScale = SKAction.scaleTo(4, duration: 0.2)
             selectedScale.timingMode = .EaseOut
-            middleNode.childNodeWithName("penguin")?.runAction(selectedScale)
+            
+            let middlePenguin = middleNode.childNodeWithName("penguin")
+            middlePenguin?.runAction(selectedScale)
+            
+            middleNode.zPosition = 30000
         }
         
-//        middleNode.childNodeWithName("penguin")?.position.x = -closestX
         middleNode.childNodeWithName("penguin")?.position = convertPoint(view!.center, toNode: middleNode)
         
-        selectedNode = middleNode
-        
         if let index = Int(middleNode.name!) {
-            penguinTitle.text = penguinObjectsData[index].name
-            
             if penguinObjectsData[index].unlocked {
+                penguinTitle.text = penguinObjectsData[index].name
                 penguinButton.text = "Play"
+                penguinButton.alpha = 1
             } else {
+                penguinTitle.text = "???"
                 penguinButton.text = "Unlock with \(penguinObjectsData[index].cost) coins"
+                
+                if totalCoins >= penguinObjectsData[index].cost {
+                    penguinButton.alpha = 1
+                } else {
+                    penguinButton.alpha = 0.35
+                }
             }
-            
         }
         
     }
@@ -368,6 +393,7 @@ class ItemSelectionScene: SKScene {
                 
                 // Update scene data
                 penguinObjectsData[index].unlocked = true
+                totalCoins = totalCoinsAfterUnlock
                 
                 // Update scene UI .. perhaps have a particle burst behind the character?
                 coinLabel.text = "\(totalCoinsAfterUnlock) coins"
