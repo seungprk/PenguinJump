@@ -89,17 +89,16 @@ class ItemSelectionScene: SKScene {
             (type: PenguinType.parasol, name: "Parasol Penguin", cost: 20, unlocked: Bool(unlockedPenguins.penguinParasol as NSNumber)),
             (type: PenguinType.shark, name: "A Penguin in Shark's Clothing", cost: 50, unlocked: Bool(unlockedPenguins.penguinShark as NSNumber)),
             
-            (type: PenguinType.penguinAngel, name: "Falling Angel", cost: 1, unlocked: Bool(unlockedPenguins.penguinAngel as NSNumber)),
-            (type: PenguinType.penguinCrown, name: "Royal Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinCrown as NSNumber)),
-            (type: PenguinType.penguinDuckyTube, name: "Kid Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinDuckyTube as NSNumber)),
-            (type: PenguinType.penguinMarathon, name: "Ironpenguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinMarathon as NSNumber)),
-            (type: PenguinType.penguinMohawk, name: "Mohawk Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinMohawk as NSNumber)),
-            
-            (type: PenguinType.penguinPolarBear, name: "Wannabe Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinPolarBear as NSNumber)),
-            (type: PenguinType.penguinPropellerHat, name: "Propeller Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinPropellerHat as NSNumber)),
-            (type: PenguinType.penguinSuperman, name: "Super Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinSuperman as NSNumber)),
-            (type: PenguinType.penguinTophat, name: "Tux", cost: 1, unlocked: Bool(unlockedPenguins.penguinTophat as NSNumber)),
-            (type: PenguinType.penguinViking, name: "Ahhhh Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinViking as NSNumber))
+            (type: PenguinType.penguinViking, name: "Ahhhh Penguin", cost: 300, unlocked: Bool(unlockedPenguins.penguinViking as NSNumber)),
+            (type: PenguinType.penguinAngel, name: "Falling Angel", cost: 300, unlocked: Bool(unlockedPenguins.penguinAngel as NSNumber)),
+            (type: PenguinType.penguinMarathon, name: "Ironpenguin", cost: 300, unlocked: Bool(unlockedPenguins.penguinMarathon as NSNumber)),
+            (type: PenguinType.penguinMohawk, name: "Mohawk Penguin", cost: 300, unlocked: Bool(unlockedPenguins.penguinMohawk as NSNumber)),
+            (type: PenguinType.penguinPropellerHat, name: "Propeller Penguin", cost: 300, unlocked: Bool(unlockedPenguins.penguinPropellerHat as NSNumber)),
+            (type: PenguinType.penguinSuperman, name: "Super Penguin", cost: 300, unlocked: Bool(unlockedPenguins.penguinSuperman as NSNumber)),
+            (type: PenguinType.penguinDuckyTube, name: "Kid Penguin", cost: 1000, unlocked: Bool(unlockedPenguins.penguinDuckyTube as NSNumber)),
+            (type: PenguinType.penguinPolarBear, name: "Wannabe Penguin", cost: 1000, unlocked: Bool(unlockedPenguins.penguinPolarBear as NSNumber)),
+            (type: PenguinType.penguinTophat, name: "Tux", cost: 1000, unlocked: Bool(unlockedPenguins.penguinTophat as NSNumber)),
+            (type: PenguinType.penguinCrown, name: "Royal Penguin", cost: 10000, unlocked: Bool(unlockedPenguins.penguinCrown as NSNumber)),
         ]
         
         // Create array of scroll nodes

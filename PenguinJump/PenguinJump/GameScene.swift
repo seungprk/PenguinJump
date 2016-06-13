@@ -506,7 +506,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         } else if name == "stormButton" {
                             beginStorm()
                         } else if name == "moneyButton" {
-                            for _ in 1...100 {
+                            for _ in 1...1000 {
                                 incrementTotalCoins()
                             }
                         } else if name == "viewOutlineButton" {
