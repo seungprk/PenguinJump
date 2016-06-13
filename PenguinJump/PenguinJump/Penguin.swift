@@ -204,7 +204,6 @@ class Penguin: SKSpriteNode {
             //        let jumpDuration = Double(distance / jumpRate)
             
             // Fixed jump duration
-//            let jumpDuration = 1.0
             let jumpDuration = type == .shark ? 0.7 : 1.0
             let jumpHeight = body.frame.height * 2
             
@@ -235,12 +234,6 @@ class Penguin: SKSpriteNode {
             
             runAction(move)
             
-            if type == .tinfoil {
-                item?.runAction(jumpSequence)
-            }
-            item?.runAction(jumpSequence)
-            item?.runAction(enlargeSequence)
-            
             shadow.runAction(shadowEnlargeSequence)
             penguinCropNode.runAction(enlargeSequence)
             penguinCropNode.runAction(jumpSequence, completion: { () -> Void in
@@ -251,6 +244,27 @@ class Penguin: SKSpriteNode {
             
             (scene as! GameScene).jumpSound?.currentTime = 0
             (scene as! GameScene).jumpSound?.play()
+            
+            switch (type!) {
+            case .tinfoil:
+                item?.runAction(jumpAction, completion: {
+                    let delay = SKAction.waitForDuration(0.1)
+                    
+                    self.item?.runAction(delay, completion: {
+                        self.item?.runAction(fallAction)
+                    })
+                })
+                item?.runAction(enlargeSequence)
+                
+            case .shark:
+                item?.runAction(jumpSequence)
+                item?.runAction(enlargeSequence)
+                
+            default:
+                break
+            }
+            
+        // Parasol jump action
         case .parasol:
             hitByLightning = false
             removeAllActions()
@@ -320,60 +334,7 @@ class Penguin: SKSpriteNode {
             (scene as! GameScene).jumpSound?.currentTime = 0
             (scene as! GameScene).jumpSound?.play()
         }
-        /*
-        hitByLightning = false
-        removeAllActions()
-        inAir = true
-        onBerg = false
         
-        // Jump Duration based on travel distance
-//        let jumpRate: CGFloat = 150
-//        let distance = sqrt(direction.dx * direction.dx + direction.dy * direction.dy)
-//        let jumpDuration = Double(distance / jumpRate)
-        
-        // Fixed jump duration
-        let jumpDuration = 1.0
-        let jumpHeight = body.frame.height * 2
-        
-        
-        let jumpAction = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let fallAction = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let enlargeAction = SKAction.scaleBy(2.0, duration: jumpDuration * 0.5)
-        let reduceAction = SKAction.scaleBy(0.5, duration: jumpDuration * 0.5)
-        let jumpCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: -jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let fallCounter = SKAction.moveBy(CGVector(dx: 0.0, dy: jumpHeight), duration: NSTimeInterval(jumpDuration * 0.5))
-        let shadowEnlarge = SKAction.scaleTo(2.0, duration: jumpDuration * 0.5)
-        let shadowReduce = SKAction.scaleTo(1.0, duration: jumpDuration * 0.5)
-
-        jumpAction.timingMode = SKActionTimingMode.EaseOut
-        fallAction.timingMode = SKActionTimingMode.EaseIn
-        enlargeAction.timingMode = SKActionTimingMode.EaseOut
-        reduceAction.timingMode = SKActionTimingMode.EaseIn
-        jumpCounter.timingMode = SKActionTimingMode.EaseOut
-        fallCounter.timingMode = SKActionTimingMode.EaseIn
-        shadowEnlarge.timingMode = .EaseOut
-        shadowReduce.timingMode = .EaseIn
-
-        let jumpSequence = SKAction.sequence([jumpAction, fallAction])
-        let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
-        let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
-        
-        let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
-        let counterMove = SKAction.moveBy(CGVector(dx: -velocity.dx, dy: -velocity.dy * 2), duration: jumpDuration)
-        
-        shadow.runAction(shadowEnlargeSequence)
-        
-        penguinCropNode.runAction(enlargeSequence)
-        runAction(move)
-        penguinCropNode.runAction(jumpSequence, completion: { () -> Void in
-            self.inAir = false
-            self.doubleJumped = false
-            self.removeAllActions()
-        })
-        
-        (scene as! GameScene).jumpSound?.currentTime = 0
-        (scene as! GameScene).jumpSound?.play()
-        */
     }
     
     func land(sinkDuration: NSTimeInterval) {

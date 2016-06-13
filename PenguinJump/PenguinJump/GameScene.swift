@@ -99,6 +99,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     let lightningButton = SKLabelNode(text: "LIGHTNING")
     let sharkButton = SKLabelNode(text: "SHARK")
     let stormButton = SKLabelNode(text: "STORM")
+    let moneyButton = SKLabelNode(text: "MONEY")
     
     // MARK: - Iceberg Generator Delegate method
     
@@ -225,7 +226,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         zoomButton.alpha = 0.5
         zoomButton.zPosition = 200000
         zoomButton.fontColor = UIColor.blackColor()
-        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - zoomButton.frame.height * 2)
+        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - debugButton.frame.height * 2)
         cam.addChild(zoomButton)
 
         rainButton.name = "rainButton"
@@ -234,7 +235,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         rainButton.alpha = 0.5
         rainButton.zPosition = 200000
         rainButton.fontColor = UIColor.blackColor()
-        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 3)
+        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 3)
         cam.addChild(rainButton)
         
         lightningButton.name = "lightningButton"
@@ -243,7 +244,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         lightningButton.alpha = 0.5
         lightningButton.zPosition = 200000
         lightningButton.fontColor = UIColor.blackColor()
-        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 4)
+        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 4)
         cam.addChild(lightningButton)
         
         sharkButton.name = "sharkButton"
@@ -252,7 +253,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         sharkButton.alpha = 0.5
         sharkButton.zPosition = 200000
         sharkButton.fontColor = UIColor.blackColor()
-        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - zoomButton.frame.height * 5)
+        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 5)
         cam.addChild(sharkButton)
         
         stormButton.name = "stormButton"
@@ -261,15 +262,24 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         stormButton.alpha = 0.5
         stormButton.zPosition = 200000
         stormButton.fontColor = UIColor.blackColor()
-        stormButton.position = CGPoint(x: 0, y: view.frame.height / 2 - stormButton.frame.height * 6)
+        stormButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 6)
         cam.addChild(stormButton)
+        
+        moneyButton.name = "moneyButton"
+        moneyButton.fontName = "Helvetica Neue Condensed Black"
+        moneyButton.fontSize = 24
+        moneyButton.alpha = 0.5
+        moneyButton.zPosition = 200000
+        moneyButton.fontColor = UIColor.blackColor()
+        moneyButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 7)
+        cam.addChild(moneyButton)
         
         zoomButton.hidden = true
         rainButton.hidden = true
         lightningButton.hidden = true
         sharkButton.hidden = true
         stormButton.hidden = true
-        
+        moneyButton.hidden = true
         
         let pauseButton = SKLabelNode(text: "I I")
         pauseButton.name = "pauseButton"
@@ -429,6 +439,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         lightningButton.hidden = false
                         sharkButton.hidden = false
                         stormButton.hidden = false
+                        moneyButton.hidden = false
                     } else {
                         debugButton.hidden = false
                         zoomButton.hidden = true
@@ -436,6 +447,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         lightningButton.hidden = true
                         sharkButton.hidden = true
                         stormButton.hidden = true
+                        moneyButton.hidden = true
                     }
                     
                     if name == "testZoom" {
@@ -466,6 +478,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                     }
                     if name == "stormButton" {
                         beginStorm()
+                    }
+                    if name == "moneyButton" {
+                        for _ in 1...100 {
+                            incrementTotalCoins()
+                        }
                     }
                     
                     if name == "pauseButton" {
