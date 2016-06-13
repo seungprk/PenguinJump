@@ -30,6 +30,7 @@ class ItemSelectionScene: SKScene {
     var totalCoins: Int?
     
     var previousNode: SKNode?
+    var soundEffectsOn: Bool!
     
     override func didMoveToView(view: SKView) {
         scaleMode = SKSceneScaleMode.AspectFill
@@ -40,6 +41,7 @@ class ItemSelectionScene: SKScene {
         let gameData = fetchGameData()
         
         totalCoins = Int(gameData.totalCoins)
+        soundEffectsOn = gameData.soundEffectsOn as Bool
         
         // Set up scene UI
         let closeButton = SKLabelNode(text: "X")
@@ -216,7 +218,9 @@ class ItemSelectionScene: SKScene {
         if previousNode != middleNode {
             previousNode = middleNode
             
-            runAction(SKAction.playSoundFileNamed("dial.wav", waitForCompletion: false))
+            if soundEffectsOn! {
+                runAction(SKAction.playSoundFileNamed("dial.wav", waitForCompletion: false))
+            }
         }
         selectedNode = middleNode
         

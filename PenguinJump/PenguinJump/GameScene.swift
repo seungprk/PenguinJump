@@ -815,12 +815,12 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         
         stage.update()
         waves.update()
+        coinLabel.text = "\(totalCoins) coins"
 
         if gameRunning {
             penguin.userInteractionEnabled = true
 
             scoreLabel.text = "Score: " + String(intScore)
-            coinLabel.text = "\(totalCoins) coins"
             
             penguinUpdate()
             coinUpdate()
@@ -1142,7 +1142,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                             
                             self.addChild(coinBurstEffectNode)
                             
-                            self.burstSound?.play()
+                            if self.gameData.soundEffectsOn as Bool {
+                                self.burstSound?.play()
+                            }
 
                             coin.body.removeFromParent()
                             coin.shadow.removeFromParent()
@@ -1168,8 +1170,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             particle.runAction(wait, completion: {
                 particle.runAction(move, completion: {
                     particle.removeFromParent()
-                    let charge = SKAction.playSoundFileNamed("charge.wav", waitForCompletion: false)
-                    self.runAction(charge)
+                    if self.gameData.soundEffectsOn as Bool {
+                        let charge = SKAction.playSoundFileNamed("charge.wav", waitForCompletion: false)
+                        self.runAction(charge)
+                    }
                     
                     self.chargeBar.flashOnce()
                     
@@ -1223,7 +1227,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     func beginStorm() {
         stormMode = true
         
-        thunderSound?.play()
+        if self.gameData.soundEffectsOn as Bool {
+            thunderSound?.play()
+        }
         
         windDirectionRight = random() % 2 == 0 ? true : false
         

@@ -83,7 +83,9 @@ class Lightning: SKNode {
     }
     
     func beginStrike() {
-        (scene as! GameScene).powerUpSound?.play()
+        if (scene as! GameScene).gameData.soundEffectsOn as Bool {
+            (scene as! GameScene).powerUpSound?.play()
+        }
         
         let wait = SKAction.waitForDuration(strikeDuration * 2)
         
@@ -116,8 +118,9 @@ class Lightning: SKNode {
     }
     
     func strike() {
-        
-        (scene as! GameScene).zapSound?.play()
+        if (scene as! GameScene).gameData.soundEffectsOn as Bool {
+            (scene as! GameScene).zapSound?.play()
+        }
         
         shadowOverlay.alpha = 1.0
         cloudOverlay.alpha = 1.0
