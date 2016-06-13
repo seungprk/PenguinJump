@@ -13,6 +13,18 @@ enum PenguinType {
     case parasol
     case tinfoil
     case shark
+    
+    case penguinViking
+    case penguinAngel
+    case penguinSuperman
+    case penguinPolarBear
+    case penguinTophat
+    case penguinPropellerHat
+    case penguinMohawk
+    case penguinCrown
+    case penguinMarathon
+    case penguinDuckyTube
+
 }
 
 class Penguin: SKSpriteNode {
@@ -104,6 +116,57 @@ class Penguin: SKSpriteNode {
             item = SKSpriteNode(imageNamed: "shark_clothing")
             item?.zPosition = 22000
             addChild(item!)
+        case .penguinAngel:
+            item = SKSpriteNode(imageNamed: "halo")
+            item?.position.y += body.size.height / 2
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinCrown:
+            item = SKSpriteNode(imageNamed: "crown")
+            item?.position.y += body.size.height / 1.75
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinDuckyTube:
+            item = SKSpriteNode(imageNamed: "ducky_tube")
+            item?.position.y -= body.size.height / 4
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinMarathon:
+            item = SKSpriteNode(imageNamed: "marathon_sign")
+            item?.position.y -= body.size.height / 4
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinMohawk:
+            item = SKSpriteNode(imageNamed: "mohawk")
+            item?.position.y += body.size.height / 2
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinPolarBear:
+            item = SKSpriteNode(imageNamed: "polar_bear_hat")
+            item?.position.y += body.size.height / 4
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinPropellerHat:
+            item = SKSpriteNode(imageNamed: "propeller_hat")
+            item?.position.y += body.size.height / 2
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinSuperman:
+            item = SKSpriteNode(imageNamed: "cape")
+            item?.position.y -= body.size.height / 3.5
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinTophat:
+            item = SKSpriteNode(imageNamed: "tophat")
+            item?.position.y += body.size.height / 2
+            item?.position.x -= body.size.width / 8
+            item?.zPosition = 22000
+            addChild(item!)
+        case .penguinViking:
+            item = SKSpriteNode(imageNamed: "viking_helmet")
+            item?.position.y += body.size.height / 2
+            item?.zPosition = 22000
+            addChild(item!)
         }
     }
     
@@ -188,6 +251,26 @@ class Penguin: SKSpriteNode {
     
     func jump(velocity: CGVector) {
         switch (type!) {
+        case .penguinAngel:
+            fallthrough
+        case .penguinCrown:
+            fallthrough
+        case .penguinDuckyTube:
+            fallthrough
+        case .penguinMarathon:
+            fallthrough
+        case .penguinMohawk:
+            fallthrough
+        case .penguinPolarBear:
+            fallthrough
+        case .penguinPropellerHat:
+            fallthrough
+        case .penguinSuperman:
+            fallthrough
+        case .penguinTophat:
+            fallthrough
+        case .penguinViking:
+            fallthrough
         case .shark:
             fallthrough
         case .tinfoil:
@@ -243,6 +326,20 @@ class Penguin: SKSpriteNode {
             })
             
             switch (type!) {
+            case .penguinAngel:
+                fallthrough
+            case .penguinCrown:
+                fallthrough
+            case .penguinMohawk:
+                fallthrough
+            case .penguinPolarBear:
+                fallthrough
+            case .penguinPropellerHat:
+                fallthrough
+            case .penguinTophat:
+                fallthrough
+            case .penguinViking:
+                fallthrough
             case .tinfoil:
                 item?.runAction(jumpAction, completion: {
                     let delay = SKAction.waitForDuration(0.1)
@@ -252,7 +349,13 @@ class Penguin: SKSpriteNode {
                     })
                 })
                 item?.runAction(enlargeSequence)
-                
+
+            case .penguinMarathon:
+                fallthrough
+            case .penguinDuckyTube:
+                fallthrough
+            case .penguinSuperman:
+                fallthrough
             case .shark:
                 item?.runAction(jumpSequence)
                 item?.runAction(enlargeSequence)

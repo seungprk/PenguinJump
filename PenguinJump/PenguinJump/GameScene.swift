@@ -387,6 +387,26 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 penguinType = .tinfoil
             case "shark":
                 penguinType = .shark
+            case "penguinAngel":
+                penguinType = .penguinAngel
+            case "penguinCrown":
+                penguinType = .penguinCrown
+            case "penguinDuckyTube":
+                penguinType = .penguinDuckyTube
+            case "penguinMarathon":
+                penguinType = .penguinMarathon
+            case "penguinMohawk":
+                penguinType = .penguinMohawk
+            case "penguinPolarBear":
+                penguinType = .penguinPolarBear
+            case "penguinPropellerHat":
+                penguinType = .penguinPropellerHat
+            case "penguinSuperman":
+                penguinType = .penguinSuperman
+            case "penguinTophat":
+                penguinType = .penguinTophat
+            case "penguinViking":
+                penguinType = .penguinViking
             default:
                 penguinType = .normal
             }

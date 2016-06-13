@@ -86,11 +86,20 @@ class ItemSelectionScene: SKScene {
         penguinObjectsData = [
             (type: PenguinType.normal, name: "Penguin", cost: 0, unlocked: true),
             (type: PenguinType.tinfoil, name: "Paranoid Penguin", cost: 10, unlocked: Bool(unlockedPenguins.penguinTinfoil as NSNumber)),
-            (type: PenguinType.parasol, name: "Parasol Penguin", cost: 30, unlocked: Bool(unlockedPenguins.penguinParasol as NSNumber)),
+            (type: PenguinType.parasol, name: "Parasol Penguin", cost: 20, unlocked: Bool(unlockedPenguins.penguinParasol as NSNumber)),
             (type: PenguinType.shark, name: "A Penguin in Shark's Clothing", cost: 50, unlocked: Bool(unlockedPenguins.penguinShark as NSNumber)),
-            (type: PenguinType.normal, name: "Filler Penguin 1", cost: 100, unlocked: false),
-            (type: PenguinType.normal, name: "Filler Penguin 2", cost: 200, unlocked: false),
-            (type: PenguinType.normal, name: "Filler Penguin 3", cost: 300, unlocked: false),
+            
+            (type: PenguinType.penguinAngel, name: "Falling Angel", cost: 1, unlocked: Bool(unlockedPenguins.penguinAngel as NSNumber)),
+            (type: PenguinType.penguinCrown, name: "Royal Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinCrown as NSNumber)),
+            (type: PenguinType.penguinDuckyTube, name: "Kid Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinDuckyTube as NSNumber)),
+            (type: PenguinType.penguinMarathon, name: "Ironpenguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinMarathon as NSNumber)),
+            (type: PenguinType.penguinMohawk, name: "Mohawk Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinMohawk as NSNumber)),
+            
+            (type: PenguinType.penguinPolarBear, name: "Wannabe Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinPolarBear as NSNumber)),
+            (type: PenguinType.penguinPropellerHat, name: "Propeller Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinPropellerHat as NSNumber)),
+            (type: PenguinType.penguinSuperman, name: "Super Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinSuperman as NSNumber)),
+            (type: PenguinType.penguinTophat, name: "Tux", cost: 1, unlocked: Bool(unlockedPenguins.penguinTophat as NSNumber)),
+            (type: PenguinType.penguinViking, name: "Ahhhh Penguin", cost: 1, unlocked: Bool(unlockedPenguins.penguinViking as NSNumber))
         ]
         
         // Create array of scroll nodes
@@ -310,6 +319,17 @@ class ItemSelectionScene: SKScene {
                 newPenguinData.penguinTinfoil = NSNumber(bool: false)
                 newPenguinData.penguinShark = NSNumber(bool: false)
                 
+                newPenguinData.penguinViking = NSNumber(bool: false)
+                newPenguinData.penguinAngel = NSNumber(bool: false)
+                newPenguinData.penguinSuperman = NSNumber(bool: false)
+                newPenguinData.penguinPolarBear = NSNumber(bool: false)
+                newPenguinData.penguinTophat = NSNumber(bool: false)
+                newPenguinData.penguinPropellerHat = NSNumber(bool: false)
+                newPenguinData.penguinMohawk = NSNumber(bool: false)
+                newPenguinData.penguinCrown = NSNumber(bool: false)
+                newPenguinData.penguinMarathon = NSNumber(bool: false)
+                newPenguinData.penguinDuckyTube = NSNumber(bool: false)
+
                 do {
                     try managedObjectContext.save()
                 } catch { print(error) }
@@ -340,6 +360,26 @@ class ItemSelectionScene: SKScene {
                 selectedPenguinString = "tinfoil"
             case .shark:
                 selectedPenguinString = "shark"
+            case .penguinAngel:
+                selectedPenguinString = "penguinAngel"
+            case .penguinCrown:
+                selectedPenguinString = "penguinCrown"
+            case .penguinDuckyTube:
+                selectedPenguinString = "penguinDuckyTube"
+            case .penguinMarathon:
+                selectedPenguinString = "penguinMarathon"
+            case .penguinMohawk:
+                selectedPenguinString = "penguinMohawk"
+            case .penguinPolarBear:
+                selectedPenguinString = "penguinPolarBear"
+            case .penguinPropellerHat:
+                selectedPenguinString = "penguinPropellerHat"
+            case .penguinSuperman:
+                selectedPenguinString = "penguinSuperman"
+            case .penguinTophat:
+                selectedPenguinString = "penguinTophat"
+            case .penguinViking:
+                selectedPenguinString = "penguinViking"
             }
             
             let gameData = fetchGameData()
@@ -383,6 +423,26 @@ class ItemSelectionScene: SKScene {
                     unlockedPenguins.penguinTinfoil = NSNumber(bool: true)
                 case .shark:
                     unlockedPenguins.penguinShark = NSNumber(bool: true)
+                case .penguinAngel:
+                    unlockedPenguins.penguinAngel = NSNumber(bool: true)
+                case .penguinCrown:
+                    unlockedPenguins.penguinCrown = NSNumber(bool: true)
+                case .penguinDuckyTube:
+                    unlockedPenguins.penguinDuckyTube = NSNumber(bool: true)
+                case .penguinMarathon:
+                    unlockedPenguins.penguinMarathon = NSNumber(bool: true)
+                case .penguinMohawk:
+                    unlockedPenguins.penguinMohawk = NSNumber(bool: true)
+                case .penguinPolarBear:
+                    unlockedPenguins.penguinPolarBear = NSNumber(bool: true)
+                case .penguinPropellerHat:
+                    unlockedPenguins.penguinPropellerHat = NSNumber(bool: true)
+                case .penguinSuperman:
+                    unlockedPenguins.penguinSuperman = NSNumber(bool: true)
+                case .penguinTophat:
+                    unlockedPenguins.penguinTophat = NSNumber(bool: true)
+                case .penguinViking:
+                    unlockedPenguins.penguinViking = NSNumber(bool: true)
                 }
                 
                 do {

@@ -3,19 +3,29 @@
     <entity name="GameData" representedClassName=".GameData" syncable="YES">
         <attribute name="highScore" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="musicOn" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="selectedPenguin" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="musicPlaying" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="selectedPenguin" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="soundEffectsOn" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="totalCoins" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>
     <entity name="UnlockedPenguins" representedClassName=".UnlockedPenguins" syncable="YES">
+        <attribute name="penguinAngel" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinCrown" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinDuckyTube" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinMarathon" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinMohawk" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="penguinNormal" optional="YES" attributeType="Boolean" defaultValueString="0" syncable="YES"/>
         <attribute name="penguinParasol" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinPolarBear" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinPropellerHat" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="penguinShark" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinSuperman" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="penguinTinfoil" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinTophat" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="penguinViking" optional="YES" attributeType="Boolean" syncable="YES"/>
     </entity>
     <elements>
         <element name="GameData" positionX="-63" positionY="-18" width="128" height="105"/>
-        <element name="UnlockedPenguins" positionX="-63" positionY="9" width="128" height="105"/>
+        <element name="UnlockedPenguins" positionX="-63" positionY="9" width="128" height="255"/>
     </elements>
 </model>
