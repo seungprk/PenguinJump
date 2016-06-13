@@ -25,6 +25,7 @@ class SettingsScene: SKScene {
     var backgroundOcean: AVAudioPlayer?
     
     override func didMoveToView(view: SKView) {
+        backgroundColor = SKColor(red: 220/255, green: 230/255, blue: 236/255, alpha: 1.0)
         
         // Fetch Data
         managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
@@ -40,13 +41,16 @@ class SettingsScene: SKScene {
         // Build Interface
         let logo = SKSpriteNode(imageNamed: "logo")
         logo.name = "logo"
+        logo.alpha = 0.2
         logo.position = CGPoint(x: size.width/2, y: size.height/2)
         logo.zPosition = -100
         addChild(logo)
         
         let musicLabel = SKLabelNode(text: "Music")
-        musicLabel.color = UIColor.whiteColor()
-        musicLabel.position = CGPoint(x: size.width/2, y: size.height/2)
+        musicLabel.fontName = "Helvetica Neue Condensed Black"
+        musicLabel.fontSize = 24
+        musicLabel.position = CGPoint(x: size.width * 0.5 - 45, y: size.height * 0.55)
+        musicLabel.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         musicLabel.zPosition = 100
         addChild(musicLabel)
         
@@ -57,12 +61,14 @@ class SettingsScene: SKScene {
         }
         musicButton.name = "musicButton"
         musicButton.position = musicLabel.position
-        musicButton.position.x += 50
+        musicButton.position.x += 100
         addChild(musicButton)
         
         let soundsLabel = SKLabelNode(text: "Sounds")
-        soundsLabel.color = UIColor.whiteColor()
-        soundsLabel.position = CGPoint(x: size.width/2, y: size.height/2 - 50)
+        soundsLabel.fontName = "Helvetica Neue Condensed Black"
+        soundsLabel.fontSize = 24
+        soundsLabel.position = CGPoint(x: size.width * 0.5 - 45, y: size.height * 0.45)
+        soundsLabel.fontColor = SKColor(red: 35/255, green: 134/255, blue: 221/255, alpha: 1.0)
         soundsLabel.zPosition = 100
         addChild(soundsLabel)
         
@@ -73,7 +79,7 @@ class SettingsScene: SKScene {
         }
         soundsButton.name = "soundsButton"
         soundsButton.position = soundsLabel.position
-        soundsButton.position.x += 50
+        soundsButton.position.x += 100
         addChild(soundsButton)
         
         backButton = SimpleButton(text: "Back")
@@ -89,13 +95,13 @@ class SettingsScene: SKScene {
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
                 if touchedNode.name == "musicButton" {
-                    musicButton.buttonPress()
+                    musicButton.buttonPress(gameData.soundEffectsOn)
                 }
                 if touchedNode.name == "soundsButton" {
-                    soundsButton.buttonPress()
+                    soundsButton.buttonPress(gameData.soundEffectsOn)
                 }
                 if touchedNode.name == "backButton" {
-                    backButton.buttonPress()
+                    backButton.buttonPress(gameData.soundEffectsOn)
                 }
             }
         }

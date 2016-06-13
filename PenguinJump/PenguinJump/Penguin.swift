@@ -249,8 +249,10 @@ class Penguin: SKSpriteNode {
                 self.removeAllActions()
             })
             
-            (scene as! GameScene).jumpSound?.currentTime = 0
-            (scene as! GameScene).jumpSound?.play()
+            if (scene as! GameScene).gameData.soundEffectsOn == true {
+                (scene as! GameScene).jumpSound?.currentTime = 0
+                (scene as! GameScene).jumpSound?.play()
+            }
         case .parasol:
             hitByLightning = false
             removeAllActions()
@@ -317,8 +319,10 @@ class Penguin: SKSpriteNode {
                 self.removeAllActions()
             })
             
-            (scene as! GameScene).jumpSound?.currentTime = 0
-            (scene as! GameScene).jumpSound?.play()
+            if (scene as! GameScene).gameData.soundEffectsOn == true {
+                (scene as! GameScene).jumpSound?.currentTime = 0
+                (scene as! GameScene).jumpSound?.play()
+            }
         }
         /*
         hitByLightning = false

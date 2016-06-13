@@ -46,8 +46,10 @@ class SimpleButton: SKNode {
         addChild(label)
     }
 
-    func buttonPress() {
-        runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
+    func buttonPress(soundOn: NSNumber) {
+        if soundOn == true {
+            runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
+        }
         mainBox.position.y -= 7
         label.position.y -= 7
         pressed = true
