@@ -53,6 +53,7 @@
 		7FCE304E1D0F4C6600B582F7 /* balloon_pop.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7FCE304D1D0F4C6600B582F7 /* balloon_pop.mp3 */; };
 		7FCE30501D0F4D5B00B582F7 /* charge.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7FCE304F1D0F4D5B00B582F7 /* charge.wav */; };
 		7FCE30521D0F598300B582F7 /* dial.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7FCE30511D0F598300B582F7 /* dial.wav */; };
+		7FD3C5DB1D14BAF200F462A5 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 7FD3C5DA1D14BAF200F462A5 /* README.md */; };
 		7FE175711D0D4F9100A2CA80 /* CutScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FE175701D0D4F9100A2CA80 /* CutScene.swift */; };
 /* End PBXBuildFile section */
 
@@ -105,6 +106,7 @@
 		7FCE304D1D0F4C6600B582F7 /* balloon_pop.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = balloon_pop.mp3; path = ../../../../Downloads/balloon_pop.mp3; sourceTree = "<group>"; };
 		7FCE304F1D0F4D5B00B582F7 /* charge.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = charge.wav; path = ../../../../Downloads/charge.wav; sourceTree = "<group>"; };
 		7FCE30511D0F598300B582F7 /* dial.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = dial.wav; path = ../../../../Downloads/dial.wav; sourceTree = "<group>"; };
+		7FD3C5DA1D14BAF200F462A5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7FE175701D0D4F9100A2CA80 /* CutScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CutScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -122,6 +124,7 @@
 		7F7FB3711CE5B80C0067FC9B = {
 			isa = PBXGroup;
 			children = (
+				7FD3C5DA1D14BAF200F462A5 /* README.md */,
 				7F7FB37C1CE5B80C0067FC9B /* PenguinJump */,
 				7F7FB37B1CE5B80C0067FC9B /* Products */,
 			);
@@ -310,6 +313,7 @@
 				241087AB1D090A26009055D6 /* SimpleButton.swift in Sources */,
 				7F9177D71D05F1830089D4A7 /* Coin.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
+				7FD3C5DB1D14BAF200F462A5 /* README.md in Sources */,
 				7F9558B51D0BA48A003B886D /* Shark.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
 				7F9558B71D0BFF26003B886D /* Item_Parasol.swift in Sources */,
