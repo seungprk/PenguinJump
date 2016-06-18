@@ -8,12 +8,16 @@
 
 import SpriteKit
 
+/// The Penguin type determines which item the Penguin is holding.
 enum PenguinType {
+    /// The default Penguin type where there is no item.
     case normal
+    /// The Parasol Penguin has a two second jump duration.
     case parasol
-    case tinfoil
+    /// The Shark Suit Penguin type has a shorter jump duration of 0.75 seconds and a 25% wind resistance.
     case shark
     
+    case tinfoil
     case penguinViking
     case penguinAngel
     case penguinSuperman
@@ -24,9 +28,13 @@ enum PenguinType {
     case penguinCrown
     case penguinMarathon
     case penguinDuckyTube
-
 }
 
+/**
+    The base Penguin class describes the node object that can be controlled by the player.
+ 
+    - parameter targeting: Boolean that is true during the touch and drag control event.
+*/
 class Penguin: SKSpriteNode {
     
     let penguinCropNode = SKCropNode()
@@ -38,7 +46,8 @@ class Penguin: SKSpriteNode {
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
     let targetDot2 = SKSpriteNode(imageNamed: "targetdot")
     let targetDot3 = SKSpriteNode(imageNamed: "targetdot")
-
+    
+    /// Boolean that is true during the touch and drag control event.
     var targeting = false
     var playerTouched = false
     
@@ -47,7 +56,7 @@ class Penguin: SKSpriteNode {
     // Game session logic
     var doubleJumped = false
     var inAir = false
-    var onBerg = false
+    var onBerg: Bool? // = false
     var hitByLightning = false
         
     init(type: PenguinType) {
@@ -74,6 +83,19 @@ class Penguin: SKSpriteNode {
         shadow.position =  CGPoint(x: 0, y: -body.frame.height * 0.35)
         shadow.zPosition = 2000
         addChild(shadow)
+        
+        // Create physics body based on shadow circle
+        let shadowBody = SKPhysicsBody(circleOfRadius: shadow.frame.width / 2)
+        shadowBody.allowsRotation = false
+        shadowBody.friction = 0
+        shadowBody.affectedByGravity = false
+        shadowBody.dynamic = true
+        shadowBody.categoryBitMask = PenguinCategory
+        shadowBody.usesPreciseCollisionDetection = true
+        
+        shadow.physicsBody = shadowBody
+        shadow.physicsBody?.contactTestBitMask = IcebergCategory
+        shadow.physicsBody?.collisionBitMask = Passthrough
         
         // Set Aim Sprites
         let xScale: CGFloat = 0.3
@@ -190,6 +212,7 @@ class Penguin: SKSpriteNode {
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        
         for touch: AnyObject in touches {
             let touchPosition = touch.locationInNode(self)
             
@@ -213,6 +236,7 @@ class Penguin: SKSpriteNode {
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        
         for touch: AnyObject in touches {
             let touchPosition = touch.locationInNode(self)
             
@@ -279,7 +303,7 @@ class Penguin: SKSpriteNode {
             hitByLightning = false
             removeAllActions()
             inAir = true
-            onBerg = false
+//            onBerg = false
             
             // Jump Duration based on travel distance
             //        let jumpRate: CGFloat = 150
@@ -374,7 +398,7 @@ class Penguin: SKSpriteNode {
             hitByLightning = false
             removeAllActions()
             inAir = true
-            onBerg = false
+//            onBerg = false
             
             // Fixed jump duration
             let jumpDuration = 2.0
@@ -447,8 +471,8 @@ class Penguin: SKSpriteNode {
         doubleJumped = false
         hitByLightning = false
 
-        onBerg = true
-        let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: sinkDuration)
+//        onBerg = true
+        let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20.0), duration: sinkDuration)
         self.runAction(penguinSinking)
     }
 }

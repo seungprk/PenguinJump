@@ -10,6 +10,7 @@ import SpriteKit
 import CoreData
 import AVFoundation
 
+/// The `ColorValues` structure holds RGBA values separately so arithmetic operations can be performed on individual values. Each value is a CGFloat between 0.0 and 1.0
 struct ColorValues {
     var red: CGFloat!
     var green: CGFloat!
@@ -70,6 +71,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var shouldCorrectAfterPause = false
     var playerTouched = false
     var freezeCamera = false
+    /// Difficulty modifier that ranges from `0.0` to `1.0`.
     var difficulty = 0.0
 
     var previousTime: NSTimeInterval?
@@ -174,6 +176,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         if fetchedData.first != nil {
             gameData = fetchedData.first
         }
+      
+        // Physics setup
+        // TODO: set up physics world
+        setupPhysics()
         
         // Set up Game Scene
         setupScene()
@@ -302,16 +308,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
     
     func setupScene() {
+        
         gameOver = false
         
         cam = SKCameraNode()
-        cam.xScale = 1.0
-        cam.yScale = 1.0
-        
-        camera = cam
-        addChild(cam)
-        
         cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        camera = cam
+        addChild(cam)        
         
         stage = IcebergGenerator(view: view!, camera: cam)
         stage.position = view!.center
@@ -480,9 +483,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                             testZoomed = testZoomed ? false : true
                         } else if name == "rainButton" {
                             let raindrop = Raindrop()
-                            addChild(raindrop)
                             raindrop.zPosition = 100000
-                            raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
+                            raindrop.drop(view!.center, windSpeed: windSpeed)
+                            addChild(raindrop)
                         } else if name == "lightningButton" {
                             if let berg = (stage as IcebergGenerator).highestBerg {
                                 let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
@@ -938,8 +941,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 let randomY = 2.0 * CGFloat(random()) % view!.frame.height - view!.frame.height / 4
 
                 let raindrop = Raindrop()
+                addChild(raindrop)
 
-                raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2, scene: self)
+                raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2)
                 
                 // Attempt to avoid dropping a raindrop over an iceberg.
                 for child in stage.children {
@@ -951,8 +955,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         raindrop.zPosition = 24000
                     }
                 }
-                
-                addChild(raindrop)
             }
         }
     }
@@ -1227,11 +1229,12 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
     
     func checkGameOver() {
-        if !penguin.inAir && !onBerg() {
-            gameOver = true            
+        if !penguin.inAir && !penguin.onBerg! {
+            gameOver = true
         }
     }
     
+    /*
     func onBerg() -> Bool {
         for child in stage.children {
             let berg = child as! Iceberg
@@ -1241,6 +1244,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
         return false
     }
+    */
     
     // MARK: - Storm Mode
     
@@ -1303,23 +1307,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
     }
     
-    // MARK: - Background
-    
-//    func bob(node: SKSpriteNode) {
-//        let bobDepth = 2.0
-//        let bobDuration = 2.0
-//        
-//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-//        let wait = SKAction.waitForDuration(bobDuration / 2)
-//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-//        
-//        let bobSequence = SKAction.sequence([down, wait, up, wait])
-//        let bob = SKAction.repeatActionForever(bobSequence)
-//        
-//        node.removeAllActions()
-//        node.runAction(bob)
-//    }
-    
     // MARK: - Audio
     
     func audioPlayerWithFile(file: String, type: String) -> AVAudioPlayer? {
@@ -1354,6 +1341,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
     }
     
+    /// Helper function to fade the volume of an `AVAudioPlayer` object.
     func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
         let amount:Float = 0.1
         let incrementDelay = duration * Double(amount)// * amount)
@@ -1379,6 +1367,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // MARK: - Utilities
     
+    /// Unused delay function with a closure. Not accurate for small increments of time.
     func delay(delay:Double, closure:()->()) {
         dispatch_after(
             dispatch_time(
@@ -1388,6 +1377,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             dispatch_get_main_queue(), closure)
     }
     
+    /// Utility function that is used to shake the screen when the penguin lands on an iceberg to give the illusion of impact.
     func shakeScreen() {
         if enableScreenShake {
             let shakeAnimation = CAKeyframeAnimation(keyPath: "transform")
@@ -1407,7 +1397,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
 }
 
-// Overload minus operator to use on CGPoint
+/// Overloaded minus operator to use on CGPoint
 func -(first: CGPoint, second: CGPoint) -> CGPoint {
     let deltaX = first.x - second.x
     let deltaY = first.y - second.y

@@ -8,13 +8,29 @@
 
 import SpriteKit
 
+// TODO: Change Iceberg to inherit from SKNode.
+/**
+    Iceberg object class.
+    Creates a node with children sprite nodes that represent the iceberg's layers: iceberg surface, shadow, and underwater reflection.
+
+    - Parameter stormMode: Boolean that determines bobbing action values
+    - Parameter landed: Boolean that determines if the penguin has landed on the berg before or not.
+
+    - shadowMask: Shadow masking sprite node.
+    - waves: Sprite node that uses the same texture as the berg sprite node. The y position is shifted down to sea level (the bottom of the shadow sprite node).
+*/
 class Iceberg: SKSpriteNode {
     
-    // Main Objects
+    // Sprite objects.
+    /// Surface sprite node.
     var berg:SKSpriteNode!
+    /// Shadow sprite node.
     var shadow:SKSpriteNode!
+    /// Underwater sprite node.
     var underwater:SKSpriteNode!
+    /// Sprite node used by the `croppedShadow` `SKCropNode` to mask the top edge of shadow sprite node.
     var shadowMask:SKSpriteNode!
+    /// Sprite node that uses the same texture as the berg sprite node. The y position is shifted down to sea level (the bottom of the shadow sprite node).
     var wave:SKSpriteNode!
     
     // Attributes
@@ -39,21 +55,24 @@ class Iceberg: SKSpriteNode {
         bob()
     }
     
-    
+    /**
+     Creates the SKSpriteNode objects using textures generated from UIImages created in a CoreGraphics Bitmap Context.
+     */
     func createBergNodes() {
         // ***** Create images *****
-        // Set rendering layer rectangle.
+        /// Set rendering layer rectangle.
         let renderingRect = CGRect(x: 0, y: 0, width: size.width, height: size.width)
         let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
         
-        // Generate points of iceberg
+        /// The points used to draw the Iceberg in the CGContext coordinate.
         let vertices = generateRandomPoints(aroundPoint: renderingRectCenter, radius: Double(size.width) / 2)
         
-        // Calculate startPoint and endPoint of shadows based on which point is further out
+        /// The calculated start point of the shadow shape based on which point is further out.
         let startPoint = vertices[1].x > vertices[2].x ? 1 : 2
+        /// The calculated end point of the shadow shape based on which point is further out.
         let endPoint = vertices[6].x < vertices[5].x ? 6 : 5
         
-        // Generate points of extruded shape
+        /// The CGPoints of the extruded shadow shape.
         var underwaterVertices = [CGPoint]()
         for point in 0...startPoint {
             underwaterVertices.append(vertices[point])
@@ -147,13 +166,38 @@ class Iceberg: SKSpriteNode {
         addChild(croppedShadow)
         addChild(wave)
         wave.alpha = 0.0
+        
+        // Create the physics body based off of berg shape.
+        /// A new set of `CGPoint`s in the reverse order of the generated vertices because bodyWithPolygonFromPath winds counter clockwise.
+        let physicsPoints:[CGPoint] = shiftPointsFromRenderingRect(vertices.reverse())
+        /// The CGPath used for the berg's physics body shape.
+        let bergPhysicsPath = CGPathCreateMutable()
+        CGPathMoveToPoint(bergPhysicsPath, nil, physicsPoints[0].x, physicsPoints[0].y)
+        for point in 1..<physicsPoints.count {
+            CGPathAddLineToPoint(bergPhysicsPath, nil, physicsPoints[point].x, physicsPoints[point].y)
+        }
+        CGPathCloseSubpath(bergPhysicsPath)
+        
+        let bergBody = SKPhysicsBody(polygonFromPath: bergPhysicsPath)
+        bergBody.allowsRotation = false
+        bergBody.friction = 0
+        bergBody.affectedByGravity = false
+        bergBody.dynamic = false
+        bergBody.categoryBitMask = IcebergCategory
+        
+        berg.physicsBody = bergBody
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // Generate 8 points around a circle
+    /**
+        Generates 8 random CGPoints around a center point.
+        - parameter center: CGPoint of center point.
+        - parameter radius: Distance between points and center.
+        - returns: An array of CGPoints.
+     */
     func generateRandomPoints(aroundPoint center: CGPoint, radius: Double) -> [CGPoint] {
         var randomPoints = [CGPoint]()
         for count in 0...7 {
@@ -172,6 +216,26 @@ class Iceberg: SKSpriteNode {
         return randomPoints
     }
     
+    /**
+        Shifts a set of points generated around the ImageContext center point back to the node's center at CGPointZero.
+        - parameter points: The set of CGPoints to shift.
+        - returns: The new set of shifted CGPoints.
+     */
+    func shiftPointsFromRenderingRect(points: [CGPoint]) -> [CGPoint] {
+        let renderingRect = CGRect(x: 0, y: 0, width: size.width, height: size.width)
+        let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
+        
+        var newPoints = [CGPoint]()
+        for point in points {
+            let newPointX = point.x - renderingRectCenter.x
+            let newPointY = point.y - renderingRectCenter.y
+            
+            newPoints.append(CGPoint(x: newPointX, y: newPointY))
+        }
+        return newPoints
+    }
+    
+    /// Runs a set of back and forth move actions on the Iceberg forever.
     func beginMoving() {
         let maxDuration = 12.0
         let minDuration = 3.0
@@ -190,6 +254,7 @@ class Iceberg: SKSpriteNode {
         runAction(backAndForth)
     }
     
+    /// Wave ripple effect on Iceberg landing.
     func ripple() {
         wave.xScale = 1.0
         wave.yScale = 1.0
@@ -204,20 +269,23 @@ class Iceberg: SKSpriteNode {
         wave.runAction(fade)
     }
     
+    /// Begins the sinking and subsequent removal of the Iceberg.
     func sink(duration: Double, completion block: (() -> Void)?) {
-        let sinkDepth = shadowHeight
         
-        let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -sinkDepth), duration: duration)
+        let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -shadowHeight), duration: duration)
+        let fade = SKAction.fadeOutWithDuration(0.5)
+        let pullOut = SKAction.moveBy(CGVector(dx: 0, dy: -self.berg.size.height * 2), duration: 0.5)
+        let bergDelay = SKAction.waitForDuration(0.2)
         
         underwater!.runAction(sink)
         shadowMask!.runAction(sink)
         
         berg!.runAction(sink, completion: {
-            self.berg.removeFromParent()
+            self.berg.alpha = 0
             self.zPosition = -500
             self.alpha = 0.5
             
-            let fade = SKAction.fadeOutWithDuration(0.5)
+            self.berg.runAction(SKAction.sequence([bergDelay, pullOut]))
             self.runAction(fade, completion: {
                 self.removeFromParent()
                 
@@ -227,19 +295,7 @@ class Iceberg: SKSpriteNode {
         
     }
     
-    func fade() {
-        let flattenedTexture = self.scene?.view?.textureFromNode(self)
-        
-        self.removeAllChildren()
-        
-        texture = flattenedTexture
-        size = flattenedTexture!.size()
-        position.y -= shadowHeight * 1.5
-        
-        let fade = SKAction.fadeOutWithDuration(0.5)
-        self.runAction(fade)
-    }
-    
+    /// Removes previous bob actions and then adds new bob actions. Needs to be called at the beginning and the end of storm mode to update the intensity of the bob.
     func bob() {
         if !landed {
             let bobActionKey = "bob_action"
@@ -251,17 +307,14 @@ class Iceberg: SKSpriteNode {
             let bobDepth = (stormMode == true) ? 5.0 : 2.0
             let bobDuration = (stormMode == true) ? 0.8 : 2.0
             
-            //        let bobDepth = 2.0 + 3.0 * (scene as! GameScene).stormIntensity
-            
             let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
             let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
             down.timingMode = .EaseInEaseOut
             up.timingMode = .EaseInEaseOut
-            
             let bobSequence = SKAction.sequence([down, up])
             let bob = SKAction.repeatActionForever(bobSequence)
             
-            // Reset position and then run action
+            // Actions for resetting the position before running the new bobbing actions for a smooth transition.
             let bergReset = SKAction.moveTo(CGPointZero, duration: 2.0)
             let underwaterReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
             let shadowMaskReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
@@ -270,18 +323,19 @@ class Iceberg: SKSpriteNode {
             shadowMaskReset.timingMode = .EaseInEaseOut
             
             berg.runAction(bergReset, completion: {
-                self.berg!.runAction(bob, withKey: bobActionKey)
+                self.berg.runAction(bob, withKey: bobActionKey)
             })
             underwater.runAction(underwaterReset, completion: {
-                self.underwater!.runAction(bob, withKey: bobActionKey)
+                self.underwater.runAction(bob, withKey: bobActionKey)
             })
             shadowMask.runAction(shadowMaskReset, completion: {
-                self.shadowMask!.runAction(bob, withKey: bobActionKey)
+                self.shadowMask.runAction(bob, withKey: bobActionKey)
             })
         }
     }
     
     func land() {
+        
         if !landed {
             landed = true
             
@@ -302,6 +356,7 @@ class Iceberg: SKSpriteNode {
     }
     
     func bump() {
+        
         let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
         let reduce = SKAction.scaleTo(1.0, duration: 0.06)
         enlarge.timingMode = .EaseOut
@@ -310,6 +365,5 @@ class Iceberg: SKSpriteNode {
         let bumpSequence = SKAction.sequence([enlarge, reduce])
         runAction(bumpSequence)
         ripple()
-
     }
 }
