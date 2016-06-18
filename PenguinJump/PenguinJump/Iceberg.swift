@@ -8,13 +8,29 @@
 
 import SpriteKit
 
+// TODO: Change Iceberg to inherit from SKNode.
+/** 
+    Iceberg object class.
+    Creates a node with children sprite nodes that represent the iceberg's layers: iceberg surface, shadow, and underwater reflection.
+
+    - Parameter stormMode: Boolean that determines bobbing action values
+    - Parameter landed: Boolean that determines if the penguin has landed on the berg before or not.
+
+        - shadowMask: Shadow masking sprite node.
+        - waves: Sprite node that uses the same texture as the berg sprite node. The y position is shifted down to sea level (the bottom of the shadow sprite node).
+*/
 class Iceberg: SKSpriteNode {
     
     // Main Objects
+    /// Surface sprite node.
     var berg:SKSpriteNode!
+    /// Shadow sprite node.
     var shadow:SKSpriteNode!
+    /// Underwater sprite node.
     var underwater:SKSpriteNode!
+    /// Sprite node used by the `croppedShadow` `SKCropNode` to mask the top edge of shadow sprite node.
     var shadowMask:SKSpriteNode!
+    /// Sprite node that uses the same texture as the berg sprite node. The y position is shifted down to sea level (the bottom of the shadow sprite node).
     var wave:SKSpriteNode!
     
     // Attributes

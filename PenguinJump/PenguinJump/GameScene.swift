@@ -17,7 +17,13 @@ struct ColorValues {
     var alpha: CGFloat!
 }
 
-class GameScene: SKScene, IcebergGeneratorDelegate {
+let IcebergCategory   : UInt32 = 0x1 << 0
+let PenguinCategory   : UInt32 = 0x1 << 1
+let LightningCategory : UInt32 = 0x1 << 2
+let SharkCategory     : UInt32 = 0x1 << 3
+let CoinCategory      : UInt32 = 0x1 << 4
+
+class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
     
     // Framework Objects
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
@@ -174,7 +180,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         if fetchedData.first != nil {
             gameData = fetchedData.first
         }
-        
+      
+        // Physics setup
+        // TODO: set up physics world
+      
         // Set up Game Scene
         setupScene()
         
