@@ -91,6 +91,7 @@ class Penguin: SKSpriteNode {
         shadowBody.affectedByGravity = false
         shadowBody.dynamic = true
         shadowBody.categoryBitMask = PenguinCategory
+        shadowBody.usesPreciseCollisionDetection = true
         
         shadow.physicsBody = shadowBody
         shadow.physicsBody?.contactTestBitMask = IcebergCategory

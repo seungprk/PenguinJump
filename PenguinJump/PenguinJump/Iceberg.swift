@@ -274,15 +274,20 @@ class Iceberg: SKSpriteNode {
         shadowMask!.runAction(sink)
         
         berg!.runAction(sink, completion: {
-            self.berg.removeFromParent()
+//            self.berg.removeFromParent()
+            self.berg.alpha = 0
             self.zPosition = -500
             self.alpha = 0.5
             
             let fade = SKAction.fadeOutWithDuration(0.5)
             self.runAction(fade, completion: {
-                self.removeFromParent()
+                let pullOut = SKAction.moveBy(CGVector(dx: 0, dy: -self.berg.size.height), duration: 0.1)
                 
-                block?()
+                self.berg.runAction(pullOut, completion: {
+                    self.removeFromParent()
+                    
+                    block?()
+                })
             })
         })
         
