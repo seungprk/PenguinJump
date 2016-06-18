@@ -308,16 +308,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
     
     func setupScene() {
+        
         gameOver = false
         
         cam = SKCameraNode()
-        cam.xScale = 1.0
-        cam.yScale = 1.0
-        
-        camera = cam
-        addChild(cam)
-        
         cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        camera = cam
+        addChild(cam)        
         
         stage = IcebergGenerator(view: view!, camera: cam)
         stage.position = view!.center
@@ -486,9 +483,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                             testZoomed = testZoomed ? false : true
                         } else if name == "rainButton" {
                             let raindrop = Raindrop()
-                            addChild(raindrop)
                             raindrop.zPosition = 100000
-                            raindrop.drop(view!.center, windSpeed: windSpeed, scene: self)
+                            raindrop.drop(view!.center, windSpeed: windSpeed)
+                            addChild(raindrop)
                         } else if name == "lightningButton" {
                             if let berg = (stage as IcebergGenerator).highestBerg {
                                 let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
@@ -944,8 +941,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 let randomY = 2.0 * CGFloat(random()) % view!.frame.height - view!.frame.height / 4
 
                 let raindrop = Raindrop()
+                addChild(raindrop)
 
-                raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2, scene: self)
+                raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2)
                 
                 // Attempt to avoid dropping a raindrop over an iceberg.
                 for child in stage.children {
@@ -957,8 +955,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         raindrop.zPosition = 24000
                     }
                 }
-                
-                addChild(raindrop)
             }
         }
     }
