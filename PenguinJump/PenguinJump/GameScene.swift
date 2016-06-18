@@ -1023,8 +1023,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     func penguinUpdate() {
         for child in stage.children {
             let berg = child as! Iceberg
-            
-            if penguin.shadow.intersectsNode(berg) && !berg.landed && !penguin.inAir && berg.name != "firstBerg" {
+
+            if  penguin.shadow.intersectsNode(berg)
+            &&  penguin.onBerg!
+            && !berg.landed
+            && !penguin.inAir
+            &&  berg.name != "firstBerg" {
+                    
                 // Penguin landed on an iceberg if check is true
                 if gameData.soundEffectsOn == true { landingSound?.play() }
                 
@@ -1041,11 +1046,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
                 let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
                 scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
-                
-            } else if penguin.shadow.intersectsNode(berg) && !penguin.inAir {
-                // Penguin landed on an iceberg that is sinking.
-                // Needs fix. Constantly bumps right now.
-//                berg.bump()
             }
         }
         
@@ -1122,57 +1122,20 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
     
     func coinUpdate() {
+        
         if let coinLayer = coinLayer {
             for child in coinLayer.children {
+                
                 let coin = child as! Coin
                 
-                if !coin.collected {
-                    if penguin.intersectsNode(coin.body) {
-                        // Run coin hit collision
-                        incrementTotalCoins()
-                        
-                        intScore += stormMode ? 4 : 2
-                        coin.collected = true
+                let coinShadowPositionInLayer = coinLayer.convertPoint(coin.shadow.position, fromNode: coin)
+                let coinPositionInScene = convertPoint(coinShadowPositionInLayer, fromNode: coinLayer)
+                let penguinPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
+                
+                if penguinPositionInScene.y > coinPositionInScene.y {
+                    print("\(penguinPositionInScene.y), \(coinPositionInScene.y)")
 
-                        let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                        let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                        scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
-                        
-                        coinSound?.currentTime = 0
-                        if gameData.soundEffectsOn == true { coinSound?.play() }
-                        
-                        let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
-                        rise.timingMode = .EaseOut
-                        
-                        coin.body.zPosition = 90000
-                        coin.body.runAction(rise, completion: {
-                            coin.generateCoinParticles(self.cam)
-                            
-                            let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
-                            let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
-                            
-                            coinBurst.zPosition = 240000
-                            coinBurst.numParticlesToEmit = 100
-                            coinBurst.targetNode = self.scene
-                            
-                            let coinBurstEffectNode = SKEffectNode()
-                            coinBurstEffectNode.addChild(coinBurst)
-                            coinBurstEffectNode.zPosition = 240000
-                            
-                            coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
-                            coinBurstEffectNode.blendMode = .Replace
-                            
-                            self.addChild(coinBurstEffectNode)
-                            
-                            if self.gameData.soundEffectsOn as Bool {
-                                self.burstSound?.play()
-                            }
-
-                            coin.body.removeFromParent()
-                            coin.shadow.removeFromParent()
-                            self.incrementBarWithCoinParticles(coin)
-                        })
-                    }
+                    coin.body.zPosition = 90000
                 }
             }
         }

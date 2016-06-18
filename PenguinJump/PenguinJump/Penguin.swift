@@ -94,8 +94,11 @@ class Penguin: SKSpriteNode {
         shadowBody.usesPreciseCollisionDetection = true
         
         shadow.physicsBody = shadowBody
-        shadow.physicsBody?.contactTestBitMask = IcebergCategory
         shadow.physicsBody?.collisionBitMask = Passthrough
+        shadow.physicsBody?.contactTestBitMask = IcebergCategory
+                                               | LightningCategory
+                                               | SharkCategory
+                                               | CoinCategory
         
         // Set Aim Sprites
         let xScale: CGFloat = 0.3

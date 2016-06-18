@@ -50,9 +50,7 @@ class Lightning: SKNode {
             lightningCropNode.maskNode = lightningMask
             lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
             lightningCropNode.addChild(trashNode)
-
         }
-
         
         cloud.position.y += cloudHeight
         cloudOverlay.position.y += cloudHeight
@@ -60,7 +58,6 @@ class Lightning: SKNode {
         cloudOverlay.alpha = 0.0
         shadowOverlay.alpha = 0.0
         
-//        cloudOverlay.zPosition = 10
         shadowOverlay.zPosition = 10
         
         addChild(cloudOverlay)
@@ -76,6 +73,15 @@ class Lightning: SKNode {
         cloudOverlay.zPosition = 30001
         lightningCropNode.zPosition = 500
         lightning.zPosition = 500
+        
+        // Add a physics body to the shadow
+        let shadowBody = SKPhysicsBody(circleOfRadius: shadow.size.width / 2)
+        shadowBody.allowsRotation = false
+        shadowBody.friction = 0
+        shadowBody.affectedByGravity = false
+        shadowBody.dynamic = false
+        shadowBody.categoryBitMask = CoinCategory
+        shadow.physicsBody = shadowBody
     }
 
     required init?(coder aDecoder: NSCoder) {
