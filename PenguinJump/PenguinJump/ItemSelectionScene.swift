@@ -244,6 +244,11 @@ class ItemSelectionScene: SKScene {
                 
                 node.zPosition = 0
             }
+            
+            if node != middleNode {
+                let penguin = node.childNodeWithName("penguin") as! SKSpriteNode
+                penguin.position = CGPointZero
+            }
         }
         
         // Scale selected penguin larger

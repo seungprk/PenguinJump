@@ -10,6 +10,7 @@ import SpriteKit
 import CoreData
 import AVFoundation
 
+/// The `ColorValues` structure holds RGBA values separately so arithmetic operations can be performed on individual values. Each value is a CGFloat between 0.0 and 1.0
 struct ColorValues {
     var red: CGFloat!
     var green: CGFloat!
@@ -17,13 +18,7 @@ struct ColorValues {
     var alpha: CGFloat!
 }
 
-let IcebergCategory   : UInt32 = 0x1 << 0
-let PenguinCategory   : UInt32 = 0x1 << 1
-let LightningCategory : UInt32 = 0x1 << 2
-let SharkCategory     : UInt32 = 0x1 << 3
-let CoinCategory      : UInt32 = 0x1 << 4
-
-class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
+class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Framework Objects
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
@@ -76,6 +71,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
     var shouldCorrectAfterPause = false
     var playerTouched = false
     var freezeCamera = false
+    /// Difficulty modifier that ranges from `0.0` to `1.0`.
     var difficulty = 0.0
 
     var previousTime: NSTimeInterval?
@@ -183,7 +179,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
       
         // Physics setup
         // TODO: set up physics world
-      
+        setupPhysics()
+        
         // Set up Game Scene
         setupScene()
         
@@ -1236,11 +1233,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
     }
     
     func checkGameOver() {
-        if !penguin.inAir && !onBerg() {
-            gameOver = true            
+        if !penguin.inAir && !penguin.onBerg! {
+            gameOver = true
         }
     }
     
+    /*
     func onBerg() -> Bool {
         for child in stage.children {
             let berg = child as! Iceberg
@@ -1250,6 +1248,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
         }
         return false
     }
+    */
     
     // MARK: - Storm Mode
     
@@ -1312,23 +1311,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
         }
     }
     
-    // MARK: - Background
-    
-//    func bob(node: SKSpriteNode) {
-//        let bobDepth = 2.0
-//        let bobDuration = 2.0
-//        
-//        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-//        let wait = SKAction.waitForDuration(bobDuration / 2)
-//        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-//        
-//        let bobSequence = SKAction.sequence([down, wait, up, wait])
-//        let bob = SKAction.repeatActionForever(bobSequence)
-//        
-//        node.removeAllActions()
-//        node.runAction(bob)
-//    }
-    
     // MARK: - Audio
     
     func audioPlayerWithFile(file: String, type: String) -> AVAudioPlayer? {
@@ -1363,6 +1345,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
         }
     }
     
+    /// Helper function to fade the volume of an `AVAudioPlayer` object.
     func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
         let amount:Float = 0.1
         let incrementDelay = duration * Double(amount)// * amount)
@@ -1388,6 +1371,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
     
     // MARK: - Utilities
     
+    /// Unused delay function with a closure. Not accurate for small increments of time.
     func delay(delay:Double, closure:()->()) {
         dispatch_after(
             dispatch_time(
@@ -1397,6 +1381,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
             dispatch_get_main_queue(), closure)
     }
     
+    /// Utility function that is used to shake the screen when the penguin lands on an iceberg to give the illusion of impact.
     func shakeScreen() {
         if enableScreenShake {
             let shakeAnimation = CAKeyframeAnimation(keyPath: "transform")
@@ -1416,7 +1401,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, IcebergGeneratorDelegate {
     }
 }
 
-// Overload minus operator to use on CGPoint
+/// Overloaded minus operator to use on CGPoint
 func -(first: CGPoint, second: CGPoint) -> CGPoint {
     let deltaX = first.x - second.x
     let deltaY = first.y - second.y

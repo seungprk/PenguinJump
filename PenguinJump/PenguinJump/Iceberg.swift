@@ -21,7 +21,7 @@ import SpriteKit
 */
 class Iceberg: SKSpriteNode {
     
-    // Main Objects
+    // Sprite objects.
     /// Surface sprite node.
     var berg:SKSpriteNode!
     /// Shadow sprite node.
@@ -163,13 +163,36 @@ class Iceberg: SKSpriteNode {
         addChild(croppedShadow)
         addChild(wave)
         wave.alpha = 0.0
+        
+        // Create the physics body based off of berg shape.
+        let physicsPoints:[CGPoint] = shiftPointsFromRenderingRect(vertices.reverse())
+        let bergPhysicsPath = CGPathCreateMutable()
+        CGPathMoveToPoint(bergPhysicsPath, nil, physicsPoints[0].x, physicsPoints[0].y)
+        for point in 1..<physicsPoints.count {
+            CGPathAddLineToPoint(bergPhysicsPath, nil, physicsPoints[point].x, physicsPoints[point].y)
+        }
+        CGPathCloseSubpath(bergPhysicsPath)
+        
+        let bergBody = SKPhysicsBody(polygonFromPath: bergPhysicsPath)
+        bergBody.allowsRotation = false
+        bergBody.friction = 0
+        bergBody.affectedByGravity = false
+        bergBody.dynamic = false
+        bergBody.categoryBitMask = IcebergCategory
+        
+        berg.physicsBody = bergBody
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // Generate 8 points around a circle
+    /**
+        Generates 8 random CGPoints around a center point.
+        - parameter center: CGPoint of center point.
+        - parameter radius: Distance between points and center.
+        - returns: An array of CGPoints.
+    */
     func generateRandomPoints(aroundPoint center: CGPoint, radius: Double) -> [CGPoint] {
         var randomPoints = [CGPoint]()
         for count in 0...7 {
@@ -188,6 +211,26 @@ class Iceberg: SKSpriteNode {
         return randomPoints
     }
     
+    /**
+        Shifts a set of points generated around the ImageContext center point back to the node's center.
+        - parameter points: The set of CGPoints to shift.
+        - returns: The new set of shifted CGPoints.
+    */
+    func shiftPointsFromRenderingRect(points: [CGPoint]) -> [CGPoint] {
+        let renderingRect = CGRect(x: 0, y: 0, width: size.width, height: size.width)
+        let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
+
+        var newPoints = [CGPoint]()
+        for point in points {
+            let newPointX = point.x - renderingRectCenter.x
+            let newPointY = point.y - renderingRectCenter.y
+            
+            newPoints.append(CGPoint(x: newPointX, y: newPointY))
+        }
+        return newPoints
+    }
+    
+    /// Runs a set of back and forth move actions on the Iceberg forever.
     func beginMoving() {
         let maxDuration = 12.0
         let minDuration = 3.0
@@ -206,6 +249,7 @@ class Iceberg: SKSpriteNode {
         runAction(backAndForth)
     }
     
+    /// Wave ripple effect on Iceberg landing.
     func ripple() {
         wave.xScale = 1.0
         wave.yScale = 1.0
@@ -220,6 +264,7 @@ class Iceberg: SKSpriteNode {
         wave.runAction(fade)
     }
     
+    /// Begins the sinking and subsequent removal of the Iceberg.
     func sink(duration: Double, completion block: (() -> Void)?) {
         let sinkDepth = shadowHeight
         
@@ -243,6 +288,12 @@ class Iceberg: SKSpriteNode {
         
     }
     
+    /*
+    /** 
+        1. Generates a SpriteKit texture using the node's current children positions.
+        2. Removes all the children nodes and set the Iceberg's texture to the generated texture.
+        3. Runs a fade action on the Iceberg.
+    */
     func fade() {
         let flattenedTexture = self.scene?.view?.textureFromNode(self)
         
@@ -255,6 +306,7 @@ class Iceberg: SKSpriteNode {
         let fade = SKAction.fadeOutWithDuration(0.5)
         self.runAction(fade)
     }
+    */
     
     func bob() {
         if !landed {
