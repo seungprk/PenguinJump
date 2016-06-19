@@ -624,7 +624,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // MARK: - Game state
     
     func beginGame() {
-        penguin.body.texture = SKTexture(imageNamed: "penguintemp")
+        penguin.beginGame()
+        
         let zoomOut = SKAction.scaleTo(1.0, duration: 2.0)
         
         let cameraFinalDestX = penguin.position.x
