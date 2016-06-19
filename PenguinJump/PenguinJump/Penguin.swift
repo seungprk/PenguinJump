@@ -35,7 +35,7 @@ class Penguin: SKSpriteNode {
     let penguinAtlas = SKTextureAtlas(named: "penguin")
     let penguinCropNode = SKCropNode()
     var body : SKSpriteNode!
-    var shadow: SKShapeNode!
+    var shadow: SKSpriteNode!
     var item: SKNode?
 
     let targetReticle = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetcircle")!))
@@ -76,18 +76,18 @@ class Penguin: SKSpriteNode {
         penguinCropNode.maskNode = SKSpriteNode(texture: SKTexture(image: UIImage(named: "deathtemp")!), size: CGSize(width: 62, height: 76))
         
         // Assign shadowOffset after body's size is set.
-        shadowOffsetY = body.frame.height * 0.35
+        shadowOffsetY = body.frame.height * 0.45
 
         // Create penguin's shadow
-        shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width * 0.8, height: body.frame.width * 0.8), cornerRadius: body.frame.width / 2)
-        shadow.fillColor = SKColor.blackColor()
-        shadow.alpha = 0.2
+        shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "penguinshadow")!))
+        shadow.size = CGSize(width: 48, height: 24)
+        shadow.alpha = 0.5
         shadow.position = CGPoint(x: 0, y: -shadowOffsetY)
         shadow.zPosition = 2000
         addChild(shadow)
         
         // Create physics body based on shadow circle
-        let shadowBody = SKPhysicsBody(circleOfRadius: shadow.frame.width / 2)
+        let shadowBody = SKPhysicsBody(texture: SKTexture(image: UIImage(named: "penguinshadow")!), size: shadow.size)
         shadowBody.allowsRotation = false
         shadowBody.friction = 0
         shadowBody.affectedByGravity = false
