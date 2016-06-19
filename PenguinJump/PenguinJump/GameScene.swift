@@ -53,7 +53,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var landingSound: AVAudioPlayer?
     var buttonPressSound: AVAudioPlayer?
     var coinSound: AVAudioPlayer?
-    
     var alertSound: AVAudioPlayer?
     var sharkSound: AVAudioPlayer?
     var lurkingSound: AVAudioPlayer?
@@ -67,35 +66,14 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // Labels
     var startMenu : StartMenuNode!
     
-    // Game session logic
-    var gameBegin = false
-    var gameRunning = false
-    var gameOver = false
-    var gamePaused = false
-    var shouldCorrectAfterPause = false
-    var playerTouched = false
-    var freezeCamera = false
-    /// Difficulty modifier that ranges from `0.0` to `1.0`.
-    var difficulty = 0.0
-
-    var previousTime: NSTimeInterval?
-    var timeSinceLastUpdate: NSTimeInterval = 0.0
-    var stormTimeElapsed: NSTimeInterval = 0.0
-    var stormIntensity = 0.0
-    var stormMode = false
-    var windSpeed = 0.0
-    var windEnabled = true
-    var windDirectionRight = true
-    
     // Information bar
     var intScore = 0
+    var totalCoins = 0
     var scoreLabel: SKLabelNode!
     var coinLabel: SKLabelNode!
     var chargeBar: ChargeBar!
     var shouldFlash = false
     let pauseButton = SKLabelNode(text: "I I")
-    
-    var totalCoins = 0
     
     // Audio settings -> fetched from CoreData?
     var musicVolume:Float = 1.0
@@ -114,6 +92,26 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     let stormButton = SKLabelNode(text: "STORM")
     let moneyButton = SKLabelNode(text: "MONEY")
     let viewOutlineButton = SKLabelNode(text: "OUTLINE VIEW")
+    
+    // Game session logic
+    var gameBegin = false
+    var gameRunning = false
+    var gameOver = false
+    var gamePaused = false
+    var shouldCorrectAfterPause = false
+    var playerTouched = false
+    var freezeCamera = false
+    /// Difficulty modifier that ranges from `0.0` to `1.0`.
+    var difficulty = 0.0
+    
+    var previousTime: NSTimeInterval?
+    var timeSinceLastUpdate: NSTimeInterval = 0.0
+    var stormTimeElapsed: NSTimeInterval = 0.0
+    var stormIntensity = 0.0
+    var stormMode = false
+    var windSpeed = 0.0
+    var windEnabled = true
+    var windDirectionRight = true
     
     // MARK: - Scene setup
     
@@ -201,87 +199,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
         
-        // Debug buttons
-        debugButton.name = "debugButton"
-        debugButton.fontName = "Helvetica Neue Condensed Black"
-        debugButton.fontSize = 24
-        debugButton.alpha = 0.5
-        debugButton.zPosition = 2000000
-        debugButton.fontColor = UIColor.blackColor()
-        debugButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2)
-        debugButton.position.y -= debugButton.frame.height * 2
-        cam.addChild(debugButton)
-        
-        zoomButton.name = "testZoom"
-        zoomButton.fontName = "Helvetica Neue Condensed Black"
-        zoomButton.fontSize = 24
-        zoomButton.alpha = 0.5
-        zoomButton.zPosition = 2000000
-        zoomButton.fontColor = UIColor.blackColor()
-        zoomButton.position = CGPoint(x: 0 /* -view.frame.width / 2 */, y: view.frame.height / 2 - debugButton.frame.height * 2)
-        cam.addChild(zoomButton)
-
-        rainButton.name = "rainButton"
-        rainButton.fontName = "Helvetica Neue Condensed Black"
-        rainButton.fontSize = 24
-        rainButton.alpha = 0.5
-        rainButton.zPosition = 2000000
-        rainButton.fontColor = UIColor.blackColor()
-        rainButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 3)
-        cam.addChild(rainButton)
-        
-        lightningButton.name = "lightningButton"
-        lightningButton.fontName = "Helvetica Neue Condensed Black"
-        lightningButton.fontSize = 24
-        lightningButton.alpha = 0.5
-        lightningButton.zPosition = 2000000
-        lightningButton.fontColor = UIColor.blackColor()
-        lightningButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 4)
-        cam.addChild(lightningButton)
-        
-        sharkButton.name = "sharkButton"
-        sharkButton.fontName = "Helvetica Neue Condensed Black"
-        sharkButton.fontSize = 24
-        sharkButton.alpha = 0.5
-        sharkButton.zPosition = 2000000
-        sharkButton.fontColor = UIColor.blackColor()
-        sharkButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 5)
-        cam.addChild(sharkButton)
-        
-        stormButton.name = "stormButton"
-        stormButton.fontName = "Helvetica Neue Condensed Black"
-        stormButton.fontSize = 24
-        stormButton.alpha = 0.5
-        stormButton.zPosition = 2000000
-        stormButton.fontColor = UIColor.blackColor()
-        stormButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 6)
-        cam.addChild(stormButton)
-        
-        moneyButton.name = "moneyButton"
-        moneyButton.fontName = "Helvetica Neue Condensed Black"
-        moneyButton.fontSize = 24
-        moneyButton.alpha = 0.5
-        moneyButton.zPosition = 2000000
-        moneyButton.fontColor = UIColor.blackColor()
-        moneyButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 7)
-        cam.addChild(moneyButton)
-        
-        viewOutlineButton.name = "viewOutlineButton"
-        viewOutlineButton.fontName = "Helvetica Neue Condensed Black"
-        viewOutlineButton.fontSize = 24
-        viewOutlineButton.alpha = 0.5
-        viewOutlineButton.zPosition = 2000000
-        viewOutlineButton.fontColor = UIColor.blackColor()
-        viewOutlineButton.position = CGPoint(x: 0, y: view.frame.height / 2 - debugButton.frame.height * 8)
-        cam.addChild(viewOutlineButton)
-        
-        zoomButton.hidden = true
-        rainButton.hidden = true
-        lightningButton.hidden = true
-        sharkButton.hidden = true
-        stormButton.hidden = true
-        moneyButton.hidden = true
-        viewOutlineButton.hidden = true
+        // Set up Debugging buttons
+        setupDebugButtons()
         
         pauseButton.name = "pauseButton"
         pauseButton.fontName = "Helvetica Neue Condensed Black"
@@ -294,14 +213,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pauseButton.alpha = 0
         cam.addChild(pauseButton)
         
-        viewFrame = SKShapeNode(rectOfSize: view.frame.size)
-        viewFrame.position = cam.position
-        viewFrame.strokeColor = SKColor.redColor()
-        viewFrame.fillColor = SKColor.clearColor()
-        viewFrame.hidden = viewOutlineOn ? false : true
-        addChild(viewFrame)
-        
-        
+        // Register for application state notifications.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "enterPause", name: UIApplicationWillResignActiveNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "becomeActive", name: UIApplicationDidBecomeActiveNotification, object: nil)
     }
@@ -442,6 +354,69 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         addChild(background)
         
         playMusic()
+    }
+    
+    // MARK: - Debug Buttons
+    
+    /// Initializes and adds to camera all debug buttons
+    func setupDebugButtons() {
+        
+        debugButtonInitialize(debugButton)
+        debugButton.name = "debugButton"
+        debugButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 2)
+        
+        debugButtonInitialize(zoomButton)
+        zoomButton.name = "testZoom"
+        zoomButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 2)
+
+        debugButtonInitialize(rainButton)
+        rainButton.name = "rainButton"
+        rainButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 3)
+        
+        debugButtonInitialize(lightningButton)
+        lightningButton.name = "lightningButton"
+        lightningButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 4)
+        
+        debugButtonInitialize(sharkButton)
+        sharkButton.name = "sharkButton"
+        sharkButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 5)
+        
+        debugButtonInitialize(stormButton)
+        stormButton.name = "stormButton"
+        stormButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 6)
+
+        debugButtonInitialize(moneyButton)
+        moneyButton.name = "moneyButton"
+        moneyButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 7)
+
+        debugButtonInitialize(viewOutlineButton)
+        viewOutlineButton.name = "viewOutlineButton"
+        viewOutlineButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 8)
+        
+        zoomButton.hidden = true
+        rainButton.hidden = true
+        lightningButton.hidden = true
+        sharkButton.hidden = true
+        stormButton.hidden = true
+        moneyButton.hidden = true
+        viewOutlineButton.hidden = true
+        
+        viewFrame = SKShapeNode(rectOfSize: view!.frame.size)
+        viewFrame.position = cam.position
+        viewFrame.strokeColor = SKColor.redColor()
+        viewFrame.fillColor = SKColor.clearColor()
+        viewFrame.hidden = viewOutlineOn ? false : true
+        addChild(viewFrame)
+    }
+    
+    func debugButtonInitialize(button: SKLabelNode) {
+        button.fontName = "Helvetica Neue Condensed Black"
+        button.fontSize = 24
+        button.alpha = 0.5
+        button.zPosition = 2000000
+        button.fontColor = UIColor.blackColor()
+        
+        cam.addChild(button)
     }
     
     // MARK: - Scene Controls
@@ -625,7 +600,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         paused = false
     }
     
-    // MARK: - Game states
+    // MARK: - Game Events
     
     func beginGame() {
 

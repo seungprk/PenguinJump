@@ -228,8 +228,8 @@
 				7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */,
 				246206E91D065A9600FE92EF /* AboutScene.swift */,
 				246206EB1D065AEE00FE92EF /* SettingsScene.swift */,
-				7FE175701D0D4F9100A2CA80 /* CutScene.swift */,
 				7F9558B81D0C852B003B886D /* ItemSelectionScene.swift */,
+				7FE175701D0D4F9100A2CA80 /* CutScene.swift */,
 			);
 			name = Scenes;
 			sourceTree = "<group>";
@@ -237,7 +237,6 @@
 		7FA6BCDE1CFF78AF003C7CDA /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
-				7F4B6B731D16121C00EFBD72 /* SKNode+.swift */,
 				2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */,
 				241087AA1D090A26009055D6 /* SimpleButton.swift */,
 				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
@@ -251,6 +250,7 @@
 				7FB95AD61CF7B7B2005875DF /* Lightning.swift */,
 				7F9558B41D0BA48A003B886D /* Shark.swift */,
 				7F9558B61D0BFF26003B886D /* Item_Parasol.swift */,
+				7F4B6B731D16121C00EFBD72 /* SKNode+.swift */,
 			);
 			name = Nodes;
 			sourceTree = "<group>";

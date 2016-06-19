@@ -121,7 +121,7 @@ class Shark: SKNode {
         })
     }
     
-    func kill(penguinMove block: (() -> ())?) {
+    func kill(blockAfterFaceUp block: (() -> ())?) {
         let bang = SKLabelNode(text: "!")
         bang.fontName = "Helvetica Neue Condensed Black"
         bang.fontSize = 18

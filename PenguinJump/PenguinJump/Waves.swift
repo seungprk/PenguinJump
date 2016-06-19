@@ -179,25 +179,20 @@ class Waves: SKSpriteNode {
         
         let fadeOut = SKAction.fadeAlphaTo(0.3, duration: bobDuration * 0.25)
         let fadeIn = SKAction.fadeAlphaTo(0.7, duration: bobDuration * 0.25)
-
-//        let fadeOut = SKAction.fadeAlphaTo(0.3, duration: bobDuration * 0.25)
-//        let fadeIn = SKAction.fadeAlphaTo(0.7, duration: bobDuration * 0.25)
-
         fadeOut.timingMode = .EaseOut
         fadeIn.timingMode = .EaseIn
         let wait = SKAction.waitForDuration(bobDuration * 0.5)
-        let sequence = SKAction.sequence([fadeOut, wait, fadeIn])
+        let fadeSequence = SKAction.sequence([fadeOut, wait, fadeIn])
         
         let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration * 0.5)
         let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration * 0.5)
         down.timingMode = .EaseInEaseOut
         up.timingMode = .EaseInEaseOut
         let bobSequence = SKAction.sequence([down, up])
-        let bob = SKAction.repeatActionForever(bobSequence)
+//        let bob = SKAction.repeatActionForever(bobSequence)
         
         removeAllActions()
-        runAction(SKAction.repeatActionForever(sequence))
-        runAction(SKAction.repeatActionForever(bob))
+        runAction(SKAction.repeatActionForever(SKAction.group([fadeSequence, bobSequence])))
     }
     
 }
