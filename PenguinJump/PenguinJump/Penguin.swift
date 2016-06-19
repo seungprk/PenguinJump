@@ -37,7 +37,7 @@ class Penguin: SKSpriteNode {
     var body : SKSpriteNode!
     var shadow: SKSpriteNode!
     var item: SKNode?
-
+    var doubleJumpWoosh : SKShapeNode!
     let targetReticle = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetcircle")!))
     let targetDot1 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
     let targetDot2 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
@@ -58,6 +58,8 @@ class Penguin: SKSpriteNode {
     var onBerg = false
     var contactingLightning = false
     var hitByLightning = false
+    var doubleJumpStartPos = CGPoint()
+    var doubleJumpStartTime = NSTimeInterval()
     
     init(type: PenguinType) {
         
@@ -398,6 +400,52 @@ class Penguin: SKSpriteNode {
         }
     }
     
+    func savePosForDoubleJump(positionInScene: CGPoint, time: NSTimeInterval) {
+        doubleJumpStartPos = positionInScene
+        doubleJumpStartTime = time
+    }
+    
+    func doubleJump(positionInScene: CGPoint, time: NSTimeInterval) {
+        // Check if time and distance long enough to execute movement
+        let posDelta = doubleJumpStartPos - positionInScene
+        let moveDistance = sqrt(posDelta.x * posDelta.x + posDelta.y * posDelta.y)
+        let timeDelta = time - doubleJumpStartTime
+        if moveDistance > 10 && timeDelta < 1.0 {
+            // Movement
+            let velocity = CGVector(dx: -posDelta.x, dy: -posDelta.y)
+            let move = SKAction.moveBy(velocity, duration: 1.0)
+            runAction(move)
+            
+            // Graphic
+            doubleJumpWoosh = SKShapeNode(circleOfRadius: 20.0)
+            doubleJumpWoosh.fillColor = SKColor.clearColor()
+            doubleJumpWoosh.strokeColor = SKColor.whiteColor()
+            doubleJumpWoosh.xScale = 1.0
+            doubleJumpWoosh.yScale = 1.0
+            doubleJumpWoosh.position = body.position
+            addChild(doubleJumpWoosh)
+            
+            let counterVelocity = CGVector(dx: posDelta.x, dy: posDelta.y)
+            let counterMove = SKAction.moveBy(counterVelocity, duration: 1.0)
+            let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
+            let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
+            airExpand.timingMode = .EaseOut
+            airFade.timingMode = .EaseIn
+            
+            doubleJumpWoosh.runAction(counterMove)
+            doubleJumpWoosh.runAction(airExpand)
+            doubleJumpWoosh.runAction(airFade, completion: {
+                self.doubleJumpWoosh.removeFromParent()
+                self.doubleJumpWoosh.alpha = 1.0
+            })
+            
+            // Sound
+            if (scene as! GameScene).gameData.soundEffectsOn == true {
+                (scene as! GameScene).jumpSound?.currentTime = 0
+                (scene as! GameScene).jumpSound?.play()
+            }
+        }
+    }
     func land(sinkDuration: NSTimeInterval) {
         doubleJumped = false
         hitByLightning = false
