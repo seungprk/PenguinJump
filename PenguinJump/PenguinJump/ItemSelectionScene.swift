@@ -125,7 +125,7 @@ class ItemSelectionScene: SKScene {
         }
         
         // Add scroll nodes to main scrolling node
-        penguinOffset = penguinAtlas.textureNamed("penguin-front").size().width * 2
+        penguinOffset = penguinAtlas.textureNamed("penguin-front").size().width * 0.15
         
         penguinScrollNode.position = view.center
         for node in 0..<scrollNodes.count {

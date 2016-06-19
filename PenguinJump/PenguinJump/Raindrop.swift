@@ -10,15 +10,12 @@ import SpriteKit
 
 class Raindrop: SKNode {
 
-    var raindrop: SKSpriteNode!
-    var ripple: SKSpriteNode!
+    let raindrop = SKSpriteNode(color: SKColor.whiteColor(), size: CGSize(width: 1, height: 80))
+    let ripple = SKSpriteNode(texture: SKTexture(image: UIImage(named: "white_circle")!))
     
     override init() {
         super.init()
         name = "raindrop"
-
-        raindrop = SKSpriteNode(color: SKColor.whiteColor(), size: CGSize(width: 1, height: 80))
-        ripple = SKSpriteNode(texture: SKTexture(image: UIImage(named: "white_circle")!))
         
         raindrop.anchorPoint = CGPoint(x: 0.5, y: 0.0)
         ripple.setScale(0)
@@ -73,6 +70,6 @@ class Raindrop: SKNode {
                 })
             })
         }
-
     }
+    
 }

@@ -98,7 +98,6 @@ class Shark: SKNode {
         }
         
         position.x += 100
-        
         swimLeft()
     }
     
