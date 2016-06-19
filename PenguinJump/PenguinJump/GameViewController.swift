@@ -41,7 +41,7 @@ class GameViewController: UIViewController {
         let skView = view as! SKView
         skView.showsFPS = true
         skView.showsNodeCount = true
-        skView.showsPhysics = true
+        skView.showsPhysics = false
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .ResizeFill
         
@@ -60,6 +60,9 @@ class GameViewController: UIViewController {
         newGameData.musicPlaying = false
         newGameData.soundEffectsOn = true
         newGameData.selectedPenguin = "normal"
-        do { try managedObjectContext.save() } catch { print(error) }
+        
+        do {
+            try managedObjectContext.save()
+        } catch { print(error) }
     }
 }

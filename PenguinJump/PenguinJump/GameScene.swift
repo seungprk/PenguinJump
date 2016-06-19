@@ -762,21 +762,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             })
         }
     }
-    
-    func initializeGameData() {
-        let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
-        newGameData.highScore = 0
-        newGameData.totalCoins = 0
-        newGameData.selectedPenguin = "normal"
-        newGameData.musicOn = true
-        newGameData.soundEffectsOn = true
-        newGameData.musicPlaying = false
-        
-        do {
-            try managedObjectContext.save()
-        } catch { print(error) }
-    }
-    
+
     // MARK: - Iceberg Generator Delegate method
     
     func didGenerateIceberg(generatedIceberg: Iceberg) {
