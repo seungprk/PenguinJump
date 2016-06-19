@@ -584,7 +584,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
     
     func enterPause() {
-        print("enterPause")
         if gameRunning {
             shouldCorrectAfterPause = true
             gamePaused = true
@@ -592,10 +591,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             paused = true
             
             var needsPauseCover = true
-            for child in children {
-                if child.name == "pauseCover" {
-                    needsPauseCover = false
-                }
+            if let _ = childNodeWithName("pauseCover") {
+                needsPauseCover = false
             }
             
             if needsPauseCover {
