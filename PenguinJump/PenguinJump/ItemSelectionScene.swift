@@ -112,7 +112,7 @@ class ItemSelectionScene: SKScene {
                 
                 scrollNode.addChild(penguin)
             } else {
-                let penguin = SKSpriteNode(imageNamed: "locked_penguin")
+                let penguin = SKSpriteNode(texture: SKTexture(image: UIImage(named: "locked_penguin")!))
                 penguin.size = CGSize(width: 25, height: 44)
                 penguin.name = "penguin"
                 

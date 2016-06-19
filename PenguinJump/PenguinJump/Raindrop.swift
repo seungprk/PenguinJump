@@ -18,7 +18,7 @@ class Raindrop: SKNode {
         name = "raindrop"
 
         raindrop = SKSpriteNode(color: SKColor.whiteColor(), size: CGSize(width: 1, height: 80))
-        ripple = SKSpriteNode(imageNamed: "white_circle")
+        ripple = SKSpriteNode(texture: SKTexture(image: UIImage(named: "white_circle")!))
         
         raindrop.anchorPoint = CGPoint(x: 0.5, y: 0.0)
         ripple.setScale(0)

@@ -43,7 +43,7 @@ class Coin: SKSpriteNode {
         body.zPosition = 200
         body.name = "body"
         
-        shadow = SKSpriteNode(imageNamed: "coin_shadow")
+        shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "coin_shadow")!))
         shadow.alpha = 0.1
         shadow.position.y -= size.height // 3
         shadow.zPosition = -100

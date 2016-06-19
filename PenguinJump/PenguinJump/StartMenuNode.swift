@@ -75,7 +75,7 @@ class StartMenuNode: SKNode {
         aboutButton.zPosition = 10000
         
         // Button "Wardrobe"
-        wardrobeButton = SKSpriteNode(imageNamed: "wardrobe_icon")
+        wardrobeButton = SKSpriteNode(texture: SKTexture(image: UIImage(named: "wardrobe_icon")!))
         wardrobeButton.name = "wardrobeButton"
         wardrobeButton.position.x += playButton.frame.width
         wardrobeButton.position.y -= frame.height * 0.175

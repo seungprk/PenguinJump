@@ -10,12 +10,12 @@ import SpriteKit
 
 class Shark: SKNode {
     
-    var face = SKSpriteNode(imageNamed: "shark_face")
-    var mouth = SKSpriteNode(imageNamed: "shark_mouth")
-    var faceMask = SKSpriteNode(imageNamed: "shark_face")
-    var fin = SKSpriteNode(imageNamed: "shark_fin")
-    var wave = SKSpriteNode(imageNamed: "shark_wave")
-    var shadow = SKSpriteNode(imageNamed: "shark_shadow")
+    var face = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_face")!))
+    var mouth = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_mouth")!))
+    var faceMask = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_face")!))
+    var fin = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_fin")!))
+    var wave = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_wave")!))
+    var shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_shadow")!))
     var finMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSizeZero)
     
     var didBeginKill = false
