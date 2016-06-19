@@ -132,6 +132,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7F4B6B7B1D166E2B00EFBD72 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7F7FB38D1CE5B80C0067FC9B /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		7F7FB3711CE5B80C0067FC9B = {
 			isa = PBXGroup;
 			children = (
@@ -154,11 +162,13 @@
 			children = (
 				7F7FB37D1CE5B80C0067FC9B /* AppDelegate.swift */,
 				7F7FB3831CE5B80C0067FC9B /* GameViewController.swift */,
-				7F7FB38D1CE5B80C0067FC9B /* Info.plist */,
+				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
+				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
 				7FA4D3141D152D0E00D0887A /* Scenes */,
 				7FA6BCDE1CFF78AF003C7CDA /* Nodes */,
 				7FB56B391D15CAF6003B0285 /* Assets */,
 				7FA4D3131D152CFC00D0887A /* CoreData Objects */,
+				7F4B6B7B1D166E2B00EFBD72 /* Supporting Files */,
 			);
 			path = PenguinJump;
 			sourceTree = "<group>";
@@ -200,9 +210,9 @@
 		7FA4D3131D152CFC00D0887A /* CoreData Objects */ = {
 			isa = PBXGroup;
 			children = (
-				7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */,
 				7F61263E1CFE4329006BE5DA /* GameData.swift */,
 				7F9558BA1D0C8B99003B886D /* UnlockedPenguins.swift */,
+				7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */,
 			);
 			name = "CoreData Objects";
 			sourceTree = "<group>";
@@ -252,8 +262,6 @@
 				7F887CEB1D00107A0070B9F4 /* Audio */,
 				7FA4D3121D152CD600D0887A /* Particles */,
 				7F7FB3881CE5B80C0067FC9B /* Images.xcassets */,
-				7F7FB3851CE5B80C0067FC9B /* Main.storyboard */,
-				7F7FB38A1CE5B80C0067FC9B /* LaunchScreen.storyboard */,
 			);
 			name = Assets;
 			sourceTree = "<group>";

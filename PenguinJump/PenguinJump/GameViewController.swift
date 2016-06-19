@@ -33,8 +33,11 @@ class GameViewController: UIViewController {
                 } catch { print(error) }
             }
         } catch { print(error) }
+        
         fetchedData.first!.musicPlaying = false
-        do { try managedObjectContext.save() } catch { print(error) }
+        do {
+            try managedObjectContext.save()
+        } catch { print(error) }
         
         
         let scene = CutScene(size: view.bounds.size)
