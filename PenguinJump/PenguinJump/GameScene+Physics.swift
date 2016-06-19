@@ -6,7 +6,6 @@
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 
-import Foundation
 import SpriteKit
 
 let Passthrough       : UInt32 = 0x0
@@ -53,6 +52,20 @@ extension GameScene: SKPhysicsContactDelegate {
             
             penguin.contactingLightning = true
         
+        case (PenguinCategory, SharkCategory):
+            let shark = secondBody.node?.parent as! Shark
+            
+            if !shark.didBeginKill {
+                shark.didBeginKill = true
+
+                let deathMove = SKAction.moveTo(self.convertPoint(shark.position, fromNode: self.sharkLayer!), duration: 0.5)
+        
+                penguin.removeAllActions()
+                shark.kill(penguinMove: {
+                    self.penguin.runAction(deathMove)                    
+                })
+            }
+            
         case (PenguinCategory, CoinCategory):
             print("Penguin shadow hit coin")
             let coin = secondBody.node?.parent as! Coin

@@ -14,7 +14,7 @@ import SpriteKit
 class CutScene: SKScene {
     
     /// The image to display during this scene.
-    let image = SKSpriteNode(imageNamed: "cutscene")
+    let image = SKSpriteNode(texture: SKTexture(image: UIImage(named: "cutscene")!) )
     
     override func didMoveToView(view: SKView) {
         

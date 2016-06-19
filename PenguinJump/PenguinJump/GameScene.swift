@@ -28,6 +28,11 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // Game options
     var enableScreenShake = true
     
+    // Constant game properties
+    let bgColorValues = ColorValues(red: 0/255, green: 151/255, blue: 255/255, alpha: 1)
+    let stormDuration = 15.0
+    let stormTransitionDuration = 2.0
+    
     // Node Objects
     var cam:SKCameraNode!
     var penguin: Penguin!
@@ -40,7 +45,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var sharkLayer: SKNode?
     
     // Audio
-    
     var backgroundMusic: AVAudioPlayer?
     var backgroundOcean: AVAudioPlayer?
     
@@ -78,10 +82,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     var timeSinceLastUpdate: NSTimeInterval = 0.0
     var stormTimeElapsed: NSTimeInterval = 0.0
     var stormIntensity = 0.0
-    var stormDuration = 15.0
-    var stormTransitionDuration = 2.0
     var stormMode = false
-    let bgColorValues = ColorValues(red: 0/255, green: 151/255, blue: 255/255, alpha: 1)
     var windSpeed = 0.0
     var windEnabled = true
     var windDirectionRight = true
@@ -178,7 +179,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         }
       
         // Physics setup
-        // TODO: set up physics world
         setupPhysics()
         
         // Set up Game Scene
@@ -474,19 +474,21 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         moneyButton.hidden = true
                         viewOutlineButton.hidden = true
                     
-                    
-                        if name == "testZoom" {
+                        switch name {
+                        case "testZoom":
                             let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
                             let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
                             
                             testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
                             testZoomed = testZoomed ? false : true
-                        } else if name == "rainButton" {
+                            
+                        case "rainButton":
                             let raindrop = Raindrop()
                             raindrop.zPosition = 100000
                             raindrop.drop(view!.center, windSpeed: windSpeed)
                             addChild(raindrop)
-                        } else if name == "lightningButton" {
+
+                        case "lightningButton":
                             if let berg = (stage as IcebergGenerator).highestBerg {
                                 let lightningRandomX = CGFloat(random()) % berg.size.width - berg.size.width / 2
                                 let lightningRandomY = CGFloat(random()) % berg.size.height - berg.size.height / 2
@@ -495,7 +497,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                                 lightning.position = lightningPosition
                                 lightningLayer?.addChild(lightning)
                             }
-                        } else if name == "sharkButton" {
+                        case "sharkButton":
                             if let berg = (stage as IcebergGenerator).highestBerg {
                                 let sharkX = berg.position.x
                                 let sharkY = berg.position.y + (350 / 4)
@@ -506,53 +508,59 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                                 sharkLayer?.addChild(shark)
                                 shark.beginSwimming()
                             }
-                        } else if name == "stormButton" {
+                        case "stormButton":
                             beginStorm()
-                        } else if name == "moneyButton" {
+                        
+                        case "moneyButton":
                             for _ in 1...1000 {
                                 incrementTotalCoins()
                             }
-                        } else if name == "viewOutlineButton" {
+                            
+                        case "viewOutlineButton":
                             viewOutlineOn = !viewOutlineOn
-                        } else if name == "pauseButton" {
+                        
+                        case "pauseButton":
                             enterPause()
-                        } else if touchedNode.name == "pauseCover" {
+                        
+                        case "pauseCover":
                             exitPause()
-                        } else if penguin.inAir && !penguin.doubleJumped {
-                            // IF A BUTTON WASN'T TOUCHED, IT'S A DOUBLE JUMP COMMAND
-                            // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
-                            // use above for swipe double jump
                             
-                            penguin.doubleJumped = true
-                            
-                            let delta = positionInScene - penguin.position
-                            
-                            let jumpAir = SKShapeNode(circleOfRadius: 20.0)
-                            jumpAir.fillColor = SKColor.clearColor()
-                            jumpAir.strokeColor = SKColor.whiteColor()
-                            
-                            jumpAir.xScale = 1.0
-                            jumpAir.yScale = 1.0
-                            
-                            jumpAir.position = penguin.position
-                            addChild(jumpAir)
-                            
-                            let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
-                            let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
-                            
-                            airExpand.timingMode = .EaseOut
-                            airFade.timingMode = .EaseIn
-                            
-                            jumpAir.runAction(airExpand)
-                            jumpAir.runAction(airFade, completion: {
-                                self.jumpAir.removeFromParent()
-                            })
-                            
-                            doubleJump(CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5))
+                        default:
+                            if penguin.inAir && !penguin.doubleJumped {
+                                // IF A BUTTON WASN'T TOUCHED, IT'S A DOUBLE JUMP COMMAND
+                                // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
+                                // use above for swipe double jump
+                                
+                                penguin.doubleJumped = true
+                                
+                                let delta = positionInScene - penguin.position
+                                
+                                let jumpAir = SKShapeNode(circleOfRadius: 20.0)
+                                jumpAir.fillColor = SKColor.clearColor()
+                                jumpAir.strokeColor = SKColor.whiteColor()
+                                
+                                jumpAir.xScale = 1.0
+                                jumpAir.yScale = 1.0
+                                
+                                jumpAir.position = penguin.position
+                                addChild(jumpAir)
+                                
+                                let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
+                                let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
+                                
+                                airExpand.timingMode = .EaseOut
+                                airFade.timingMode = .EaseIn
+                                
+                                jumpAir.runAction(airExpand)
+                                jumpAir.runAction(airFade, completion: {
+                                    self.jumpAir.removeFromParent()
+                                })
+                                
+                                doubleJump(CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5))
+                            }
                         }
                     }
                 }
-
             }
         }
     }
@@ -621,7 +629,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         paused = false
     }
     
-    // MARK: - Game state
+    // MARK: - Game states
     
     func beginGame() {
         penguin.body.texture = SKTexture(imageNamed: "penguintemp")
@@ -678,6 +686,33 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         cam.addChild(scoreLabel)
         gameRunning = true
 
+    }
+    
+    func beginStorm() {
+        stormMode = true
+        
+        if self.gameData.soundEffectsOn as Bool {
+            thunderSound?.play()
+        }
+        
+        windDirectionRight = random() % 2 == 0 ? true : false
+        
+        waves.stormMode = self.stormMode
+        waves.bob()
+        
+        for child in stage.children {
+            let berg = child as! Iceberg
+            berg.stormMode = self.stormMode
+            berg.bob()
+        }
+        
+        let flashUp = SKAction.fadeAlphaTo(1.0, duration: 0.5)
+        let flashDown = SKAction.fadeAlphaTo(0.0, duration: 0.5)
+        flashUp.timingMode = .EaseInEaseOut
+        flashDown.timingMode = .EaseInEaseOut
+        
+        let flash = SKAction.sequence([flashUp, flashDown])
+        chargeBar.barFlash.runAction(SKAction.repeatActionForever(flash))
     }
     
     func runGameOver() {
@@ -740,39 +775,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             try managedObjectContext.save()
         } catch { print(error) }
     }
-
-    func playMusic() {
-        if gameData.musicOn == true && gameData.musicPlaying == false {
-            if let backgroundMusic = backgroundMusic {
-                backgroundMusic.volume = 0.0
-                backgroundMusic.numberOfLoops = -1 // Negative integer to loop indefinitely
-                backgroundMusic.play()
-                fadeAudioPlayer(backgroundMusic, fadeTo: musicVolume * 0.5, duration: 1, completion: nil)
-            }
-            if let backgroundOcean = backgroundOcean {
-                backgroundOcean.volume = 0.0
-                backgroundOcean.numberOfLoops = -1 // Negative integer to loop indefinitely
-                backgroundOcean.play()
-                fadeAudioPlayer(backgroundOcean, fadeTo: musicVolume * 0.1, duration: 1, completion: nil)
-            }
-            gameData.musicPlaying = true
-            do { try managedObjectContext.save() } catch { print(error) }
-        }
-    }
-    
-    func fadeMusic() {
-        if gameData.musicOn == true {
-            fadeAudioPlayer(backgroundMusic!, fadeTo: 0.0, duration: 1.0, completion: {() in
-                self.backgroundMusic?.stop()
-            })
-            fadeAudioPlayer(backgroundOcean!, fadeTo: 0.0, duration: 1.0, completion: {() in
-                self.backgroundOcean?.stop()
-            })
-            gameData.musicOn = false
-            gameData.musicPlaying = false
-            do { try managedObjectContext.save() } catch { print(error) }
-        }
-    }
     
     // MARK: - Iceberg Generator Delegate method
     
@@ -806,7 +808,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         if generatedIceberg.name != "rightBerg" && generatedIceberg.name != "leftBerg" {
             // Can put in a shark
             
-            // Reusing lightning RNG for test
+            // Reusing lightning RNG
             if lightningRandom == 1 {
                 let sharkX = berg.position.x
                 let sharkY = berg.position.y + (350 / 4)
@@ -818,423 +820,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 shark.beginSwimming()
             }
         }
-    }
-    
-    // MARK: - Updates
-    
-    override func update(currentTime: NSTimeInterval) {
-        if shouldCorrectAfterPause {
-            timeSinceLastUpdate = 0.0
-            shouldCorrectAfterPause = false
-            previousTime = currentTime
-        } else {
-            if let previousTime = previousTime {
-                timeSinceLastUpdate = currentTime - previousTime
-                self.previousTime = currentTime
-            } else {
-                self.previousTime = currentTime
-            }
-        }
-        
-        stage.update()
-        waves.update()
-        coinLabel.text = "\(totalCoins) coins"
-
-        if gameRunning {
-            penguin.userInteractionEnabled = true
-
-            scoreLabel.text = "Score: " + String(intScore)
-            
-            penguinUpdate()
-            coinUpdate()
-            chargeBarUpdate()
-            trackDifficulty()
-            
-            checkGameOver()
-            if gameOver {
-                runGameOver()
-            }
-            
-            updateStorm()
-            updateRain()
-            updateLightning()
-            updateShark()
-            
-            centerCamera()
-        } else {
-            penguin.userInteractionEnabled = false
-            penguin.removeAllActions()
-            for child in penguin.children {
-                child.removeAllActions()
-            }
-        }
-        
-    }
-    
-    func updateShark() {
-        if let sharkLayer = sharkLayer {
-            for child in sharkLayer.children {
-                let shark = child as! Shark
-                
-                if penguin.shadow.intersectsNode(shark.wave) {
-                    if !shark.didBeginKill {
-                        shark.didBeginKill = true
-                        
-                        penguin.removeAllActions()
-                        
-                        shark.kill(penguinMove: {
-                            let deathMove = SKAction.moveTo(shark.position, duration: 0.5)
-                            self.penguin.runAction(deathMove)
-                        })
-                    }
-                }
-                
-                if shark.position.y < cam.position.y - view!.frame.height * 1.2 {
-                    shark.removeFromParent()
-                    
-                    if sharkLayer.children.count < 1 {
-                        lurkingSound?.stop()
-                    }
-                }
-            }
-        }
-    }
-    
-    func updateLightning() {
-        if let lightningLayer = lightningLayer{
-            for child in lightningLayer.children {
-                let lightning = child as! Lightning
-                
-                let difference = lightning.position.y - penguin.position.y
-                if difference < 40 {
-                    if !lightning.didBeginStriking {
-                        lightning.didBeginStriking = true
-                        lightning.beginStrike()
-                    }
-                }
-            }
-        }
-    }
-    
-    func updateRain() {
-        if stormMode {
-            let maxRaindropsPerSecond = 80.0
-
-            // Storm start ease in
-            var raindropsPerSecond = 0.1 * pow(5.3, stormTimeElapsed) - 0.1
-            
-            // Cap at 80 maximum
-            if raindropsPerSecond > maxRaindropsPerSecond {
-                raindropsPerSecond = maxRaindropsPerSecond
-            }
-            
-            // Storm ending rain ease out
-            if stormTimeElapsed > stormDuration - 2 {
-                raindropsPerSecond = 0.1 * pow(5.3, abs(stormTimeElapsed - stormDuration)) - 0.1
-            }
-            
-            let numberOfRainDrops = Int(timeSinceLastUpdate * raindropsPerSecond /* * stormIntensity */) + 1// + randomRaindrops
-            
-            for _ in 0..<numberOfRainDrops {
-                
-                let randomX = 3.0 * CGFloat(random()) % view!.frame.width - view!.frame.width / 2
-                let randomY = 2.0 * CGFloat(random()) % view!.frame.height - view!.frame.height / 4
-
-                let raindrop = Raindrop()
-                addChild(raindrop)
-
-                raindrop.drop(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), windSpeed: windSpeed * 2)
-                
-                // Attempt to avoid dropping a raindrop over an iceberg.
-                for child in stage.children {
-                    let berg = child as! Iceberg
-                    if berg.containsPoint(convertPoint(CGPoint(x: penguin.position.x + CGFloat(randomX), y: penguin.position.y + CGFloat(randomY)), toNode: stage)) {
-                        raindrop.zPosition = 0
-                        
-                    } else {
-                        raindrop.zPosition = 24000
-                    }
-                }
-            }
-        }
-    }
-    
-    func updateWinds() {
-        if windEnabled {
-            windSpeed = windDirectionRight ? stormIntensity * 70 : -stormIntensity * 70
-            
-            var deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
-            if penguin.type == PenguinType.shark {
-                deltaX = deltaX * 0.75
-            }
-            
-            let push = SKAction.moveBy(CGVector(dx: deltaX, dy: 0), duration: timeSinceLastUpdate)
-            penguin.runAction(push)
-        }
-
-    }
-    
-    func updateStorm() {
-
-        if stormMode {
-            updateWinds()
-            
-            // Update storm intensity during storm mode.
-            if stormTimeElapsed < stormDuration - stormTransitionDuration {
-                stormTimeElapsed += timeSinceLastUpdate
-                
-                if stormIntensity < 0.99 {
-                    // Begin storm gradually
-                    stormIntensity += 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
-                } else {
-                    // Enter full storm intensity
-                    stormIntensity = 1.0
-                }
-            } else {
-                // Begin ending storm mode.
-                if stormIntensity > 0.01 {
-                    // Exit storm gradually
-                    stormIntensity -= 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
-                } else {
-                    // End of storm mode.
-                    stormIntensity = 0.0
-                    stormTimeElapsed = 0.0
-                    stormMode = false
-                    
-                    waves.stormMode = self.stormMode
-                    waves.bob()
-                    
-                    for child in stage.children {
-                        let berg = child as! Iceberg
-                        berg.stormMode = self.stormMode
-                        berg.bob()
-                    }
-                    
-                    chargeBar.barFlash.removeAllActions()
-                }
-            }
-        }
-        backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green - CGFloat(40 / 255 * stormIntensity), blue: bgColorValues.blue - CGFloat(120 / 255 * stormIntensity), alpha: bgColorValues.alpha)
-    }
-    
-    func penguinUpdate() {
-        for child in stage.children {
-            let berg = child as! Iceberg
-
-            if  penguin.shadow.intersectsNode(berg)
-            &&  penguin.onBerg
-            && !penguin.inAir
-            && !berg.landed
-            &&  berg.name != "firstBerg" {
-                    
-                // Penguin landed on an iceberg if check is true
-                if gameData.soundEffectsOn == true { landingSound?.play() }
-                
-                berg.land()
-                stage.updateCurrentBerg(berg)
-                shakeScreen()
-                
-                let sinkDuration = 7.0 - (3.0 * difficulty)
-                berg.sink(sinkDuration, completion: nil)
-                penguin.land(sinkDuration)
-                
-                intScore += 1
-                
-                let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
-            }
-        }
-        
-        if !penguin.hitByLightning && penguin.contactingLightning {
-            if let lightningLayer = lightningLayer {
-                for child in lightningLayer.children {
-                    let lightning = child as! Lightning
-                    
-                    if lightning.activated {
-                        if lightning.shadow.intersectsNode(penguin.shadow) {
-                            // Penguin hit!
-
-                            penguin.hitByLightning = true
-                            
-                            let shadowPositionInLayer = lightningLayer.convertPoint(lightning.shadow.position, fromNode: lightning)
-                            let lightningShadowPositionInScene = convertPoint(shadowPositionInLayer, fromNode: lightningLayer)
-                            let penguinShadowPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
-            
-                            let deltaX = penguinShadowPositionInScene.x - lightningShadowPositionInScene.x
-                            let deltaY = penguinShadowPositionInScene.y - lightningShadowPositionInScene.y
-                            let maxDelta = lightning.shadow.size.width / 2
-                            
-                            let maxPushDistance = penguin.size.height * 1.5
-                            let pushX = (deltaX / maxDelta) * maxPushDistance
-                            let pushY = (deltaY / maxDelta) * maxPushDistance
-
-                            let push = SKAction.moveBy(CGVector(dx: pushX, dy: pushY), duration: 1.0)
-                            push.timingMode = .EaseOut
-                            penguin.removeAllActions()
-                            penguin.runAction(push, completion:  {
-                                self.penguin.hitByLightning = false
-                            })
-                        }
-                    }
-                }
-            }
-        }
-        
-        
-    }
-    
-    func chargeBarUpdate() {
-        chargeBar.mask.size.width = scoreLabel.frame.width * 0.95
-        
-        if chargeBar.bar.position.x >= chargeBar.mask.size.width {
-            shouldFlash = true
-            
-            if shouldFlash && !stormMode {
-                shouldFlash = false
-                beginStorm()
-                
-                chargeBar.flash(completion: {
-                    
-                    let chargeDown = SKAction.moveToX(0, duration: self.stormDuration - self.stormTimeElapsed)
-                    self.chargeBar.bar.runAction(chargeDown)
-                })
-                
-                
-            }
-        } else if chargeBar.bar.position.x > 0 && !stormMode {
-            let decrease = SKAction.moveBy(CGVector(dx: -5 * timeSinceLastUpdate, dy: 0), duration: timeSinceLastUpdate)
-            chargeBar.bar.runAction(decrease)
-            
-            if !stormMode && !chargeBar.flashing {
-                chargeBar.barFlash.alpha = 0.0
-
-            }
-        }
-    }
-    
-    func coinUpdate() {
-        
-        if let coinLayer = coinLayer {
-            for child in coinLayer.children {
-                
-                let coin = child as! Coin
-                
-                let coinShadowPositionInLayer = coinLayer.convertPoint(coin.shadow.position, fromNode: coin)
-                let coinPositionInScene = convertPoint(coinShadowPositionInLayer, fromNode: coinLayer)
-                let penguinPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
-                
-                if penguinPositionInScene.y > coinPositionInScene.y {
-                    coin.body.zPosition = 90000
-                }
-            }
-        }
-    }
-    
-    func incrementBarWithCoinParticles(coin: Coin) {
-        for particle in coin.particles {
-            let chargeBarPositionInCam = cam.convertPoint(chargeBar.position, fromNode: scoreLabel)
-            
-            let randomX = CGFloat(random()) % (chargeBar.bar.position.x + 1)
-
-            let move = SKAction.moveTo(CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
-            move.timingMode = .EaseOut
-            
-            let wait = SKAction.waitForDuration(0.2 * Double(coin.particles.indexOf(particle)!))
-            
-            particle.runAction(wait, completion: {
-                particle.runAction(move, completion: {
-                    particle.removeFromParent()
-                    if self.gameData.soundEffectsOn as Bool {
-                        let charge = SKAction.playSoundFileNamed("charge.wav", waitForCompletion: false)
-                        self.runAction(charge)
-                    }
-                    
-                    self.chargeBar.flashOnce()
-                    
-                    if !self.stormMode {
-                        let incrementAction = SKAction.moveBy(CGVector(dx: self.chargeBar.increment, dy: 0), duration: 0.5)
-                        incrementAction.timingMode = .EaseOut
-                        self.chargeBar.bar.runAction(incrementAction)
-                    } else {
-                        // Coin collected during storm mode.
-                        // Increment bar but add to time elapsed too.
-                    }
-                    
-                    if coin.particles.isEmpty {
-                        coin.removeFromParent()
-                    }
-                })
-            })
-        }
-    }
-    
-    func incrementTotalCoins() {
-        totalCoins += 1
-        
-        // Increment coin total in game data
-        if gameData != nil {
-            let totalCoins = gameData.totalCoins as Int
-            gameData.totalCoins = totalCoins + 1
-            
-            do { try managedObjectContext.save() } catch { print(error) }
-        }
-    }
-    
-    func checkGameOver() {
-        if !penguin.inAir && !penguin.onBerg {
-            gameOver = true
-        }
-    }
-    
-    /*
-    func onBerg() -> Bool {
-        for child in stage.children {
-            let berg = child as! Iceberg
-            if penguin.shadow.intersectsNode(berg) {
-                return true
-            }
-        }
-        return false
-    }
-    */
-    
-    // MARK: - Storm Mode
-    
-    func beginStorm() {
-        stormMode = true
-        
-        if self.gameData.soundEffectsOn as Bool {
-            thunderSound?.play()
-        }
-        
-        windDirectionRight = random() % 2 == 0 ? true : false
-        
-        waves.stormMode = self.stormMode
-        waves.bob()
-        
-        for child in stage.children {
-            let berg = child as! Iceberg
-            berg.stormMode = self.stormMode
-            berg.bob()
-        }
-        
-        let flashUp = SKAction.fadeAlphaTo(1.0, duration: 0.5)
-        let flashDown = SKAction.fadeAlphaTo(0.0, duration: 0.5)
-        flashUp.timingMode = .EaseInEaseOut
-        flashDown.timingMode = .EaseInEaseOut
-        
-        let flash = SKAction.sequence([flashUp, flashDown])
-        chargeBar.barFlash.runAction(SKAction.repeatActionForever(flash))
-    }
-
-    // MARK: - Gameplay logic
-    
-    func trackDifficulty() {
-        // Difficulty:
-        // minimum 0.0
-        // maximum 1.0
-        difficulty = -1.0 * pow(0.9995, Double(penguin.position.y)) + 1.0
     }
     
     // MARK: - Camera control
@@ -1259,100 +844,4 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             cam.removeAllActions()
         }
     }
-    
-    // MARK: - Audio
-    
-    func audioPlayerWithFile(file: String, type: String) -> AVAudioPlayer? {
-        let path = NSBundle.mainBundle().pathForResource(file, ofType: type)
-        let url = NSURL.fileURLWithPath(path!)
-        
-        var audioPlayer: AVAudioPlayer?
-        
-        do {
-            try audioPlayer = AVAudioPlayer(contentsOfURL: url)
-        } catch {
-            print("Audio player not available")
-        }
-        
-        return audioPlayer
-    }
-    
-    func fadeVolumeDown(player: AVAudioPlayer) {
-        player.volume -= 0.01
-        if player.volume < 0.01 {
-            player.stop()
-        } else {
-            // Use afterDelay value to change duration.
-            performSelector("fadeVolumeDown:", withObject: player, afterDelay: 0.02)
-        }
-    }
-    
-    func fadeVolumeUp(player: AVAudioPlayer ) {
-        player.volume += 0.01
-        if player.volume < musicVolume {
-            performSelector("fadeVolumeUp:", withObject: player, afterDelay: 0.02)
-        }
-    }
-    
-    /// Helper function to fade the volume of an `AVAudioPlayer` object.
-    func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
-        let amount:Float = 0.1
-        let incrementDelay = duration * Double(amount)// * amount)
-        
-        if player.volume > fadeTo + amount {
-            player.volume -= amount
-            
-            delay(incrementDelay) {
-                self.fadeAudioPlayer(player, fadeTo: fadeTo, duration: duration, completion: block)
-            }
-        } else if player.volume < fadeTo - amount {
-            player.volume += amount
-            
-            delay(incrementDelay) {
-                self.fadeAudioPlayer(player, fadeTo: fadeTo, duration: duration, completion: block)
-            }
-        } else {
-            // Execute when desired volume reached.
-            block?()
-        }
-        
-    }
-    
-    // MARK: - Utilities
-    
-    /// Unused delay function with a closure. Not accurate for small increments of time.
-    func delay(delay:Double, closure:()->()) {
-        dispatch_after(
-            dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(delay * Double(NSEC_PER_SEC))
-            ),
-            dispatch_get_main_queue(), closure)
-    }
-    
-    /// Utility function that is used to shake the screen when the penguin lands on an iceberg to give the illusion of impact.
-    func shakeScreen() {
-        if enableScreenShake {
-            let shakeAnimation = CAKeyframeAnimation(keyPath: "transform")
-//            let randomIntensityOne = CGFloat(random() % 4 + 1)
-            let randomIntensityTwo = CGFloat(random() % 4 + 1)
-            shakeAnimation.values = [
-                //NSValue( CATransform3D:CATransform3DMakeTranslation(-randomIntensityOne, 0, 0 ) ),
-                //NSValue( CATransform3D:CATransform3DMakeTranslation( randomIntensityOne, 0, 0 ) ),
-                NSValue( CATransform3D:CATransform3DMakeTranslation( 0, -randomIntensityTwo, 0 ) ),
-                NSValue( CATransform3D:CATransform3DMakeTranslation( 0, randomIntensityTwo, 0 ) ),
-            ]
-            shakeAnimation.repeatCount = 1
-            shakeAnimation.duration = 25/100
-            
-            view!.layer.addAnimation(shakeAnimation, forKey: nil)
-        }
-    }
-}
-
-/// Overloaded minus operator to use on CGPoint
-func -(first: CGPoint, second: CGPoint) -> CGPoint {
-    let deltaX = first.x - second.x
-    let deltaY = first.y - second.y
-    return CGPoint(x: deltaX, y: deltaY)
 }

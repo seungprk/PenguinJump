@@ -43,6 +43,8 @@ class Shark: SKNode {
         face.position.y -= shadow.size.height / 2 - wave.size.height
         
         // Set up sprite nodes
+        shadow.physicsBody = shadowPhysicsBody(shadow.texture!, category: SharkCategory)
+        
         shadow.alpha = 0.1
         shadow.zPosition = -20
         wave.zPosition = 10

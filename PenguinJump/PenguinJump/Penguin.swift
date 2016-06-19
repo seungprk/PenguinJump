@@ -41,8 +41,8 @@ class Penguin: SKSpriteNode {
     let body = SKSpriteNode(imageNamed: "penguin")
     var shadow: SKShapeNode!
     var item: SKNode?
-    
-    let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
+
+    let targetReticle = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetcircle")!))
     let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
     let targetDot2 = SKSpriteNode(imageNamed: "targetdot")
     let targetDot3 = SKSpriteNode(imageNamed: "targetdot")
@@ -51,7 +51,10 @@ class Penguin: SKSpriteNode {
     var targeting = false
     var playerTouched = false
     
+    /// The PenguinType of this penguin.
     var type: PenguinType!
+    /// The offset distance of the shadow from the penguin's body. Used to adjust the move action in the jump method to align the shadow with the center of the targeting reticle.
+    var shadowOffsetY: CGFloat!
     
     // Game session logic
     var doubleJumped = false
@@ -59,7 +62,8 @@ class Penguin: SKSpriteNode {
     var onBerg = false
     var contactingLightning = false
     var hitByLightning = false
-        
+    
+    
     init(type: PenguinType) {
         super.init(texture: nil, color: UIColor.clearColor(), size: body.size)
         
@@ -77,11 +81,14 @@ class Penguin: SKSpriteNode {
         penguinCropNode.addChild(body)
         penguinCropNode.maskNode = SKSpriteNode(imageNamed: "deathtemp")
         
+        // Assign shadowOffset after body's size is set.
+        shadowOffsetY = body.frame.height * 0.35
+
         // Create penguin's shadow
         shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width * 0.8, height: body.frame.width * 0.8), cornerRadius: body.frame.width / 2)
         shadow.fillColor = SKColor.blackColor()
         shadow.alpha = 0.2
-        shadow.position =  CGPoint(x: 0, y: -body.frame.height * 0.35)
+        shadow.position = CGPoint(x: 0, y: -shadowOffsetY)
         shadow.zPosition = 2000
         addChild(shadow)
         
@@ -96,11 +103,8 @@ class Penguin: SKSpriteNode {
         
         shadow.physicsBody = shadowBody
         shadow.physicsBody?.collisionBitMask = Passthrough
-        shadow.physicsBody?.contactTestBitMask = IcebergCategory
-                                               | LightningCategory
-                                               | SharkCategory
-                                               | CoinCategory
-        
+        shadow.physicsBody?.contactTestBitMask = 0xFFFFFFFF
+
         // Set Aim Sprites
         let xScale: CGFloat = 0.3
         let yScale: CGFloat = 0.3
@@ -340,7 +344,7 @@ class Penguin: SKSpriteNode {
             let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
             let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
             
-            let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
+            let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2 + shadowOffsetY), duration: jumpDuration)
             
             runAction(move)
             
@@ -429,7 +433,7 @@ class Penguin: SKSpriteNode {
             let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
             let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
             
-            let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
+            let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2 + shadowOffsetY), duration: jumpDuration)
 //            let counterMove = SKAction.moveBy(CGVector(dx: -velocity.dx, dy: -velocity.dy * 2), duration: jumpDuration)
             
             let itemDelay = SKAction.waitForDuration(0.005)
