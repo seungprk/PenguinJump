@@ -452,8 +452,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             let positionInScene = touch.locationInNode(self)
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
-                if let name = touchedNode.name
-                {
+                if let name = touchedNode.name {
                     if name == "debugButton" {
                         debugButton.hidden = true
                         zoomButton.hidden = false
@@ -525,40 +524,15 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                             exitPause()
                             
                         default:
-                            if penguin.inAir && !penguin.doubleJumped {
-                                // IF A BUTTON WASN'T TOUCHED, IT'S A DOUBLE JUMP COMMAND
-                                // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
-                                // use above for swipe double jump
-                                
-                                penguin.doubleJumped = true
-                                
-                                let delta = positionInScene - penguin.position
-                                
-                                let jumpAir = SKShapeNode(circleOfRadius: 20.0)
-                                jumpAir.fillColor = SKColor.clearColor()
-                                jumpAir.strokeColor = SKColor.whiteColor()
-                                
-                                jumpAir.xScale = 1.0
-                                jumpAir.yScale = 1.0
-                                
-                                jumpAir.position = penguin.position
-                                addChild(jumpAir)
-                                
-                                let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
-                                let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
-                                
-                                airExpand.timingMode = .EaseOut
-                                airFade.timingMode = .EaseIn
-                                
-                                jumpAir.runAction(airExpand)
-                                jumpAir.runAction(airFade, completion: {
-                                    self.jumpAir.removeFromParent()
-                                })
-                                
-                                doubleJump(CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5))
-                            }
+                            break
                         }
                     }
+                }
+                else if penguin.inAir && !penguin.doubleJumped {
+                    // IF A BUTTON WASN'T TOUCHED, IT'S A DOUBLE JUMP COMMAND
+                    // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
+                    // use above for swipe double jump
+                    penguin.doubleJump(positionInScene)
                 }
             }
         }

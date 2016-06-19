@@ -37,7 +37,7 @@ class Penguin: SKSpriteNode {
     var body : SKSpriteNode!
     var shadow: SKSpriteNode!
     var item: SKNode?
-
+    var doubleJumpWoosh : SKShapeNode!
     let targetReticle = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetcircle")!))
     let targetDot1 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
     let targetDot2 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
@@ -398,6 +398,46 @@ class Penguin: SKSpriteNode {
         }
     }
     
+    func doubleJump(positionInScene: CGPoint) {
+        doubleJumped = true
+        
+        let delta = positionInScene - position
+        
+        doubleJumpWoosh = SKShapeNode(circleOfRadius: 20.0)
+        doubleJumpWoosh .fillColor = SKColor.clearColor()
+        doubleJumpWoosh .strokeColor = SKColor.whiteColor()
+        
+        doubleJumpWoosh .xScale = 1.0
+        doubleJumpWoosh .yScale = 1.0
+        
+        doubleJumpWoosh .position = position
+        addChild(doubleJumpWoosh )
+        
+        let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
+        let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
+        
+        airExpand.timingMode = .EaseOut
+        airFade.timingMode = .EaseIn
+        
+        doubleJumpWoosh .runAction(airExpand)
+        doubleJumpWoosh .runAction(airFade, completion: {
+            self.doubleJumpWoosh.removeFromParent()
+        })
+        
+        let velocity = CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5)
+        
+        let nudgeRate: CGFloat = 180
+        let nudgeDistance = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
+        let nudgeDuration = Double(nudgeDistance / nudgeRate)
+        
+        let nudge = SKAction.moveBy(velocity, duration: nudgeDuration)
+        runAction(nudge)
+        
+        if (scene as! GameScene).gameData.soundEffectsOn == true {
+            (scene as! GameScene).jumpSound?.currentTime = 0
+            (scene as! GameScene).jumpSound?.play()
+        }
+    }
     func land(sinkDuration: NSTimeInterval) {
         doubleJumped = false
         hitByLightning = false
