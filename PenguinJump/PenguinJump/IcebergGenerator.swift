@@ -1,8 +1,8 @@
 //
-//  Stage.swift
-//  IcebergGenerator
+//  IcebergGenerator.swift: The stage object that generates icebergs. It calls the delegate method after each new iceberg is generated, passing the iceberg object that was just generated as a parameter.
 //
 //  Created by Matthew Tso on 5/24/16.
+//
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 
@@ -13,7 +13,12 @@ enum pathingMode {
     case straight
 }
 
+/// The delegate protocol that the game scene conforms to and implements in order to generate new game objects based on the last iceberg created by the IcebergGenerator.
 protocol IcebergGeneratorDelegate {
+    /** 
+        The IcebergGenerator calls this function after each iceberg is added as a child and assigned a position.
+        - parameter generatedIceberg: The Iceberg that was generated.
+    */
     func didGenerateIceberg(generatedIceberg: Iceberg)
 }
 

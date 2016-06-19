@@ -1,14 +1,15 @@
 //
-//  Penguin.swift
-//  PenguinJump
+//  Penguin.swift: The base penguin object that is player controlled. Implements its own touch event methods.
 //
 //  Created by Matthew Tso on 5/25/16.
+//  Edited by David Park.
+//
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 
 import SpriteKit
 
-// The Penguin type determines which item the Penguin is holding.
+/// The Penguin type determines which item the Penguin is holding.
 enum PenguinType {
     case normal //The default Penguin type where there is no item.
     case parasol // The Parasol Penguin has a two second jump duration.
@@ -27,7 +28,7 @@ enum PenguinType {
 }
 
 /*
-    The base Penguin class describes the node object that can be controlled by the player
+    The base Penguin class describes the node object that can be controlled by the player.
     - parameter targeting: Boolean that is true during the touch and drag control event.
 */
 class Penguin: SKSpriteNode {
