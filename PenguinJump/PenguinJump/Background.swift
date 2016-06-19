@@ -34,7 +34,7 @@ class Background: SKSpriteNode {
     func generateSilhouette() {
         var fishFrames = [SKTexture]()
         for number in 1...4 {
-            let texture = SKTexture(imageNamed: "fish\(number)")
+            let texture = SKTexture(image: UIImage(named: "fish\(number)")!)
             
             fishFrames.append(texture)
         }

@@ -27,7 +27,7 @@ class Coin: SKSpriteNode {
         /// Array of the coin's textures. The last texture is the coin image without the shine.
         var coinTextures = [SKTexture]()
         for i in 1...7 {
-            coinTextures.append(SKTexture(imageNamed: "coin\(i)"))
+            coinTextures.append(SKTexture(image: UIImage(named: "coin\(i)")!))
         }
         
         // Designated initializer for SKSpriteNode.

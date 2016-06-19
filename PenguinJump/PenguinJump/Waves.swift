@@ -166,7 +166,7 @@ class Waves: SKSpriteNode {
     }
     
     func newWaveNode() -> SKSpriteNode {
-        let waveNode = SKSpriteNode()//texture: SKTexture(imageNamed: "wave"))
+        let waveNode = SKSpriteNode()//texture: SKTexture(image: UIImage(named: "wave")!)
         waveNode.color = waveColor
         waveNode.size = CGSize(width: nodeWidth, height: 1.0)
         
