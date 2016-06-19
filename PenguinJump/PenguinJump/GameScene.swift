@@ -201,7 +201,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pan.timingMode = .EaseInEaseOut
         cam.runAction(pan)
         
-        
         // Debug buttons
         debugButton.name = "debugButton"
         debugButton.fontName = "Helvetica Neue Condensed Black"

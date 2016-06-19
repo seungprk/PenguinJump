@@ -132,7 +132,6 @@ class ItemSelectionScene: SKScene {
         }
     }
     
-    
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
             let positionInScene = touch.locationInNode(self)
@@ -212,13 +211,13 @@ class ItemSelectionScene: SKScene {
         // Calculate which penguin is closest to the middle
         var middleNode: SKNode!
         var closestX = penguinOffset * 10
-        
+
         for node in scrollNodes {
             let nodePositionInScene = convertPoint(node.position, fromNode: penguinScrollNode)
             let nodeDistanceFromCenter = nodePositionInScene.x - view!.center.x
             if nodeDistanceFromCenter < abs(closestX) {
                 closestX = nodeDistanceFromCenter
-                
+
                 middleNode = node
             }
         }
