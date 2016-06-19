@@ -57,11 +57,13 @@ extension GameScene: SKPhysicsContactDelegate {
             if !shark.didBeginKill {
                 shark.didBeginKill = true
 
-                let deathMove = SKAction.moveTo(self.convertPoint(shark.position, fromNode: self.sharkLayer!), duration: 0.5)
+                let deathMove = SKAction.moveTo(convertPoint(CGPoint(x: shark.position.x, y: shark.position.y + penguin.size.height), fromNode: sharkLayer!), duration: 0.1)
         
                 penguin.removeAllActions()
-                shark.kill(penguinMove: {
-                    self.penguin.runAction(deathMove)                    
+                penguin.runAction(deathMove)
+                
+                shark.kill(blockAfterFaceUp: {
+                    self.gameOver = true
                 })
             }
             
@@ -89,20 +91,20 @@ extension GameScene: SKPhysicsContactDelegate {
                     coin.generateCoinParticles(self.cam)
                     
                     let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
-                    let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
-                    
-                    coinBurst.zPosition = 240000
-                    coinBurst.numParticlesToEmit = 40
-                    coinBurst.targetNode = self.scene
-                    
-                    let coinBurstEffectNode = SKEffectNode()
-                    coinBurstEffectNode.addChild(coinBurst)
-                    coinBurstEffectNode.zPosition = 240000
-                    
-                    coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
-                    coinBurstEffectNode.blendMode = .Replace
-                    
-                    self.addChild(coinBurstEffectNode)
+                    if let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode? {
+                        coinBurst.zPosition = 240000
+                        coinBurst.numParticlesToEmit = 25
+                        coinBurst.targetNode = self.scene
+                        
+                        let coinBurstEffectNode = SKEffectNode()
+                        coinBurstEffectNode.addChild(coinBurst)
+                        coinBurstEffectNode.zPosition = 240000
+                        
+                        coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
+                        coinBurstEffectNode.blendMode = .Replace
+                        
+                        self.addChild(coinBurstEffectNode)
+                    }
                     
                     if self.gameData.soundEffectsOn as Bool {
                         self.burstSound?.play()

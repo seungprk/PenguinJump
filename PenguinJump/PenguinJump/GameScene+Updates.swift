@@ -216,8 +216,8 @@ extension GameScene {
                 && !penguin.inAir
                 && !berg.landed
                 &&  berg.name != "firstBerg" {
-                    
                     // Penguin landed on an iceberg if check is true
+                    
                     if gameData.soundEffectsOn == true { landingSound?.play() }
                     
                     berg.land()

@@ -33,15 +33,18 @@ class GameViewController: UIViewController {
                 } catch { print(error) }
             }
         } catch { print(error) }
+        
         fetchedData.first!.musicPlaying = false
-        do { try managedObjectContext.save() } catch { print(error) }
+        do {
+            try managedObjectContext.save()
+        } catch { print(error) }
         
         
         let scene = CutScene(size: view.bounds.size)
         let skView = view as! SKView
         skView.showsFPS = true
         skView.showsNodeCount = true
-        skView.showsPhysics = false
+        skView.showsPhysics = true
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .ResizeFill
         

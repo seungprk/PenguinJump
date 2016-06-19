@@ -49,14 +49,6 @@ class Coin: SKSpriteNode {
         shadow.zPosition = -100
         shadow.physicsBody = shadowPhysicsBody(shadow.texture!, category: CoinCategory)
         
-//        let shadowBody = SKPhysicsBody(rectangleOfSize: shadow.size)
-//        shadowBody.allowsRotation = false
-//        shadowBody.friction = 0
-//        shadowBody.affectedByGravity = false
-//        shadowBody.dynamic = false
-//        shadowBody.categoryBitMask = CoinCategory
-//        shadow.physicsBody = shadowBody        
-
         addChild(body)
         addChild(shadow)
         
