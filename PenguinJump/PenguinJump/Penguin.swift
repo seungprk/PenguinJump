@@ -214,6 +214,7 @@ class Penguin: SKSpriteNode {
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        body.texture = penguinAtlas.textureNamed("penguin-ready")
         
         for touch: AnyObject in touches {
             let touchPosition = touch.locationInNode(self)
@@ -270,6 +271,8 @@ class Penguin: SKSpriteNode {
                 targetDot1.removeFromParent()
                 targetDot2.removeFromParent()
                 targetDot3.removeFromParent()
+            } else {
+                body.texture = penguinAtlas.textureNamed("penguin-back")
             }
         }
     }
