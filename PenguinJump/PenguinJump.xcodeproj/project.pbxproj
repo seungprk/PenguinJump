@@ -16,6 +16,7 @@
 		7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE651CF647E700EC559E /* IcebergGenerator.swift */; };
 		7F36CE681CF653F200EC559E /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE671CF653F200EC559E /* GameScene.swift */; };
 		7F36CE6A1CF6BB1900EC559E /* Penguin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE691CF6BB1900EC559E /* Penguin.swift */; };
+		7F4B6B741D16121C00EFBD72 /* SKNode+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4B6B731D16121C00EFBD72 /* SKNode+.swift */; };
 		7F506B3F1D061AD600E8FD2C /* coin.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7F506B3E1D061AD600E8FD2C /* coin.wav */; };
 		7F61263D1CFE409F006BE5DA /* PenguinJump.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7F61263B1CFE409F006BE5DA /* PenguinJump.xcdatamodeld */; };
 		7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F61263E1CFE4329006BE5DA /* GameData.swift */; };
@@ -68,6 +69,7 @@
 		7F36CE651CF647E700EC559E /* IcebergGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IcebergGenerator.swift; sourceTree = "<group>"; };
 		7F36CE671CF653F200EC559E /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		7F36CE691CF6BB1900EC559E /* Penguin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Penguin.swift; sourceTree = "<group>"; };
+		7F4B6B731D16121C00EFBD72 /* SKNode+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SKNode+.swift"; sourceTree = "<group>"; };
 		7F506B3E1D061AD600E8FD2C /* coin.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = coin.wav; sourceTree = "<group>"; };
 		7F61263C1CFE409F006BE5DA /* PenguinJump.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PenguinJump.xcdatamodel; sourceTree = "<group>"; };
 		7F61263E1CFE4329006BE5DA /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 		7FA6BCDE1CFF78AF003C7CDA /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				7F4B6B731D16121C00EFBD72 /* SKNode+.swift */,
 				2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */,
 				241087AA1D090A26009055D6 /* SimpleButton.swift */,
 				7F36CE691CF6BB1900EC559E /* Penguin.swift */,
@@ -344,6 +347,7 @@
 				7F36CE681CF653F200EC559E /* GameScene.swift in Sources */,
 				7FA6BCDD1CFF5B73003C7CDA /* Waves.swift in Sources */,
 				7FB4C51B1D069EE100C6E680 /* Raindrop.swift in Sources */,
+				7F4B6B741D16121C00EFBD72 /* SKNode+.swift in Sources */,
 				7F0F506E1D14EA660046BD40 /* GameScene+Physics.swift in Sources */,
 				7F61263F1CFE4329006BE5DA /* GameData.swift in Sources */,
 				241087AB1D090A26009055D6 /* SimpleButton.swift in Sources */,

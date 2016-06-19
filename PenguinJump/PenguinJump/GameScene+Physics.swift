@@ -47,7 +47,12 @@ extension GameScene: SKPhysicsContactDelegate {
             penguin.shadow.alpha = 0.8
             
             penguin.onBerg = true
+        
+        case (PenguinCategory, LightningCategory):
+            print("begin contact with lightning")
             
+            penguin.contactingLightning = true
+        
         case (PenguinCategory, CoinCategory):
             print("Penguin shadow hit coin")
             let coin = secondBody.node?.parent as! Coin
@@ -69,7 +74,6 @@ extension GameScene: SKPhysicsContactDelegate {
                 let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
                 rise.timingMode = .EaseOut
                 
-//                coin.body.zPosition = 90000
                 coin.body.runAction(rise, completion: {
                     coin.generateCoinParticles(self.cam)
                     
@@ -124,6 +128,11 @@ extension GameScene: SKPhysicsContactDelegate {
             penguin.shadow.alpha = 0.2
             
             penguin.onBerg = false
+            
+        case (PenguinCategory, LightningCategory):
+            print("end contact with lightning")
+            
+            penguin.contactingLightning = false
             
         default:
             print("Contact ended between \(bodies.first) and \(bodies.second).")

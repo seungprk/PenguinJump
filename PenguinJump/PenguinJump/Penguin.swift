@@ -56,7 +56,8 @@ class Penguin: SKSpriteNode {
     // Game session logic
     var doubleJumped = false
     var inAir = false
-    var onBerg: Bool? // = false
+    var onBerg = false
+    var contactingLightning = false
     var hitByLightning = false
         
     init(type: PenguinType) {
@@ -306,7 +307,6 @@ class Penguin: SKSpriteNode {
             hitByLightning = false
             removeAllActions()
             inAir = true
-//            onBerg = false
             
             // Jump Duration based on travel distance
             //        let jumpRate: CGFloat = 150
@@ -401,7 +401,6 @@ class Penguin: SKSpriteNode {
             hitByLightning = false
             removeAllActions()
             inAir = true
-//            onBerg = false
             
             // Fixed jump duration
             let jumpDuration = 2.0
@@ -474,7 +473,6 @@ class Penguin: SKSpriteNode {
         doubleJumped = false
         hitByLightning = false
 
-//        onBerg = true
         let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20.0), duration: sinkDuration)
         self.runAction(penguinSinking)
     }

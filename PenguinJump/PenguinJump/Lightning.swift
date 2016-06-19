@@ -35,6 +35,7 @@ class Lightning: SKNode {
         shadowOverlay = SKSpriteNode(imageNamed: "blue_ellipse_5040")
         
         shadow.alpha = 0.1
+        shadow.physicsBody = shadowPhysicsBody(shadow.texture!, category: LightningCategory)
         
         if let lightning = SKEmitterNode(fileNamed: "Lightning.sks") {
             self.lightning = lightning
@@ -73,15 +74,6 @@ class Lightning: SKNode {
         cloudOverlay.zPosition = 30001
         lightningCropNode.zPosition = 500
         lightning.zPosition = 500
-        
-        // Add a physics body to the shadow
-        let shadowBody = SKPhysicsBody(circleOfRadius: shadow.size.width / 2)
-        shadowBody.allowsRotation = false
-        shadowBody.friction = 0
-        shadowBody.affectedByGravity = false
-        shadowBody.dynamic = false
-        shadowBody.categoryBitMask = CoinCategory
-        shadow.physicsBody = shadowBody
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -151,6 +143,5 @@ class Lightning: SKNode {
             self.removeFromParent()
         })
     }
-    
     
 }

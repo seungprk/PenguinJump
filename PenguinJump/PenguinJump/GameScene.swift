@@ -964,7 +964,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             windSpeed = windDirectionRight ? stormIntensity * 70 : -stormIntensity * 70
             
             var deltaX = penguin.inAir ? windSpeed * timeSinceLastUpdate * difficulty : windSpeed * 0.5 * timeSinceLastUpdate * difficulty
-            
             if penguin.type == PenguinType.shark {
                 deltaX = deltaX * 0.75
             }
@@ -980,23 +979,25 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         if stormMode {
             updateWinds()
             
+            // Update storm intensity during storm mode.
             if stormTimeElapsed < stormDuration - stormTransitionDuration {
                 stormTimeElapsed += timeSinceLastUpdate
                 
                 if stormIntensity < 0.99 {
+                    // Begin storm gradually
                     stormIntensity += 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
                 } else {
+                    // Enter full storm intensity
                     stormIntensity = 1.0
-                    
                 }
-                
             } else {
+                // Begin ending storm mode.
                 if stormIntensity > 0.01 {
+                    // Exit storm gradually
                     stormIntensity -= 1.0 * (timeSinceLastUpdate / stormTransitionDuration) * 0.3
                 } else {
+                    // End of storm mode.
                     stormIntensity = 0.0
-                    
-                    // End storm mode.
                     stormTimeElapsed = 0.0
                     stormMode = false
                     
@@ -1010,12 +1011,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                     }
                     
                     chargeBar.barFlash.removeAllActions()
-
                 }
             }
-            
-        } else {
-
         }
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green - CGFloat(40 / 255 * stormIntensity), blue: bgColorValues.blue - CGFloat(120 / 255 * stormIntensity), alpha: bgColorValues.alpha)
     }
@@ -1025,9 +1022,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             let berg = child as! Iceberg
 
             if  penguin.shadow.intersectsNode(berg)
-            &&  penguin.onBerg!
-            && !berg.landed
+            &&  penguin.onBerg
             && !penguin.inAir
+            && !berg.landed
             &&  berg.name != "firstBerg" {
                     
                 // Penguin landed on an iceberg if check is true
@@ -1049,7 +1046,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             }
         }
         
-        if !penguin.hitByLightning {
+        if !penguin.hitByLightning && penguin.contactingLightning {
             if let lightningLayer = lightningLayer {
                 for child in lightningLayer.children {
                     let lightning = child as! Lightning
@@ -1060,23 +1057,18 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
 
                             penguin.hitByLightning = true
                             
-                            let lightningShadowPositionInScene = convertPoint(lightning.shadow.position, fromNode: lightning)
+                            let shadowPositionInLayer = lightningLayer.convertPoint(lightning.shadow.position, fromNode: lightning)
+                            let lightningShadowPositionInScene = convertPoint(shadowPositionInLayer, fromNode: lightningLayer)
                             let penguinShadowPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
-                            
-                            let maxPushDistance = penguin.size.height * 2
-                            
+            
                             let deltaX = penguinShadowPositionInScene.x - lightningShadowPositionInScene.x
                             let deltaY = penguinShadowPositionInScene.y - lightningShadowPositionInScene.y
+                            let maxDelta = lightning.shadow.size.width / 2
                             
-                            let distanceFromLightningCenter = sqrt(deltaX * deltaX + deltaY * deltaY)
-                            let pushDistance = -distanceFromLightningCenter + maxPushDistance
-                            
-                            let angle = atan(deltaY / deltaX)
-                            
-                            let pushX = cos(angle) * pushDistance
-                            let pushY = sin(angle) * pushDistance
-                            
-                            print(CGVector(dx: pushX, dy: pushY))
+                            let maxPushDistance = penguin.size.height * 1.5
+                            let pushX = (deltaX / maxDelta) * maxPushDistance
+                            let pushY = (deltaY / maxDelta) * maxPushDistance
+
                             let push = SKAction.moveBy(CGVector(dx: pushX, dy: pushY), duration: 1.0)
                             push.timingMode = .EaseOut
                             penguin.removeAllActions()
@@ -1133,8 +1125,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 let penguinPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
                 
                 if penguinPositionInScene.y > coinPositionInScene.y {
-                    print("\(penguinPositionInScene.y), \(coinPositionInScene.y)")
-
                     coin.body.zPosition = 90000
                 }
             }
@@ -1192,7 +1182,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     }
     
     func checkGameOver() {
-        if !penguin.inAir && !penguin.onBerg! {
+        if !penguin.inAir && !penguin.onBerg {
             gameOver = true
         }
     }
