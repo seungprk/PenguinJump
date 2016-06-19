@@ -10,8 +10,8 @@ import SpriteKit
 
 class Item_Parasol: SKNode {
     
-    let parasol_closed = SKSpriteNode(imageNamed: "parasol_closed")
-    let parasol_open = SKSpriteNode(imageNamed: "parasol_open")
+    let parasol_closed = SKSpriteNode(texture: SKTexture(image: UIImage(named: "parasol_closed")!))
+    let parasol_open = SKSpriteNode(texture: SKTexture(image: UIImage(named: "parasol_open")!))
     
     override init() {
         super.init()

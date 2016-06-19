@@ -32,7 +32,7 @@ class ScoreScene: SKScene {
         
         backgroundColor = SKColor(red: 220/255, green: 230/255, blue: 236/255, alpha: 1.0)
         
-        let logo = SKSpriteNode(imageNamed: "logo")
+        let logo = SKSpriteNode(texture: SKTexture(image: UIImage(named: "logo")!))
         logo.name = "logo"
         logo.alpha = 0.2
         logo.position = CGPoint(x: size.width/2, y: size.height/2)

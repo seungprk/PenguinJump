@@ -112,7 +112,7 @@ class ItemSelectionScene: SKScene {
                 
                 scrollNode.addChild(penguin)
             } else {
-                let penguin = SKSpriteNode(imageNamed: "locked_penguin")
+                let penguin = SKSpriteNode(texture: SKTexture(image: UIImage(named: "locked_penguin")!))
                 penguin.size = CGSize(width: 25, height: 44)
                 penguin.name = "penguin"
                 
@@ -123,7 +123,7 @@ class ItemSelectionScene: SKScene {
         }
         
         // Add scroll nodes to main scrolling node
-        penguinOffset = SKTexture(imageNamed: "penguintemp").size().width * 2
+        penguinOffset = SKTexture(image: UIImage(named: "penguintemp")!).size().width * 2
         
         penguinScrollNode.position = view.center
         for node in 0..<scrollNodes.count {
@@ -131,7 +131,6 @@ class ItemSelectionScene: SKScene {
             penguinScrollNode.addChild(scrollNodes[node])
         }
     }
-    
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
@@ -212,13 +211,13 @@ class ItemSelectionScene: SKScene {
         // Calculate which penguin is closest to the middle
         var middleNode: SKNode!
         var closestX = penguinOffset * 10
-        
+
         for node in scrollNodes {
             let nodePositionInScene = convertPoint(node.position, fromNode: penguinScrollNode)
             let nodeDistanceFromCenter = nodePositionInScene.x - view!.center.x
             if nodeDistanceFromCenter < abs(closestX) {
                 closestX = nodeDistanceFromCenter
-                
+
                 middleNode = node
             }
         }

@@ -167,7 +167,7 @@ class Iceberg: SKSpriteNode {
         addChild(wave)
         wave.alpha = 0.0
         
-        // Create the physics body based off of berg shape.
+        //  ** Create the physics body based off of berg shape. **
         /// A new set of `CGPoint`s in the reverse order of the generated vertices because bodyWithPolygonFromPath winds counter clockwise.
         let physicsPoints:[CGPoint] = shiftPointsFromRenderingRect(vertices.reverse())
         /// The CGPath used for the berg's physics body shape.

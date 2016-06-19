@@ -19,7 +19,7 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Load Core Data and make sure musicPlaying is set to false to make sure music plays once main game scene loads
+        /// Load Core Data and make sure musicPlaying is set to false to make sure music plays once main game scene loads
         var fetchedData = [GameData]()
         do {
             fetchedData = try managedObjectContext.executeFetchRequest(fetchRequest) as! [GameData]

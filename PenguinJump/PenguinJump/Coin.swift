@@ -8,29 +8,55 @@
 
 import SpriteKit
 
+/**
+ A collectable coin in the stage.
+ 
+ - parameter value: An integer value of the coin towards the persistent coin total. The default is 1.
+ */
 class Coin: SKSpriteNode {
+    
     let value = 1
     
     var shadow: SKSpriteNode!
     var body: SKSpriteNode!
+    var particles = [SKSpriteNode]()
     var collected = false
     
-    var particles = [SKSpriteNode]()
-    
     init() {
-        let coinTexture = SKTexture(imageNamed: "coin")
-        super.init(texture: nil, color: SKColor.clearColor(), size: coinTexture.size())
         
+        /// Array of the coin's textures. The last texture is the coin image without the shine.
+        var coinTextures = [SKTexture]()
+        for i in 1...7 {
+            coinTextures.append(SKTexture(image: UIImage(named: "coin\(i)")!))
+        }
+        
+        // Designated initializer for SKSpriteNode.
+        super.init(texture: nil, color: SKColor.clearColor(), size: coinTextures.last!.size())
         name = "coin"
         
-        body = SKSpriteNode(texture: coinTexture)
+        let coinShine = SKAction.animateWithTextures(coinTextures, timePerFrame: 1/30)
+        let wait = SKAction.waitForDuration(2.5)
+        let coinAnimation = SKAction.sequence([coinShine, wait])
+
+        body = SKSpriteNode(texture: coinTextures.last)
+        body.runAction(SKAction.repeatActionForever(coinAnimation))
         body.zPosition = 200
         body.name = "body"
-        shadow = SKSpriteNode(imageNamed: "circle_shadow")
-        shadow.alpha = 0.1
-        shadow.position.y -= size.height / 3
-        shadow.zPosition = -100
         
+        shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "coin_shadow")!))
+        shadow.alpha = 0.1
+        shadow.position.y -= size.height // 3
+        shadow.zPosition = -100
+        shadow.physicsBody = shadowPhysicsBody(shadow.texture!, category: CoinCategory)
+        
+//        let shadowBody = SKPhysicsBody(rectangleOfSize: shadow.size)
+//        shadowBody.allowsRotation = false
+//        shadowBody.friction = 0
+//        shadowBody.affectedByGravity = false
+//        shadowBody.dynamic = false
+//        shadowBody.categoryBitMask = CoinCategory
+//        shadow.physicsBody = shadowBody        
+
         addChild(body)
         addChild(shadow)
         
@@ -42,14 +68,14 @@ class Coin: SKSpriteNode {
     }
     
     func bob() {
-        let bobDepth = 4.0
-        let bobDuration = 2.0
+        
+        let bobDepth = 6.0
+        let bobDuration = 1.5
         
         let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
         let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
         down.timingMode = .EaseInEaseOut
         up.timingMode = .EaseInEaseOut
-        
         let bobSequence = SKAction.sequence([down, up])
         let bob = SKAction.repeatActionForever(bobSequence)
         
@@ -57,7 +83,10 @@ class Coin: SKSpriteNode {
         body.runAction(bob)
     }
     
-    
+    /**
+     Creates coin particles used to increment the charge bar.
+     - parameter camera: The target `SKCameraNode`. The particles are added as children of the camera because the particles need to move to the charge bar, which is a child of the camera.
+     */
     func generateCoinParticles(camera: SKCameraNode) {
         
         let numberOfParticles = random() % 2 + 3

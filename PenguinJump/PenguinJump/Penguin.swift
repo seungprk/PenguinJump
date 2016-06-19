@@ -37,22 +37,27 @@ class Penguin: SKSpriteNode {
     var body : SKSpriteNode!
     var shadow: SKShapeNode!
     var item: SKNode?
-    
-    let targetReticle = SKSpriteNode(imageNamed: "targetcircle")
-    let targetDot1 = SKSpriteNode(imageNamed: "targetdot")
-    let targetDot2 = SKSpriteNode(imageNamed: "targetdot")
-    let targetDot3 = SKSpriteNode(imageNamed: "targetdot")
+
+    let targetReticle = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetcircle")!))
+    let targetDot1 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
+    let targetDot2 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
+    let targetDot3 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
     
     // Boolean that is true during the touch and drag control event.
     var targeting = false
     var playerTouched = false
     
+    /// The PenguinType of this penguin.
+    var type: PenguinType!
+    /// The offset distance of the shadow from the penguin's body. Used to adjust the move action in the jump method to align the shadow with the center of the targeting reticle.
+    var shadowOffsetY: CGFloat!
+    
     // Game session logic
     var doubleJumped = false
     var inAir = false
-    var onBerg: Bool? // = false
+    var onBerg = false
+    var contactingLightning = false
     var hitByLightning = false
-    var type: PenguinType!
     
     init(type: PenguinType) {
         
@@ -68,13 +73,16 @@ class Penguin: SKSpriteNode {
         body.position = CGPointZero
         body.zPosition = 21000
         penguinCropNode.addChild(body)
-        penguinCropNode.maskNode = SKSpriteNode(texture: SKTexture(imageNamed: "deathtemp"), size: body.size)
+        penguinCropNode.maskNode = SKSpriteNode(texture: SKTexture(image: UIImage(named: "deathtemp")!))
         
+        // Assign shadowOffset after body's size is set.
+        shadowOffsetY = body.frame.height * 0.35
+
         // Create penguin's shadow
         shadow = SKShapeNode(rectOfSize: CGSize(width: body.frame.width * 0.8, height: body.frame.width * 0.8), cornerRadius: body.frame.width / 2)
         shadow.fillColor = SKColor.blackColor()
         shadow.alpha = 0.2
-        shadow.position =  CGPoint(x: 0, y: -body.frame.height * 0.35)
+        shadow.position = CGPoint(x: 0, y: -shadowOffsetY)
         shadow.zPosition = 2000
         addChild(shadow)
         
@@ -88,9 +96,9 @@ class Penguin: SKSpriteNode {
         shadowBody.usesPreciseCollisionDetection = true
         
         shadow.physicsBody = shadowBody
-        shadow.physicsBody?.contactTestBitMask = IcebergCategory
         shadow.physicsBody?.collisionBitMask = Passthrough
-        
+        shadow.physicsBody?.contactTestBitMask = 0xFFFFFFFF
+
         // Set Aim Sprites
         let xScale: CGFloat = 0.3
         let yScale: CGFloat = 0.3
@@ -124,62 +132,62 @@ class Penguin: SKSpriteNode {
             item?.zPosition = 20500
             addChild(item!)
         case .tinfoil:
-            item = SKSpriteNode(imageNamed: "tinfoil_hat")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "tinfoil_hat")!))
             item?.zPosition = 22000
             item?.position.y += body.size.height / 3
             addChild(item!)
         case .shark:
-            item = SKSpriteNode(imageNamed: "shark_clothing")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_clothing")!))
             item?.zPosition = 22000
             addChild(item!)
         case .penguinAngel:
-            item = SKSpriteNode(imageNamed: "halo")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "halo")!))
             item?.position.y += body.size.height / 2
             item?.zPosition = 22000
             addChild(item!)
         case .penguinCrown:
-            item = SKSpriteNode(imageNamed: "crown")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "crown")!))
             item?.position.y += body.size.height / 1.75
             item?.zPosition = 22000
             addChild(item!)
         case .penguinDuckyTube:
-            item = SKSpriteNode(imageNamed: "ducky_tube")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "ducky_tube")!))
             item?.position.y -= body.size.height / 4
             item?.zPosition = 22000
             addChild(item!)
         case .penguinMarathon:
-            item = SKSpriteNode(imageNamed: "marathon_sign")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "marathon_sign")!))
             item?.position.y -= body.size.height / 4
             item?.zPosition = 22000
             addChild(item!)
         case .penguinMohawk:
-            item = SKSpriteNode(imageNamed: "mohawk")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "mohawk")!))
             item?.position.y += body.size.height / 2
             item?.zPosition = 22000
             addChild(item!)
         case .penguinPolarBear:
-            item = SKSpriteNode(imageNamed: "polar_bear_hat")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "polar_bear_hat")!))
             item?.position.y += body.size.height / 4
             item?.zPosition = 22000
             addChild(item!)
         case .penguinPropellerHat:
-            item = SKSpriteNode(imageNamed: "propeller_hat")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "propeller_hat")!))
             item?.position.y += body.size.height / 2
             item?.zPosition = 22000
             addChild(item!)
         case .penguinSuperman:
-            item = SKSpriteNode(imageNamed: "cape")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "cape")!))
             item?.position.y -= body.size.height / 3.5
             item?.zPosition = 22000
             addChild(item!)
         case .penguinTophat:
-            item = SKSpriteNode(imageNamed: "tophat")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "tophat")!))
             item?.position.y += body.size.height / 2
             item?.position.x -= body.size.width / 8
             item?.zPosition = 22000
             addChild(item!)
         case .penguinViking:
-            item = SKSpriteNode(imageNamed: "viking_helmet")
+            item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "viking_helmet")!))
             item?.position.y += body.size.height / 2
             item?.zPosition = 22000
             addChild(item!)
@@ -391,7 +399,6 @@ class Penguin: SKSpriteNode {
         doubleJumped = false
         hitByLightning = false
 
-//        onBerg = true
         let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20.0), duration: sinkDuration)
         self.runAction(penguinSinking)
     }

@@ -13,7 +13,7 @@ class AboutScene: SKScene {
     override func didMoveToView(view: SKView) {
         backgroundColor = UIColor.whiteColor()
         
-        let logo = SKSpriteNode(imageNamed: "logo")
+        let logo = SKSpriteNode(texture: SKTexture(image: UIImage(named: "logo")!))
         logo.name = "logo"
         logo.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 + logo.frame.height - 25)
         addChild(logo)

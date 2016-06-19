@@ -29,12 +29,13 @@ class Lightning: SKNode {
         name = "lightning"
         let cloudHeight = view.frame.height / 4
         
-        cloud = SKSpriteNode(imageNamed: "black_cloud")
-        cloudOverlay = SKSpriteNode(imageNamed: "blue_cloud")
-        shadow = SKSpriteNode(imageNamed: "black_ellipse_5040")
-        shadowOverlay = SKSpriteNode(imageNamed: "blue_ellipse_5040")
+        cloud = SKSpriteNode(texture: SKTexture(image: UIImage(named: "black_cloud")!))
+        cloudOverlay = SKSpriteNode(texture: SKTexture(image: UIImage(named: "blue_cloud")!))
+        shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "black_ellipse_5040")!))
+        shadowOverlay = SKSpriteNode(texture: SKTexture(image: UIImage(named: "blue_ellipse_5040")!))
         
         shadow.alpha = 0.1
+        shadow.physicsBody = shadowPhysicsBody(shadow.texture!, category: LightningCategory)
         
         if let lightning = SKEmitterNode(fileNamed: "Lightning.sks") {
             self.lightning = lightning
@@ -50,9 +51,7 @@ class Lightning: SKNode {
             lightningCropNode.maskNode = lightningMask
             lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
             lightningCropNode.addChild(trashNode)
-
         }
-
         
         cloud.position.y += cloudHeight
         cloudOverlay.position.y += cloudHeight
@@ -60,7 +59,6 @@ class Lightning: SKNode {
         cloudOverlay.alpha = 0.0
         shadowOverlay.alpha = 0.0
         
-//        cloudOverlay.zPosition = 10
         shadowOverlay.zPosition = 10
         
         addChild(cloudOverlay)
@@ -145,6 +143,5 @@ class Lightning: SKNode {
             self.removeFromParent()
         })
     }
-    
     
 }

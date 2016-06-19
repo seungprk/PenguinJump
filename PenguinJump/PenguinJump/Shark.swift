@@ -10,12 +10,12 @@ import SpriteKit
 
 class Shark: SKNode {
     
-    var face = SKSpriteNode(imageNamed: "shark_face")
-    var mouth = SKSpriteNode(imageNamed: "shark_mouth")
-    var faceMask = SKSpriteNode(imageNamed: "shark_face")
-    var fin = SKSpriteNode(imageNamed: "shark_fin")
-    var wave = SKSpriteNode(imageNamed: "shark_wave")
-    var shadow = SKSpriteNode(imageNamed: "shark_shadow")
+    var face = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_face")!))
+    var mouth = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_mouth")!))
+    var faceMask = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_face")!))
+    var fin = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_fin")!))
+    var wave = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_wave")!))
+    var shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_shadow")!))
     var finMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSizeZero)
     
     var didBeginKill = false
@@ -43,6 +43,8 @@ class Shark: SKNode {
         face.position.y -= shadow.size.height / 2 - wave.size.height
         
         // Set up sprite nodes
+        shadow.physicsBody = shadowPhysicsBody(shadow.texture!, category: SharkCategory)
+        
         shadow.alpha = 0.1
         shadow.zPosition = -20
         wave.zPosition = 10
