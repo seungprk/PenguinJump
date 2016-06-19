@@ -447,12 +447,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     // MARK: - Scene Controls
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        
         for touch in touches {
             let positionInScene = touch.locationInNode(self)
             let touchedNodes = self.nodesAtPoint(positionInScene)
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name {
+                    
+                    // Debug Functionality
                     if name == "debugButton" {
                         debugButton.hidden = true
                         zoomButton.hidden = false
@@ -471,7 +472,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         stormButton.hidden = true
                         moneyButton.hidden = true
                         viewOutlineButton.hidden = true
-                    
+                        
                         switch name {
                         case "testZoom":
                             let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
@@ -528,12 +529,23 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                         }
                     }
                 }
+                
+                // Doublejump Functionality
                 else if penguin.inAir && !penguin.doubleJumped {
-                    // IF A BUTTON WASN'T TOUCHED, IT'S A DOUBLE JUMP COMMAND
                     // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
                     // use above for swipe double jump
-                    penguin.doubleJump(positionInScene)
+                    penguin.savePosForDoubleJump(positionInScene, time: touch.timestamp)
                 }
+            }
+        }
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            let positionInScene = touch.locationInNode(self)
+            // Doublejump Functionality
+            if penguin.inAir && !penguin.doubleJumped {
+                penguin.doubleJump(positionInScene, time: touch.timestamp)
             }
         }
     }

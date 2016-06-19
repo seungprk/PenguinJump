@@ -58,6 +58,8 @@ class Penguin: SKSpriteNode {
     var onBerg = false
     var contactingLightning = false
     var hitByLightning = false
+    var doubleJumpStartPos = CGPoint()
+    var doubleJumpStartTime = NSTimeInterval()
     
     init(type: PenguinType) {
         
@@ -398,44 +400,50 @@ class Penguin: SKSpriteNode {
         }
     }
     
-    func doubleJump(positionInScene: CGPoint) {
-        doubleJumped = true
-        
-        let delta = positionInScene - position
-        
-        doubleJumpWoosh = SKShapeNode(circleOfRadius: 20.0)
-        doubleJumpWoosh .fillColor = SKColor.clearColor()
-        doubleJumpWoosh .strokeColor = SKColor.whiteColor()
-        
-        doubleJumpWoosh .xScale = 1.0
-        doubleJumpWoosh .yScale = 1.0
-        
-        doubleJumpWoosh .position = position
-        addChild(doubleJumpWoosh )
-        
-        let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
-        let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
-        
-        airExpand.timingMode = .EaseOut
-        airFade.timingMode = .EaseIn
-        
-        doubleJumpWoosh .runAction(airExpand)
-        doubleJumpWoosh .runAction(airFade, completion: {
-            self.doubleJumpWoosh.removeFromParent()
-        })
-        
-        let velocity = CGVector(dx: -delta.x * 2.5, dy: -delta.y * 2.5)
-        
-        let nudgeRate: CGFloat = 180
-        let nudgeDistance = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
-        let nudgeDuration = Double(nudgeDistance / nudgeRate)
-        
-        let nudge = SKAction.moveBy(velocity, duration: nudgeDuration)
-        runAction(nudge)
-        
-        if (scene as! GameScene).gameData.soundEffectsOn == true {
-            (scene as! GameScene).jumpSound?.currentTime = 0
-            (scene as! GameScene).jumpSound?.play()
+    func savePosForDoubleJump(positionInScene: CGPoint, time: NSTimeInterval) {
+        doubleJumpStartPos = positionInScene
+        doubleJumpStartTime = time
+    }
+    
+    func doubleJump(positionInScene: CGPoint, time: NSTimeInterval) {
+        // Check if time and distance long enough to execute movement
+        let posDelta = doubleJumpStartPos - positionInScene
+        let moveDistance = sqrt(posDelta.x * posDelta.x + posDelta.y * posDelta.y)
+        let timeDelta = time - doubleJumpStartTime
+        if moveDistance > 10 && timeDelta < 1.0 {
+            // Movement
+            let velocity = CGVector(dx: -posDelta.x, dy: -posDelta.y)
+            let move = SKAction.moveBy(velocity, duration: 1.0)
+            runAction(move)
+            
+            // Graphic
+            doubleJumpWoosh = SKShapeNode(circleOfRadius: 20.0)
+            doubleJumpWoosh.fillColor = SKColor.clearColor()
+            doubleJumpWoosh.strokeColor = SKColor.whiteColor()
+            doubleJumpWoosh.xScale = 1.0
+            doubleJumpWoosh.yScale = 1.0
+            doubleJumpWoosh.position = body.position
+            addChild(doubleJumpWoosh)
+            
+            let counterVelocity = CGVector(dx: posDelta.x, dy: posDelta.y)
+            let counterMove = SKAction.moveBy(counterVelocity, duration: 1.0)
+            let airExpand = SKAction.scaleBy(2.0, duration: 0.4)
+            let airFade = SKAction.fadeAlphaTo(0.0, duration: 0.4)
+            airExpand.timingMode = .EaseOut
+            airFade.timingMode = .EaseIn
+            
+            doubleJumpWoosh.runAction(counterMove)
+            doubleJumpWoosh.runAction(airExpand)
+            doubleJumpWoosh.runAction(airFade, completion: {
+                self.doubleJumpWoosh.removeFromParent()
+                self.doubleJumpWoosh.alpha = 1.0
+            })
+            
+            // Sound
+            if (scene as! GameScene).gameData.soundEffectsOn == true {
+                (scene as! GameScene).jumpSound?.currentTime = 0
+                (scene as! GameScene).jumpSound?.play()
+            }
         }
     }
     func land(sinkDuration: NSTimeInterval) {
