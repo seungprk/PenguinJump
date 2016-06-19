@@ -11,7 +11,7 @@
 		246206EA1D065A9600FE92EF /* AboutScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246206E91D065A9600FE92EF /* AboutScene.swift */; };
 		246206EC1D065AEE00FE92EF /* SettingsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246206EB1D065AEE00FE92EF /* SettingsScene.swift */; };
 		2469540F1CFCB8E5006B3AF1 /* StartMenuNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */; };
-		24A19F7A1D161983002357F6 /* penguin.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 24A19F791D161983002357F6 /* penguin.atlas */; };
+		24D36C3B1D165FDF00565786 /* penguin.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 24D36C3A1D165FDF00565786 /* penguin.atlas */; };
 		7F0F506E1D14EA660046BD40 /* GameScene+Physics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0F506D1D14EA660046BD40 /* GameScene+Physics.swift */; };
 		7F36CE5C1CF5630300EC559E /* Iceberg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE5B1CF5630300EC559E /* Iceberg.swift */; };
 		7F36CE661CF647E700EC559E /* IcebergGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36CE651CF647E700EC559E /* IcebergGenerator.swift */; };
@@ -68,7 +68,7 @@
 		246206E91D065A9600FE92EF /* AboutScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AboutScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		246206EB1D065AEE00FE92EF /* SettingsScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SettingsScene.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		2469540E1CFCB8E5006B3AF1 /* StartMenuNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartMenuNode.swift; sourceTree = "<group>"; };
-		24A19F791D161983002357F6 /* penguin.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = penguin.atlas; sourceTree = "<group>"; };
+		24D36C3A1D165FDF00565786 /* penguin.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = penguin.atlas; sourceTree = "<group>"; };
 		7F0F506D1D14EA660046BD40 /* GameScene+Physics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GameScene+Physics.swift"; sourceTree = "<group>"; };
 		7F36CE5B1CF5630300EC559E /* Iceberg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Iceberg.swift; sourceTree = "<group>"; };
 		7F36CE651CF647E700EC559E /* IcebergGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IcebergGenerator.swift; sourceTree = "<group>"; };
@@ -249,7 +249,7 @@
 		7FB56B391D15CAF6003B0285 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
-				24A19F791D161983002357F6 /* penguin.atlas */,
+				24D36C3A1D165FDF00565786 /* penguin.atlas */,
 				7F887CEB1D00107A0070B9F4 /* Audio */,
 				7FA4D3121D152CD600D0887A /* Particles */,
 				7F7FB3881CE5B80C0067FC9B /* Images.xcassets */,
@@ -324,7 +324,7 @@
 				7F887CF61D00225D0070B9F4 /* landing.m4a in Resources */,
 				7F7FB38C1CE5B80C0067FC9B /* LaunchScreen.storyboard in Resources */,
 				7FA4D30C1D152C7100D0887A /* power_up.mp3 in Resources */,
-				24A19F7A1D161983002357F6 /* penguin.atlas in Resources */,
+				24D36C3B1D165FDF00565786 /* penguin.atlas in Resources */,
 				7FA4D3091D152C7100D0887A /* charge.wav in Resources */,
 				7FA4D30B1D152C7100D0887A /* lurking.mp3 in Resources */,
 				7F887CF21D0021950070B9F4 /* splash.m4a in Resources */,

@@ -32,6 +32,8 @@ class ItemSelectionScene: SKScene {
     var previousNode: SKNode?
     var soundEffectsOn: Bool!
     
+    var penguinAtlas = SKTextureAtlas(named: "penguin")
+    
     override func didMoveToView(view: SKView) {
         scaleMode = SKSceneScaleMode.AspectFill
         backgroundColor = SKColor(red: 0, green: 93/255, blue: 134/255, alpha: 1)
@@ -123,7 +125,7 @@ class ItemSelectionScene: SKScene {
         }
         
         // Add scroll nodes to main scrolling node
-        penguinOffset = SKTexture(image: UIImage(named: "penguintemp")!).size().width * 2
+        penguinOffset = penguinAtlas.textureNamed("penguin-front").size().width * 2
         
         penguinScrollNode.position = view.center
         for node in 0..<scrollNodes.count {

@@ -62,18 +62,18 @@ class Penguin: SKSpriteNode {
     init(type: PenguinType) {
         
         // Create penguin
-        super.init(texture: nil, color: UIColor.clearColor(), size: CGSize(width: 70, height: 70))
+        super.init(texture: nil, color: UIColor.clearColor(), size: CGSize(width: 80, height: 80))
         name = "penguin"
         penguinCropNode.position = CGPointZero
         penguinCropNode.zPosition = 21000
         addChild(penguinCropNode)
         
         body = SKSpriteNode(texture: penguinAtlas.textureNamed("penguin-front"))
-        body.size = CGSize(width: 45, height: 67)
+        body.size = CGSize(width: 62, height: 76)
         body.position = CGPointZero
         body.zPosition = 21000
         penguinCropNode.addChild(body)
-        penguinCropNode.maskNode = SKSpriteNode(texture: SKTexture(image: UIImage(named: "deathtemp")!))
+        penguinCropNode.maskNode = SKSpriteNode(texture: SKTexture(image: UIImage(named: "deathtemp")!), size: CGSize(width: 62, height: 76))
         
         // Assign shadowOffset after body's size is set.
         shadowOffsetY = body.frame.height * 0.35
@@ -323,7 +323,7 @@ class Penguin: SKSpriteNode {
         let jumpSequence = SKAction.sequence([jumpTextureChange, jumpAction, fallTextureChange, fallAction])
         let enlargeSequence = SKAction.sequence([enlargeAction, reduceAction])
         let shadowEnlargeSequence = SKAction.sequence([shadowEnlarge, shadowReduce])
-        let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2), duration: jumpDuration)
+        let move = SKAction.moveBy(CGVector(dx: velocity.dx, dy: velocity.dy * 2 + shadowOffsetY), duration: jumpDuration)
         
         // RunActions
         runAction(move)
