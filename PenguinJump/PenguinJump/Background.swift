@@ -10,12 +10,12 @@ import SpriteKit
 
 class Background: SKSpriteNode {
 
-    var camera: SKCameraNode!
+    unowned let camera: SKCameraNode
     
     init(view: SKView, camera sceneCamera: SKCameraNode) {
+        camera = sceneCamera
         super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
         position = view.center
-        camera = sceneCamera
         zPosition = -5000
         
         _ = NSTimer.scheduledTimerWithTimeInterval(7.0, target: self, selector: "randomSharkGenerate", userInfo: nil, repeats: true)

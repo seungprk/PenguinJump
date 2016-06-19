@@ -123,7 +123,7 @@ class ItemSelectionScene: SKScene {
         }
         
         // Add scroll nodes to main scrolling node
-        penguinOffset = SKTexture(image: UIImage(named: "penguintemp")!).size().width * 2
+        penguinOffset = SKTexture(image: UIImage(named: "penguinold2")!).size().width * 2
         
         penguinScrollNode.position = view.center
         for node in 0..<scrollNodes.count {

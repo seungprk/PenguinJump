@@ -32,7 +32,7 @@ enum PenguinType {
 */
 class Penguin: SKSpriteNode {
     
-    var penguinAtlas = SKTextureAtlas(named: "penguin")
+    let penguinAtlas = SKTextureAtlas(named: "penguin")
     let penguinCropNode = SKCropNode()
     var body : SKSpriteNode!
     var shadow: SKShapeNode!
@@ -97,7 +97,7 @@ class Penguin: SKSpriteNode {
         
         shadow.physicsBody = shadowBody
         shadow.physicsBody?.collisionBitMask = Passthrough
-        shadow.physicsBody?.contactTestBitMask = 0xFFFFFFFF
+        shadow.physicsBody?.contactTestBitMask = All
 
         // Set Aim Sprites
         let xScale: CGFloat = 0.3

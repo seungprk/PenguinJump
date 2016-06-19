@@ -8,7 +8,12 @@
 
 import SpriteKit
 
+/// Collision Bitmask set to 0x0 to pass through all objects.
 let Passthrough       : UInt32 = 0x0
+
+/// Bitmask that sets all bits on.
+let All               : UInt32 = 0xFFFFFFFF
+
 let IcebergCategory   : UInt32 = 0x1 << 0
 let PenguinCategory   : UInt32 = 0x1 << 1
 let LightningCategory : UInt32 = 0x1 << 2
@@ -41,15 +46,9 @@ extension GameScene: SKPhysicsContactDelegate {
         switch bodies {
             
         case (IcebergCategory, PenguinCategory):
-            /* Debug coloring */
-            penguin.shadow.fillColor = SKColor.redColor()
-            penguin.shadow.alpha = 0.8
-            
             penguin.onBerg = true
         
         case (PenguinCategory, LightningCategory):
-            print("begin contact with lightning")
-            
             penguin.contactingLightning = true
         
         case (PenguinCategory, SharkCategory):
@@ -67,9 +66,8 @@ extension GameScene: SKPhysicsContactDelegate {
             }
             
         case (PenguinCategory, CoinCategory):
-            print("Penguin shadow hit coin")
             let coin = secondBody.node?.parent as! Coin
-            
+
             if !coin.collected {
                 incrementTotalCoins()
                 
@@ -94,7 +92,7 @@ extension GameScene: SKPhysicsContactDelegate {
                     let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode
                     
                     coinBurst.zPosition = 240000
-                    coinBurst.numParticlesToEmit = 100
+                    coinBurst.numParticlesToEmit = 40
                     coinBurst.targetNode = self.scene
                     
                     let coinBurstEffectNode = SKEffectNode()
@@ -118,7 +116,8 @@ extension GameScene: SKPhysicsContactDelegate {
             
             
         default:
-            print("Contact began  between \(bodies.first) and \(bodies.second).")
+            break
+            
         }
     }
     
@@ -137,20 +136,15 @@ extension GameScene: SKPhysicsContactDelegate {
         switch bodies {
             
         case (IcebergCategory, PenguinCategory):
-            penguin.shadow.fillColor = SKColor.blackColor()
-            penguin.shadow.alpha = 0.2
-            
             penguin.onBerg = false
             
         case (PenguinCategory, LightningCategory):
-            print("end contact with lightning")
-            
             penguin.contactingLightning = false
             
         default:
-            print("Contact ended between \(bodies.first) and \(bodies.second).")
+            break
+            
         }
-
     }
     
 }

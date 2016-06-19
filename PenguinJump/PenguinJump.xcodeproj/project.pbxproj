@@ -59,7 +59,6 @@
 		7FB4C51B1D069EE100C6E680 /* Raindrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB4C51A1D069EE100C6E680 /* Raindrop.swift */; };
 		7FB95AD51CF7AFCC005875DF /* ScoreScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD41CF7AFCC005875DF /* ScoreScene.swift */; };
 		7FB95AD71CF7B7B2005875DF /* Lightning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB95AD61CF7B7B2005875DF /* Lightning.swift */; };
-		7FD3C5DB1D14BAF200F462A5 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 7FD3C5DA1D14BAF200F462A5 /* README.md */; };
 		7FE175711D0D4F9100A2CA80 /* CutScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FE175701D0D4F9100A2CA80 /* CutScene.swift */; };
 /* End PBXBuildFile section */
 
@@ -367,7 +366,6 @@
 				241087AB1D090A26009055D6 /* SimpleButton.swift in Sources */,
 				7F9177D71D05F1830089D4A7 /* Coin.swift in Sources */,
 				7F7FB3841CE5B80C0067FC9B /* GameViewController.swift in Sources */,
-				7FD3C5DB1D14BAF200F462A5 /* README.md in Sources */,
 				7F9558B51D0BA48A003B886D /* Shark.swift in Sources */,
 				7F7FB37E1CE5B80C0067FC9B /* AppDelegate.swift in Sources */,
 				7F9558B71D0BFF26003B886D /* Item_Parasol.swift in Sources */,

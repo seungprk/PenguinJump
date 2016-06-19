@@ -21,7 +21,7 @@ class IcebergGenerator: SKSpriteNode {
     
     var delegate: IcebergGeneratorDelegate?
     
-    var camera:SKCameraNode!
+    unowned let camera: SKCameraNode
     
     var bergSize:CGFloat = 150.0
     let maxBergSize:CGFloat = 150.0
@@ -41,9 +41,9 @@ class IcebergGenerator: SKSpriteNode {
     var highestRightBerg: Iceberg?
     
     init(view: SKView, camera sceneCamera: SKCameraNode) {
+        camera = sceneCamera
         super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
         position = view.center
-        camera = sceneCamera
     }
     
     required init?(coder aDecoder: NSCoder) {
