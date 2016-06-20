@@ -201,7 +201,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         cam.runAction(pan)
         
         // Set up Debugging buttons
-        setupDebugButtons()
+//        setupDebugButtons()
         
         pauseButton.name = "pauseButton"
         pauseButton.fontName = "Helvetica Neue Condensed Black"
@@ -249,7 +249,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         sharkLayer?.zPosition = 0
         addChild(sharkLayer!)
         
-//        backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         backgroundColor = SKColor(red: bgColorValues.red, green: bgColorValues.green, blue: bgColorValues.blue, alpha: bgColorValues.alpha)
         
         scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
@@ -264,9 +263,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         chargeBar.position = CGPoint(x: 0 /* - scoreLabel.frame.width / 2 */, y: 0 - scoreLabel.frame.height * 0.5)
         
         scoreLabel.addChild(chargeBar)
-//        chargeBar.position.x -= scoreLabel.frame.width / 2
-        
-//        chargeBar.position = CGPoint(x: scoreLabel.position.x - scoreLabel.frame.width / 2, y: scoreLabel.position.y - scoreLabel.frame.height)
         
         coinLabel = SKLabelNode(text: "\(totalCoins) coins")
         coinLabel.fontName = "Helvetica Neue Condensed Black"
@@ -276,7 +272,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         coinLabel.zPosition = 30000
         coinLabel.horizontalAlignmentMode = .Right
         cam.addChild(coinLabel)
-        
         
         // Fetch penguin type
         var fetchedData = [GameData]()
@@ -345,7 +340,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         waves.position = view!.center
         waves.zPosition = 0
         addChild(waves)
-//        bob(waves)
         waves.stormMode = self.stormMode
         waves.bob()
         
@@ -778,12 +772,15 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             cam.runAction(pan)
             
-            if viewOutlineOn {
-                viewFrame.hidden = false
-                viewFrame.position = cam.position
-            } else {
-                viewFrame.hidden = true
+            if let viewFrame = viewFrame {
+                if viewOutlineOn {
+                    viewFrame.hidden = false
+                    viewFrame.position = cam.position
+                } else {
+                    viewFrame.hidden = true
+                }
             }
+            
         } else {
             cam.removeAllActions()
         }
