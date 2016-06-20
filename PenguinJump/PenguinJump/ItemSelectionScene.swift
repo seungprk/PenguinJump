@@ -189,6 +189,7 @@ class ItemSelectionScene: SKScene {
     }
     
     override func update(currentTime: NSTimeInterval) {
+        
         if let firstNode = scrollNodes.first {
             let firstNodePositionInScene = convertPoint(firstNode.position, fromNode: penguinScrollNode)
             
@@ -199,6 +200,7 @@ class ItemSelectionScene: SKScene {
                 penguinScrollNode.runAction(leftResist)
             }
         }
+        
         if let lastNode = scrollNodes.last {
             let lastNodePositionInScene = convertPoint(lastNode.position, fromNode: penguinScrollNode)
             
@@ -254,7 +256,7 @@ class ItemSelectionScene: SKScene {
         
         // Scale selected penguin larger
         if middleNode.childNodeWithName("penguin")?.xScale < 1.001 {
-            let selectedScale = SKAction.scaleTo(4, duration: 0.2)
+            let selectedScale = SKAction.scaleTo(2.5, duration: 0.2)
             selectedScale.timingMode = .EaseOut
             
             let middlePenguin = middleNode.childNodeWithName("penguin")

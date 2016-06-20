@@ -137,45 +137,55 @@ class Penguin: SKSpriteNode {
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "tinfoil_hat")!))
             item?.zPosition = 22000
             item?.position.y += body.size.height / 3
+            item?.setScale(2)
             addChild(item!)
         case .shark:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_clothing")!))
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         case .penguinAngel:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "halo")!))
             item?.position.y += body.size.height / 2
+            item?.setScale(2)
             item?.zPosition = 22000
             addChild(item!)
         case .penguinCrown:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "crown")!))
             item?.position.y += body.size.height / 1.75
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         case .penguinDuckyTube:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "ducky_tube")!))
+            item?.position.x += 2
             item?.position.y -= body.size.height / 4
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         case .penguinMarathon:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "marathon_sign")!))
             item?.position.y -= body.size.height / 4
             item?.zPosition = 22000
+            item?.setScale(1.5)
             addChild(item!)
         case .penguinMohawk:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "mohawk")!))
             item?.position.y += body.size.height / 2
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         case .penguinPolarBear:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "polar_bear_hat")!))
             item?.position.y += body.size.height / 4
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         case .penguinPropellerHat:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "propeller_hat")!))
-            item?.position.y += body.size.height / 2
+            item?.position.y += body.size.height / 2.5
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         case .penguinSuperman:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "cape")!))
@@ -187,11 +197,13 @@ class Penguin: SKSpriteNode {
             item?.position.y += body.size.height / 2
             item?.position.x -= body.size.width / 8
             item?.zPosition = 22000
+            item?.setScale(1.5)
             addChild(item!)
         case .penguinViking:
             item = SKSpriteNode(texture: SKTexture(image: UIImage(named: "viking_helmet")!))
             item?.position.y += body.size.height / 2
             item?.zPosition = 22000
+            item?.setScale(2)
             addChild(item!)
         }
     }
