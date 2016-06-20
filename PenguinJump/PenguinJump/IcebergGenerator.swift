@@ -2,7 +2,6 @@
 //  IcebergGenerator.swift: The stage object that generates icebergs. It calls the delegate method after each new iceberg is generated, passing the iceberg object that was just generated as a parameter.
 //
 //  Created by Matthew Tso on 5/24/16.
-//
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 

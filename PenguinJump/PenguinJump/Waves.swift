@@ -166,7 +166,7 @@ class Waves: SKSpriteNode {
     }
     
     func newWaveNode() -> SKSpriteNode {
-        let waveNode = SKSpriteNode()//texture: SKTexture(image: UIImage(named: "wave")!)
+        let waveNode = SKSpriteNode()
         waveNode.color = waveColor
         waveNode.size = CGSize(width: nodeWidth, height: 1.0)
         
@@ -189,7 +189,6 @@ class Waves: SKSpriteNode {
         down.timingMode = .EaseInEaseOut
         up.timingMode = .EaseInEaseOut
         let bobSequence = SKAction.sequence([down, up])
-//        let bob = SKAction.repeatActionForever(bobSequence)
         
         removeAllActions()
         runAction(SKAction.repeatActionForever(SKAction.group([fadeSequence, bobSequence])))

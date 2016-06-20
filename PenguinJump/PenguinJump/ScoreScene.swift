@@ -1,8 +1,8 @@
 //
-//  ScoreScene.swift
-//  PenguinJump
+//  ScoreScene.swift: Displays the all-time high score and the score of the last play session. The score of the last play session is zero when navigated to from the start menu instead of a game over state.
 //
 //  Created by Matthew Tso on 5/26/16.
+//  Edited by Seung Park
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 

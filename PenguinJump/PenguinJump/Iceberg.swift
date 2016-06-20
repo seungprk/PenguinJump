@@ -1,6 +1,5 @@
 //
-//  Iceberg.swift
-//  IcebergGenerator
+//  Iceberg.swift: A single iceberg object that is instantiated by the IcebergGenerator to form the platforms of the game.
 //
 //  Created by Matthew Tso on 5/23/16.
 //  Copyright © 2016 De Anza. All rights reserved.
@@ -8,7 +7,6 @@
 
 import SpriteKit
 
-// TODO: Change Iceberg to inherit from SKNode.
 /**
     Iceberg object class.
     Creates a node with children sprite nodes that represent the iceberg's layers: iceberg surface, shadow, and underwater reflection.
@@ -41,7 +39,7 @@ class Iceberg: SKSpriteNode {
     let underwaterHeight:CGFloat = 20.0
     
     // Settings
-    var stormMode: Bool!// = false
+    var stormMode: Bool!
     let debug = false
     var landed = false
     
@@ -56,8 +54,8 @@ class Iceberg: SKSpriteNode {
     }
     
     /**
-     Creates the SKSpriteNode objects using textures generated from UIImages created in a CoreGraphics Bitmap Context.
-     */
+        Creates the SKSpriteNode objects using textures generated from UIImages created in a CoreGraphics Bitmap Context.
+    */
     func createBergNodes() {
         // ***** Create images *****
         /// Set rendering layer rectangle.
@@ -90,7 +88,7 @@ class Iceberg: SKSpriteNode {
             underwaterVertices.append(vertices[point])
         }
         
-        // Generate images
+        // ***** Generate images *****
         // Iceberg Image
         UIGraphicsBeginImageContextWithOptions(renderingRect.size, false, 0.0)
         let context = UIGraphicsGetCurrentContext()
@@ -167,9 +165,11 @@ class Iceberg: SKSpriteNode {
         addChild(wave)
         wave.alpha = 0.0
         
-        //  ** Create the physics body based off of berg shape. **
-        /// A new set of `CGPoint`s in the reverse order of the generated vertices because bodyWithPolygonFromPath winds counter clockwise.
+        //  ***** Create the physics body based off of the berg's vertices. *****
+        
+        /// A new set of `CGPoint`s in the reverse order of the generated vertices because bodyWithPolygonFromPath winds counter-clockwise.
         let physicsPoints:[CGPoint] = shiftPointsFromRenderingRect(vertices.reverse())
+        
         /// The CGPath used for the berg's physics body shape.
         let bergPhysicsPath = CGPathCreateMutable()
         CGPathMoveToPoint(bergPhysicsPath, nil, physicsPoints[0].x, physicsPoints[0].y)

@@ -10,8 +10,8 @@ import SpriteKit
 
 extension SKNode {
     
-    /** 
-        Creates a physics body from a texture suitable for the coin, lightning, or shark objects.
+    /**
+        Creates a physics body from an SKTexture. Suitable for the coin, lightning, or shark objects.
 
         Defaults set:
         - allowsRotation = false

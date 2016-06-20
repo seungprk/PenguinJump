@@ -4,7 +4,7 @@ Penguin Jump is a 2D infinite runner game created for the iOS programming CIS55 
 
 ## Team Members
 
-Matthew Tso, David Park
+Matthew Tso, Seung (David) Park
 
 ## Requirements
 
@@ -36,13 +36,14 @@ Coins around the stage can be collected towards a persistent total. Watch out, t
 
 ### Touch Controls
 
-The player controls the penguin character that can jump for a certain amount of time in a forward direction.
+The player can only jump in a positive Y (up and down) direction. The targeting reticle locks when the reticle's Y position is the same as the penguin. 
 
-The player controls a penguin character in a game world that is comprised of an expansive ocean with a path of icebergs that are safe platforms. The goal is to get as high of a score as possible by jumping from one iceberg to another.
+When the player touches the penguin, a targeting reticle appears while the touch is registered. The targeting reticle is aimed opposite of where the touch is relative to the penguin. The penguin performs a jump to the location of the targeting reticle at the moment of touch release. The jump lasts the same amount of time no matter the distance traveled. 
 
+While the penguin is in the air, a swift swipe gesture will make the penguin perform a second jump that resets the jump timer and jump direction.
 
 ## More Information
 
 The project is hosted at https://github.com/seungprk/PenguinJump/ .
 
-Copyright (C) David Park and Matthew Tso
+Copyright (C) Seung Park and Matthew Tso

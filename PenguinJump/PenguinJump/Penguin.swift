@@ -2,8 +2,7 @@
 //  Penguin.swift: The base penguin object that is player controlled. Implements its own touch event methods.
 //
 //  Created by Matthew Tso on 5/25/16.
-//  Edited by David Park.
-//
+//  Edited by Seung Park.
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 
@@ -27,7 +26,7 @@ enum PenguinType {
     case penguinDuckyTube
 }
 
-/*
+/**
     The base Penguin class describes the node object that can be controlled by the player.
     - parameter targeting: Boolean that is true during the touch and drag control event.
 */
@@ -44,7 +43,7 @@ class Penguin: SKSpriteNode {
     let targetDot2 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
     let targetDot3 = SKSpriteNode(texture: SKTexture(image: UIImage(named: "targetdot")!))
     
-    // Boolean that is true during the touch and drag control event.
+    /// Boolean that is true during the touch and drag control event.
     var targeting = false
     var playerTouched = false
     
@@ -89,7 +88,7 @@ class Penguin: SKSpriteNode {
         shadow.zPosition = 2000
         addChild(shadow)
         
-        // Create physics body based on shadow circle
+        /// Create physics body based on shadow circle
         let shadowBody = SKPhysicsBody(texture: SKTexture(image: UIImage(named: "penguinshadow")!), size: shadow.size)
         shadowBody.allowsRotation = false
         shadowBody.friction = 0
@@ -217,26 +216,27 @@ class Penguin: SKSpriteNode {
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        
         body.texture = penguinAtlas.textureNamed("penguin-ready")
         
         for touch: AnyObject in touches {
             let touchPosition = touch.locationInNode(self)
             
-            if touchPosition.y < 0 {
+            if touchPosition.y < -shadowOffsetY {
                 let targetX = -touchPosition.x
-                let targetY = -touchPosition.y
+                let targetY = -touchPosition.y - shadowOffsetY
                 
-                targetReticle.position = CGPoint(x: targetX, y: targetY * 2)
-                targetDot1.position = CGPoint(x: targetX / 2, y: targetY * 2 / 2)
-                targetDot2.position = CGPoint(x: targetX / 4, y: targetY * 2 / 4)
-                targetDot3.position = CGPoint(x: targetX * 3/4, y: targetY * 2 * 3/4)
+                targetReticle.position = CGPoint(x: targetX, y: targetY * 2 - shadowOffsetY)
+                targetDot1.position = CGPoint(x: targetX / 2, y: targetY * 2 / 2 - shadowOffsetY)
+                targetDot2.position = CGPoint(x: targetX / 4, y: targetY * 2 / 4 - shadowOffsetY)
+                targetDot3.position = CGPoint(x: targetX * 3/4, y: targetY * 2 * 3/4 - shadowOffsetY)
             } else {
                 let targetX = -touchPosition.x
                 
-                targetReticle.position = CGPoint(x: targetX, y: 0)
-                targetDot1.position = CGPoint(x: targetX / 2, y: 0)
-                targetDot2.position = CGPoint(x: targetX / 4, y: 0)
-                targetDot3.position = CGPoint(x: targetX * 3/4, y: 0)
+                targetReticle.position = CGPoint(x: targetX, y: -shadowOffsetY)
+                targetDot1.position = CGPoint(x: targetX / 2, y: -shadowOffsetY)
+                targetDot2.position = CGPoint(x: targetX / 4, y: -shadowOffsetY)
+                targetDot3.position = CGPoint(x: targetX * 3/4, y: -shadowOffsetY)
             }
         }
     }
@@ -247,11 +247,11 @@ class Penguin: SKSpriteNode {
             let touchPosition = touch.locationInNode(self)
             
             if playerTouched {
-                if touchPosition.y < 0 {
+                if touchPosition.y < -shadowOffsetY {
                     for touch: AnyObject in touches {
                         let touchEndPos = touch.locationInNode(self)
                         
-                        let velocity = CGVector(dx: -touchEndPos.x, dy: -touchEndPos.y)
+                        let velocity = CGVector(dx: -touchEndPos.x, dy: -touchEndPos.y - shadowOffsetY * 1.5)
                         
                         if !inAir {
                             jump(velocity)
@@ -261,11 +261,12 @@ class Penguin: SKSpriteNode {
                     for touch: AnyObject in touches {
                         let touchEndPos = touch.locationInNode(self)
                         
-                        let velocity = CGVector(dx: -touchEndPos.x, dy: 0)
+                        let velocity = CGVector(dx: -touchEndPos.x, dy: -shadowOffsetY / 2)
                         
                         if !inAir {
                             jump(velocity)
-                        }                    }
+                        }
+                    }
                 }
                 playerTouched = false
                 targeting = false
@@ -281,6 +282,7 @@ class Penguin: SKSpriteNode {
     }
     
     func jump(velocity: CGVector) {
+        
         // Default, or normal mode variables
         let jumpHeight = body.frame.height * 2
         var jumpDuration = 1.0
@@ -411,7 +413,9 @@ class Penguin: SKSpriteNode {
         let posDelta = doubleJumpStartPos - positionInScene
         let moveDistance = sqrt(posDelta.x * posDelta.x + posDelta.y * posDelta.y)
         let timeDelta = time - doubleJumpStartTime
+        
         if moveDistance > 10 && timeDelta < 1.0 {
+            
             // Movement
             let velocity = CGVector(dx: -posDelta.x, dy: -posDelta.y)
             let move = SKAction.moveBy(velocity, duration: 1.0)
@@ -447,10 +451,12 @@ class Penguin: SKSpriteNode {
             }
         }
     }
+    
     func land(sinkDuration: NSTimeInterval) {
         doubleJumped = false
         hitByLightning = false
-
+        
+        // Sink height should be the same as the iceberg's shadow height.
         let penguinSinking = SKAction.moveBy(CGVector(dx: 0, dy: -20.0), duration: sinkDuration)
         self.runAction(penguinSinking)
     }

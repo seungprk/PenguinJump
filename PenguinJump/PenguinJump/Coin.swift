@@ -1,6 +1,5 @@
 //
 //  Coin.swift
-//  PenguinJump
 //
 //  Created by Matthew Tso on 6/6/16.
 //  Copyright © 2016 De Anza. All rights reserved.

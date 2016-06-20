@@ -3,6 +3,7 @@
 //  PenguinJump
 //
 //  Created by Matthew Tso on 5/25/16.
+//  Edited by Seung Park.
 //  Copyright © 2016 De Anza. All rights reserved.
 //
 
@@ -507,8 +508,6 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 
                 // Doublejump Functionality
                 else if penguin.inAir && !penguin.doubleJumped {
-                    // http://stackoverflow.com/questions/26551777/sprite-kit-determine-vector-of-swipe-gesture-to-flick-sprite
-                    // use above for swipe double jump
                     penguin.savePosForDoubleJump(positionInScene, time: touch.timestamp)
                 }
             }
@@ -524,7 +523,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             }
         }
     }
-    
+    /*
     func doubleJump(velocity: CGVector) {
         let nudgeRate: CGFloat = 180
         let nudgeDistance = sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
@@ -534,7 +533,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         penguin.runAction(nudge)
         jumpSound?.currentTime = 0
         if gameData.soundEffectsOn == true { jumpSound?.play() }
-    }
+    }*/
     
     // MARK: - Pause state
     
