@@ -16,7 +16,7 @@ class Shark: SKNode {
     var fin = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_fin")!))
     var wave = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_wave")!))
     var shadow = SKSpriteNode(texture: SKTexture(image: UIImage(named: "shark_shadow")!))
-    var finMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSizeZero)
+    var finMask = SKSpriteNode(color: SKColor.black(), size: CGSizeZero)
     
     var didBeginKill = false
     
@@ -78,18 +78,18 @@ class Shark: SKNode {
     func bob() {
         let bobDepth = 2.0
         let bobDuration = 2.0
-        let bobUp = SKAction.moveBy(CGVector(dx: 0, dy: bobDepth), duration: bobDuration)
-        let bobDown = SKAction.moveBy(CGVector(dx: 0, dy: -bobDepth), duration: bobDuration)
-        bobUp.timingMode = .EaseInEaseOut
-        bobDown.timingMode = .EaseInEaseOut
+        let bobUp = SKAction.move(by: CGVector(dx: 0, dy: bobDepth), duration: bobDuration)
+        let bobDown = SKAction.move(by: CGVector(dx: 0, dy: -bobDepth), duration: bobDuration)
+        bobUp.timingMode = .easeInEaseOut
+        bobDown.timingMode = .easeInEaseOut
         
-        let bob = SKAction.repeatActionForever(SKAction.sequence([bobUp, bobDown]))
-        finMask.runAction(bob)
-        wave.runAction(bob)
+        let bob = SKAction.repeatForever(SKAction.sequence([bobUp, bobDown]))
+        finMask.run(bob)
+        wave.run(bob)
         
-        let counterBob = SKAction.repeatActionForever(SKAction.sequence([bobDown, bobUp]))
-        fin.runAction(counterBob)
-        shadow.runAction(counterBob)
+        let counterBob = SKAction.repeatForever(SKAction.sequence([bobDown, bobUp]))
+        fin.run(counterBob)
+        shadow.run(counterBob)
     }
     
     func beginSwimming() {
@@ -102,21 +102,21 @@ class Shark: SKNode {
     }
     
     func swimLeft() {
-        let swimLeft = SKAction.moveBy(CGVector(dx: -200, dy: 0), duration: 10.0)
-        swimLeft.timingMode = .EaseInEaseOut
+        let swimLeft = SKAction.move(by: CGVector(dx: -200, dy: 0), duration: 10.0)
+        swimLeft.timingMode = .easeInEaseOut
         
         self.xScale = 1
-        runAction(swimLeft, completion: {
+        run(swimLeft, completion: {
             self.swimRight()
         })
     }
     
     func swimRight() {
-        let swimRight = SKAction.moveBy(CGVector(dx: 200, dy: 0), duration: 10.0)
-        swimRight.timingMode = .EaseInEaseOut
+        let swimRight = SKAction.move(by: CGVector(dx: 200, dy: 0), duration: 10.0)
+        swimRight.timingMode = .easeInEaseOut
         
         self.xScale = -1
-        runAction(swimRight, completion: {
+        run(swimRight, completion: {
             self.swimLeft()
         })
     }
@@ -125,15 +125,15 @@ class Shark: SKNode {
         let bang = SKLabelNode(text: "!")
         bang.fontName = "Helvetica Neue Condensed Black"
         bang.fontSize = 18
-        bang.fontColor = SKColor.whiteColor()
+        bang.fontColor = SKColor.white()
         bang.position.y += fin.size.height / 2
         addChild(bang)
         
-        let reactionTime = SKAction.waitForDuration(0.2)
-        let faceMoveUp = SKAction.moveBy(CGVector(dx: 0, dy: face.size.height), duration: 0.5)
-        let faceMoveDown = SKAction.moveBy(CGVector(dx: 0, dy: -face.size.height), duration: 0.5)
-        faceMoveUp.timingMode = .EaseOut
-        faceMoveDown.timingMode = .EaseIn
+        let reactionTime = SKAction.wait(forDuration: 0.2)
+        let faceMoveUp = SKAction.move(by: CGVector(dx: 0, dy: face.size.height), duration: 0.5)
+        let faceMoveDown = SKAction.move(by: CGVector(dx: 0, dy: -face.size.height), duration: 0.5)
+        faceMoveUp.timingMode = .easeOut
+        faceMoveDown.timingMode = .easeIn
 
         if (scene as! GameScene).gameData.soundEffectsOn as Bool {
             (scene as! GameScene).alertSound?.play()
@@ -145,23 +145,23 @@ class Shark: SKNode {
         fin.removeAllActions()
         shadow.removeAllActions()
         
-        runAction(reactionTime, completion: {
+        run(reactionTime, completion: {
             if (self.scene as! GameScene).gameData.soundEffectsOn as Bool {
                 (self.scene as! GameScene).sharkSound?.play()
             }
             
-            self.fin.runAction(faceMoveDown, completion: {
+            self.fin.run(faceMoveDown, completion: {
                 self.wave.removeFromParent()
                 self.fin.removeFromParent()
             })
             
-            self.face.runAction(faceMoveUp, completion: {
+            self.face.run(faceMoveUp, completion: {
                 bang.removeFromParent()
                 
-                self.runAction(reactionTime, completion: {
+                self.run(reactionTime, completion: {
                     block?()
                     
-                    self.face.runAction(faceMoveDown)
+                    self.face.run(faceMoveDown)
                 })
             })
         })

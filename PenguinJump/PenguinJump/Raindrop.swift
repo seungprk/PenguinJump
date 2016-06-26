@@ -10,7 +10,7 @@ import SpriteKit
 
 class Raindrop: SKNode {
 
-    let raindrop = SKSpriteNode(color: SKColor.whiteColor(), size: CGSize(width: 1, height: 80))
+    let raindrop = SKSpriteNode(color: SKColor.white(), size: CGSize(width: 1, height: 80))
     let ripple = SKSpriteNode(texture: SKTexture(image: UIImage(named: "white_circle")!))
     
     override init() {
@@ -47,25 +47,25 @@ class Raindrop: SKNode {
             raindrop.zRotation = CGFloat(angle)
             raindrop.position = CGPoint(x: startingX, y: startingY)
             
-            let drop = SKAction.moveTo(CGPointZero, duration: dropDuration - 0.5)
-            let scaleToZero = SKAction.scaleYTo(0, duration: 0.5)
-            let rippleScale = SKAction.scaleTo(1, duration: 0.5)
-            let rippleFade = SKAction.fadeAlphaTo(0, duration: 0.5)
+            let drop = SKAction.move(to: CGPointZero, duration: dropDuration - 0.5)
+            let scaleToZero = SKAction.scaleY(to: 0, duration: 0.5)
+            let rippleScale = SKAction.scale(to: 1, duration: 0.5)
+            let rippleFade = SKAction.fadeAlpha(to: 0, duration: 0.5)
             
-            drop.timingMode = .EaseIn
-            scaleToZero.timingMode = .EaseOut
-            rippleScale.timingMode = .EaseOut
-            rippleFade.timingMode = .EaseIn
+            drop.timingMode = .easeIn
+            scaleToZero.timingMode = .easeOut
+            rippleScale.timingMode = .easeOut
+            rippleFade.timingMode = .easeIn
             
             addChild(raindrop)
-            raindrop.runAction(drop, completion: {
-                self.raindrop.runAction(scaleToZero, completion: {
+            raindrop.run(drop, completion: {
+                self.raindrop.run(scaleToZero, completion: {
                     self.raindrop.removeFromParent()
                 })
                 
                 self.addChild(self.ripple)
-                self.ripple.runAction(rippleScale)
-                self.ripple.runAction(rippleFade, completion: {
+                self.ripple.run(rippleScale)
+                self.ripple.run(rippleFade, completion: {
                     self.removeFromParent()
                 })
             })

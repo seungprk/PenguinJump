@@ -16,7 +16,7 @@ class CutScene: SKScene {
     /// The image to display during this scene.
     let image = SKSpriteNode(texture: SKTexture(image: UIImage(named: "cutscene")!) )
     
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         
         backgroundColor = SKColor(red: 0/255, green: 151/255, blue: 255/255, alpha: 1.0)
         
@@ -25,16 +25,16 @@ class CutScene: SKScene {
         image.position.x += view.frame.width
         addChild(image)
         
-        let fadeIn = SKAction.fadeAlphaTo(1, duration: 1)
-        let moveInFromRight = SKAction.moveTo(CGPoint(x: view.center.x + 5, y: view.center.y), duration: 1)
-        let moveSlowly = SKAction.moveBy(CGVector(dx: -10, dy: 0), duration: 7)
+        let fadeIn = SKAction.fadeAlpha(to: 1, duration: 1)
+        let moveInFromRight = SKAction.move(to: CGPoint(x: view.center.x + 5, y: view.center.y), duration: 1)
+        let moveSlowly = SKAction.move(by: CGVector(dx: -10, dy: 0), duration: 7)
 
-        fadeIn.timingMode = .EaseOut
-        moveInFromRight.timingMode = .EaseOut
+        fadeIn.timingMode = .easeOut
+        moveInFromRight.timingMode = .easeOut
 
-        image.runAction(fadeIn)
-        image.runAction(moveInFromRight, completion: {
-            self.image.runAction(moveSlowly, completion: {
+        image.run(fadeIn)
+        image.run(moveInFromRight, completion: {
+            self.image.run(moveSlowly, completion: {
                 self.presentGameScene()
             })
         })
@@ -49,18 +49,18 @@ class CutScene: SKScene {
         `presentGameScene` is its own method because it can be called in either of two places: after the didMoveToView waits for a time, or right after the user touches the screen during this scene.
     */
     func presentGameScene() {
-        let fadeOut = SKAction.fadeAlphaTo(0, duration: 0.5)
-        let moveOutToLeft = SKAction.moveTo(CGPoint(x: view!.center.x - view!.frame.width, y: view!.center.y), duration: 0.5)
-        fadeOut.timingMode = .EaseIn
-        moveOutToLeft.timingMode = .EaseIn
+        let fadeOut = SKAction.fadeAlpha(to: 0, duration: 0.5)
+        let moveOutToLeft = SKAction.move(to: CGPoint(x: view!.center.x - view!.frame.width, y: view!.center.y), duration: 0.5)
+        fadeOut.timingMode = .easeIn
+        moveOutToLeft.timingMode = .easeIn
         
-        image.runAction(fadeOut)
-        image.runAction(moveOutToLeft, completion: {
+        image.run(fadeOut)
+        image.run(moveOutToLeft, completion: {
             // Set Up and Present Main Game Scene
             let gameScene = GameScene(size: self.size)
-            gameScene.scaleMode = SKSceneScaleMode.AspectFill
+            gameScene.scaleMode = SKSceneScaleMode.aspectFill
 
-            let transition = SKTransition.moveInWithDirection(.Right, duration: 0.5)
+            let transition = SKTransition.moveIn(with: .right, duration: 0.5)
             
             if let view = self.view {
                 view.presentScene(gameScene, transition: transition)

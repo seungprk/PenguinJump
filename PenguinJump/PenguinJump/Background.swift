@@ -14,11 +14,11 @@ class Background: SKSpriteNode {
     
     init(view: SKView, camera sceneCamera: SKCameraNode) {
         camera = sceneCamera
-        super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
+        super.init(texture: nil, color: UIColor.clear(), size: view.frame.size)
         position = view.center
         zPosition = -5000
         
-        _ = NSTimer.scheduledTimerWithTimeInterval(7.0, target: self, selector: "randomSharkGenerate", userInfo: nil, repeats: true)
+        _ = Timer.scheduledTimer(timeInterval: 7.0, target: self, selector: "randomSharkGenerate", userInfo: nil, repeats: true)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -38,7 +38,7 @@ class Background: SKSpriteNode {
             
             fishFrames.append(texture)
         }
-        let fishAnim = SKAction.animateWithTextures(fishFrames, timePerFrame: 0.6)
+        let fishAnim = SKAction.animate(with: fishFrames, timePerFrame: 0.6)
         
         let randomX = CGFloat(random()) % scene!.frame.width
         let sharkPosition = CGPoint(
@@ -53,10 +53,10 @@ class Background: SKSpriteNode {
         shark.position = sharkPosition
         addChild(shark)
         
-        let swimDown = SKAction.moveBy(CGVector(dx: 0, dy: -scene!.frame.height * 2.0), duration: 70.0)
-        shark.runAction(swimDown, completion: {
+        let swimDown = SKAction.move(by: CGVector(dx: 0, dy: -scene!.frame.height * 2.0), duration: 70.0)
+        shark.run(swimDown, completion: {
             shark.removeFromParent()
         })
-        shark.runAction(SKAction.repeatActionForever(fishAnim))
+        shark.run(SKAction.repeatForever(fishAnim))
     }
 }

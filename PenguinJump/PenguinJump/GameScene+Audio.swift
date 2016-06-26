@@ -49,8 +49,8 @@ extension GameScene {
     // MARK: - Audio helper functions
     
     func audioPlayerWithFile(file: String, type: String) -> AVAudioPlayer? {
-        let path = NSBundle.mainBundle().pathForResource(file, ofType: type)
-        let url = NSURL.fileURLWithPath(path!)
+        let path = Bundle.main().pathForResource(file, ofType: type)
+        let url = NSURL.fileURL(withPath: path!)
         
         var audioPlayer: AVAudioPlayer?
         
@@ -69,7 +69,7 @@ extension GameScene {
             player.stop()
         } else {
             // Use afterDelay value to change duration.
-            performSelector("fadeVolumeDown:", withObject: player, afterDelay: 0.02)
+            perform("fadeVolumeDown:", with: player, afterDelay: 0.02)
         }
     }
     
@@ -77,12 +77,12 @@ extension GameScene {
         player.volume += 0.01
         if player.volume < musicVolume {
             // Use afterDelay value to change duration.
-            performSelector("fadeVolumeUp:", withObject: player, afterDelay: 0.02)
+            perform("fadeVolumeUp:", with: player, afterDelay: 0.02)
         }
     }
     
     /// Helper function to fade the volume of an `AVAudioPlayer` object.
-    func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: NSTimeInterval, completion block: (() -> ())? ) {
+    func fadeAudioPlayer(player: AVAudioPlayer, fadeTo: Float, duration: TimeInterval, completion block: (() -> ())? ) {
         let amount:Float = 0.1
         let incrementDelay = duration * Double(amount)// * amount)
         

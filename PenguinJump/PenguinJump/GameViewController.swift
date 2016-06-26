@@ -13,7 +13,7 @@ import CoreData
 class GameViewController: UIViewController {
     
     // Core Data
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    let managedObjectContext = (UIApplication.shared().delegate as! AppDelegate).managedObjectContext
     let fetchRequest = NSFetchRequest(entityName: "GameData")
     
     override func viewDidLoad() {
@@ -46,7 +46,7 @@ class GameViewController: UIViewController {
         skView.showsNodeCount = true
         skView.showsPhysics = false
         skView.ignoresSiblingOrder = true
-        scene.scaleMode = .ResizeFill
+        scene.scaleMode = .resizeFill
         
         skView.presentScene(scene)
     }
@@ -56,7 +56,7 @@ class GameViewController: UIViewController {
     }
     
     func initializeGameData() {
-        let newGameData = NSEntityDescription.insertNewObjectForEntityForName("GameData", inManagedObjectContext: managedObjectContext) as! GameData
+        let newGameData = NSEntityDescription.insertNewObject(forEntityName: "GameData", into: managedObjectContext) as! GameData
         newGameData.highScore = 0
         newGameData.totalCoins = 0
         newGameData.musicOn = true

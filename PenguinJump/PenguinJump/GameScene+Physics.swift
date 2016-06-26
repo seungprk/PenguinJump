@@ -57,10 +57,10 @@ extension GameScene: SKPhysicsContactDelegate {
             if !shark.didBeginKill {
                 shark.didBeginKill = true
 
-                let deathMove = SKAction.moveTo(convertPoint(CGPoint(x: shark.position.x, y: shark.position.y + penguin.size.height), fromNode: sharkLayer!), duration: 0.1)
+                let deathMove = SKAction.move(to: convert(CGPoint(x: shark.position.x, y: shark.position.y + penguin.size.height), from: sharkLayer!), duration: 0.1)
         
                 penguin.removeAllActions()
-                penguin.runAction(deathMove)
+                penguin.run(deathMove)
                 
                 shark.kill(blockAfterFaceUp: {
                     self.gameOver = true
@@ -77,21 +77,21 @@ extension GameScene: SKPhysicsContactDelegate {
                 
                 coin.collected = true
                 
-                let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                let scoreBumpUp = SKAction.scale(to: 1.2, duration: 0.1)
+                let scoreBumpDown = SKAction.scale(to: 1.0, duration: 0.1)
+                scoreLabel.run(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
                 
                 coinSound?.currentTime = 0
                 if gameData.soundEffectsOn == true { coinSound?.play() }
                 
-                let rise = SKAction.moveBy(CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
-                rise.timingMode = .EaseOut
+                let rise = SKAction.move(by: CGVector(dx: 0, dy: coin.body.size.height), duration: 0.5)
+                rise.timingMode = .easeOut
                 
-                coin.body.runAction(rise, completion: {
+                coin.body.run(rise, completion: {
                     coin.generateCoinParticles(self.cam)
                     
-                    let path = NSBundle.mainBundle().pathForResource("CoinBurst", ofType: "sks")
-                    if let coinBurst = NSKeyedUnarchiver.unarchiveObjectWithFile(path!) as! SKEmitterNode? {
+                    let path = Bundle.main().pathForResource("CoinBurst", ofType: "sks")
+                    if let coinBurst = NSKeyedUnarchiver.unarchiveObject(withFile: path!) as! SKEmitterNode? {
                         coinBurst.zPosition = 240000
                         coinBurst.numParticlesToEmit = 25
                         coinBurst.targetNode = self.scene
@@ -100,8 +100,8 @@ extension GameScene: SKPhysicsContactDelegate {
                         coinBurstEffectNode.addChild(coinBurst)
                         coinBurstEffectNode.zPosition = 240000
                         
-                        coinBurstEffectNode.position = self.convertPoint(coin.body.position, fromNode: coin)
-                        coinBurstEffectNode.blendMode = .Replace
+                        coinBurstEffectNode.position = self.convert(coin.body.position, from: coin)
+                        coinBurstEffectNode.blendMode = .replace
                         
                         self.addChild(coinBurstEffectNode)
                     }

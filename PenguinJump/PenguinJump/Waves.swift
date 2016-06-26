@@ -31,7 +31,7 @@ class Waves: SKSpriteNode {
     var stormMode = false
     
     init(camera: SKCameraNode, gameScene: GameScene) {
-        super.init(texture: nil, color: UIColor.clearColor(), size: CGSizeZero)
+        super.init(texture: nil, color: UIColor.clear(), size: CGSizeZero)
         
         self.camera = camera
         self.gameScene = gameScene
@@ -143,8 +143,8 @@ class Waves: SKSpriteNode {
     func updateFurthestNodes() {
         // Reset values
         highestNodeY = -10000.0
-        lowestNodeY = CGFloat.max
-        leftmostNodeX = CGFloat.max
+        lowestNodeY = CGFloat.greatestFiniteMagnitude
+        leftmostNodeX = CGFloat.greatestFiniteMagnitude
         rightmostNodeX = camera.position.x - gameScene.frame.width
 
         for waveNode in children {
@@ -177,21 +177,21 @@ class Waves: SKSpriteNode {
         let bobDepth = stormMode ? 6.0 : 4.0
         let bobDuration = stormMode ? 1.8 : 3.0
         
-        let fadeOut = SKAction.fadeAlphaTo(0.3, duration: bobDuration * 0.25)
-        let fadeIn = SKAction.fadeAlphaTo(0.7, duration: bobDuration * 0.25)
-        fadeOut.timingMode = .EaseOut
-        fadeIn.timingMode = .EaseIn
-        let wait = SKAction.waitForDuration(bobDuration * 0.5)
+        let fadeOut = SKAction.fadeAlpha(to: 0.3, duration: bobDuration * 0.25)
+        let fadeIn = SKAction.fadeAlpha(to: 0.7, duration: bobDuration * 0.25)
+        fadeOut.timingMode = .easeOut
+        fadeIn.timingMode = .easeIn
+        let wait = SKAction.wait(forDuration: bobDuration * 0.5)
         let fadeSequence = SKAction.sequence([fadeOut, wait, fadeIn])
         
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration * 0.5)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration * 0.5)
-        down.timingMode = .EaseInEaseOut
-        up.timingMode = .EaseInEaseOut
+        let down = SKAction.move(by: CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration * 0.5)
+        let up = SKAction.move(by: CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration * 0.5)
+        down.timingMode = .easeInEaseOut
+        up.timingMode = .easeInEaseOut
         let bobSequence = SKAction.sequence([down, up])
         
         removeAllActions()
-        runAction(SKAction.repeatActionForever(SKAction.group([fadeSequence, bobSequence])))
+        run(SKAction.repeatForever(SKAction.group([fadeSequence, bobSequence])))
     }
     
 }

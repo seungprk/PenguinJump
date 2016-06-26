@@ -46,7 +46,7 @@ class IcebergGenerator: SKSpriteNode {
     
     init(view: SKView, camera sceneCamera: SKCameraNode) {
         camera = sceneCamera
-        super.init(texture: nil, color: UIColor.clearColor(), size: view.frame.size)
+        super.init(texture: nil, color: UIColor.clear(), size: view.frame.size)
         position = view.center
     }
     
@@ -67,8 +67,8 @@ class IcebergGenerator: SKSpriteNode {
         secondBerg.position = startPoint
         secondBerg.position.y += 300
         
-        insertChild(firstBerg, atIndex: 0)
-        insertChild(secondBerg, atIndex: 0)
+        insertChild(firstBerg, at: 0)
+        insertChild(secondBerg, at: 0)
         
         highestBerg = secondBerg
         
@@ -138,7 +138,7 @@ class IcebergGenerator: SKSpriteNode {
                 
                 highestLeftBerg = berg
                 
-                insertChild(berg, atIndex: 0)
+                insertChild(berg, at: 0)
                 
                 delegate?.didGenerateIceberg(berg)
             }
@@ -155,7 +155,7 @@ class IcebergGenerator: SKSpriteNode {
                 
                 highestRightBerg = berg
                 
-                insertChild(berg, atIndex: 0)
+                insertChild(berg, at: 0)
                 
                 delegate?.didGenerateIceberg(berg)
             }
@@ -195,7 +195,7 @@ class IcebergGenerator: SKSpriteNode {
                     normalBergCount = 0
                 }
                 
-                insertChild(berg, atIndex: 0)
+                insertChild(berg, at: 0)
                 
                 delegate?.didGenerateIceberg(berg)
                 

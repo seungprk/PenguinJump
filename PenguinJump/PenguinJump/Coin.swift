@@ -30,15 +30,15 @@ class Coin: SKSpriteNode {
         }
         
         // Designated initializer for SKSpriteNode.
-        super.init(texture: nil, color: SKColor.clearColor(), size: coinTextures.last!.size())
+        super.init(texture: nil, color: SKColor.clear(), size: coinTextures.last!.size())
         name = "coin"
         
-        let coinShine = SKAction.animateWithTextures(coinTextures, timePerFrame: 1/30)
-        let wait = SKAction.waitForDuration(2.5)
+        let coinShine = SKAction.animate(with: coinTextures, timePerFrame: 1/30)
+        let wait = SKAction.wait(forDuration: 2.5)
         let coinAnimation = SKAction.sequence([coinShine, wait])
 
         body = SKSpriteNode(texture: coinTextures.last)
-        body.runAction(SKAction.repeatActionForever(coinAnimation))
+        body.run(SKAction.repeatForever(coinAnimation))
         body.zPosition = 200
         body.name = "body"
         
@@ -63,15 +63,15 @@ class Coin: SKSpriteNode {
         let bobDepth = 6.0
         let bobDuration = 1.5
         
-        let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-        let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-        down.timingMode = .EaseInEaseOut
-        up.timingMode = .EaseInEaseOut
+        let down = SKAction.move(by: CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+        let up = SKAction.move(by: CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+        down.timingMode = .easeInEaseOut
+        up.timingMode = .easeInEaseOut
         let bobSequence = SKAction.sequence([down, up])
-        let bob = SKAction.repeatActionForever(bobSequence)
+        let bob = SKAction.repeatForever(bobSequence)
         
         removeAllActions()
-        body.runAction(bob)
+        body.run(bob)
     }
     
     /**
@@ -83,13 +83,13 @@ class Coin: SKSpriteNode {
         let numberOfParticles = random() % 2 + 3
         
         for _ in 1...numberOfParticles {
-            let particle = SKSpriteNode(color: SKColor.yellowColor(), size: CGSize(width: size.width / 5, height: size.width / 5))
+            let particle = SKSpriteNode(color: SKColor.yellow(), size: CGSize(width: size.width / 5, height: size.width / 5))
             //                let randomX = random() % Int(size.width) - Int(size.width / 2)
             let randomX = Int( arc4random_uniform( UInt32(size.width) ) ) - Int(size.width / 2)
             let randomY = Int( arc4random_uniform( UInt32(size.height) ) ) - Int(size.height / 2)
             
-            let bodyPositionInScene = convertPoint(body.position, toNode: scene!)
-            let bodyPositionInCam = camera.convertPoint(bodyPositionInScene, fromNode: scene!)
+            let bodyPositionInScene = convert(body.position, to: scene!)
+            let bodyPositionInCam = camera.convert(bodyPositionInScene, from: scene!)
             
             
             particle.position = CGPoint(x: bodyPositionInCam.x + CGFloat(randomX), y: bodyPositionInCam.y + CGFloat(randomY))

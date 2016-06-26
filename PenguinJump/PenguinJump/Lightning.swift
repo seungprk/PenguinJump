@@ -40,13 +40,13 @@ class Lightning: SKNode {
         if let lightning = SKEmitterNode(fileNamed: "Lightning.sks") {
             self.lightning = lightning
             
-            let trashNode = SKSpriteNode(color: SKColor.clearColor(), size: CGSize(width: 500, height: 3000))
+            let trashNode = SKSpriteNode(color: SKColor.clear(), size: CGSize(width: 500, height: 3000))
             trashNode.addChild(self.lightning)
             
             lightningCropNode = SKCropNode()
-            let lightningMask = SKSpriteNode(color: SKColor.blackColor(), size: CGSize(width: cloud.size.width, height: cloudHeight - cloud.size.height / 2 + 3))
+            let lightningMask = SKSpriteNode(color: SKColor.black(), size: CGSize(width: cloud.size.width, height: cloudHeight - cloud.size.height / 2 + 3))
             lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-            lightning.particleAction = SKAction.moveTo(CGPointZero, duration: 0.1)
+            lightning.particleAction = SKAction.move(to: CGPointZero, duration: 0.1)
             
             lightningCropNode.maskNode = lightningMask
             lightningMask.anchorPoint = CGPoint(x: 0.5, y: 0.0)
@@ -85,26 +85,26 @@ class Lightning: SKNode {
             (scene as! GameScene).powerUpSound?.play()
         }
         
-        let wait = SKAction.waitForDuration(strikeDuration * 2)
+        let wait = SKAction.wait(forDuration: strikeDuration * 2)
         
-        let fadeGrow = SKAction.fadeAlphaTo(0.5, duration: 1.0)
+        let fadeGrow = SKAction.fadeAlpha(to: 0.5, duration: 1.0)
 
-        shadowOverlay.runAction(fadeGrow, completion: {
+        shadowOverlay.run(fadeGrow, completion: {
             self.strike()
             
-            self.runAction(wait, completion: {
+            self.run(wait, completion: {
                 self.strike()
                 
-                self.runAction(wait, completion: {
+                self.run(wait, completion: {
                     self.strike()
                     
-                    self.runAction(wait, completion: {
+                    self.run(wait, completion: {
                         self.strike()
                         
-                        self.runAction(wait, completion: {
+                        self.run(wait, completion: {
                             self.strike()
                             
-                            self.runAction(wait, completion: {
+                            self.run(wait, completion: {
                                 self.disappear()
                             })
                         })
@@ -126,8 +126,8 @@ class Lightning: SKNode {
         self.lightningCropNode.alpha = 1.0
         self.lightning.numParticlesToEmit = 1000
         
-        let wait = SKAction.waitForDuration(strikeDuration)
-        self.runAction(wait, completion: {
+        let wait = SKAction.wait(forDuration: strikeDuration)
+        self.run(wait, completion: {
             self.shadowOverlay.alpha = 0.0
             self.cloudOverlay.alpha = 0.0
             self.activated = false
@@ -137,9 +137,9 @@ class Lightning: SKNode {
     }
     
     func disappear() {
-        let fadeOut = SKAction.fadeAlphaTo(0.0, duration: 1.0)
+        let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 1.0)
         
-        runAction(fadeOut, completion: {
+        run(fadeOut, completion: {
             self.removeFromParent()
         })
     }

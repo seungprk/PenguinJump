@@ -10,8 +10,8 @@ import SpriteKit
 
 class AboutScene: SKScene {
     
-    override func didMoveToView(view: SKView) {
-        backgroundColor = UIColor.whiteColor()
+    override func didMove(to view: SKView) {
+        backgroundColor = UIColor.white()
         
         let logo = SKSpriteNode(texture: SKTexture(image: UIImage(named: "logo")!))
         logo.name = "logo"
@@ -22,14 +22,14 @@ class AboutScene: SKScene {
         teamName.fontName = "Helvetica Neue Condensed Black"
         teamName.fontSize = 24
         teamName.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
-        teamName.fontColor = SKColor.blackColor()
+        teamName.fontColor = SKColor.black()
         addChild(teamName)
         
         let memberOne = SKLabelNode(text: "David Park")
         memberOne.fontName = "Helvetica Neue"
         memberOne.fontSize = 19
         memberOne.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 - 50)
-        memberOne.fontColor = SKColor.blackColor()
+        memberOne.fontColor = SKColor.black()
         addChild(memberOne)
         
         let memberOneDescript = SKLabelNode(text: "@seungprk")
@@ -45,7 +45,7 @@ class AboutScene: SKScene {
         plusSign.fontSize = 19
         plusSign.position = memberOneDescript.position
         plusSign.position.y -= 25
-        plusSign.fontColor = SKColor.blackColor()
+        plusSign.fontColor = SKColor.black()
         addChild(plusSign)
         
         let memberTwo = SKLabelNode(text: "Matthew Tso")
@@ -53,7 +53,7 @@ class AboutScene: SKScene {
         memberTwo.fontSize = 19
         memberTwo.position = plusSign.position
         memberTwo.position.y -= 25
-        memberTwo.fontColor = SKColor.blackColor()
+        memberTwo.fontColor = SKColor.black()
         addChild(memberTwo)
         
         let memberTwoDescript = SKLabelNode(text: "@matthewtso")
@@ -68,8 +68,8 @@ class AboutScene: SKScene {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         let gameScene = GameScene(size: self.size)
-        let transition = SKTransition.pushWithDirection(.Up, duration: 0.5)
-        gameScene.scaleMode = SKSceneScaleMode.AspectFill
+        let transition = SKTransition.push(with: .up, duration: 0.5)
+        gameScene.scaleMode = SKSceneScaleMode.aspectFill
         self.scene!.view?.presentScene(gameScene, transition: transition)
     }
 }

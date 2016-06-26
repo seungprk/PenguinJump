@@ -32,7 +32,7 @@ class Iceberg: SKSpriteNode {
     var wave:SKSpriteNode!
     
     // Attributes
-    let bergColor = SKColor.whiteColor()
+    let bergColor = SKColor.white()
     let shadowColor = SKColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1.0)
     let underwaterColor = SKColor(red: 0.25, green: 0.55, blue: 0.8, alpha: 1.0)
     let shadowHeight:CGFloat = 20.0
@@ -45,7 +45,7 @@ class Iceberg: SKSpriteNode {
     
     // Functions
     init(size: CGSize, stormMode: Bool) {
-        super.init(texture: nil, color: UIColor.clearColor(), size: size)
+        super.init(texture: nil, color: UIColor.clear(), size: size)
         
         createBergNodes()
         
@@ -60,7 +60,7 @@ class Iceberg: SKSpriteNode {
         // ***** Create images *****
         /// Set rendering layer rectangle.
         let renderingRect = CGRect(x: 0, y: 0, width: size.width, height: size.width)
-        let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
+        let renderingRectCenter = CGPoint(x: renderingRect.midX, y: renderingRect.midY)
         
         /// The points used to draw the Iceberg in the CGContext coordinate.
         let vertices = generateRandomPoints(aroundPoint: renderingRectCenter, radius: Double(size.width) / 2)
@@ -92,50 +92,50 @@ class Iceberg: SKSpriteNode {
         // Iceberg Image
         UIGraphicsBeginImageContextWithOptions(renderingRect.size, false, 0.0)
         let context = UIGraphicsGetCurrentContext()
-        CGContextSaveGState(context)
+        context!.saveGState()
         
-        CGContextTranslateCTM(context, 0, renderingRect.height)
-        CGContextScaleCTM(context, 1, -1)
-        CGContextSetRGBFillColor(context, 1, 1, 1, 1)
-        CGContextAddLines(context, vertices, vertices.count)
-        CGContextFillPath(context)
+        context!.translate(x: 0, y: renderingRect.height)
+        context!.scale(x: 1, y: -1)
+        context!.setFillColor(red: 1, green: 1, blue: 1, alpha: 1)
+        context!.addLines(between: vertices, count: vertices.count)
+        context!.fillPath()
         let bergImage = UIGraphicsGetImageFromCurrentImageContext()
         
-        CGContextRestoreGState(context)
+        context!.restoreGState()
         UIGraphicsEndImageContext()
         
         // Underwater Shape Image
         UIGraphicsBeginImageContextWithOptions(CGSize(width: renderingRect.width, height: renderingRect.height + shadowHeight + underwaterHeight), false, 0.0)
         let contextExtruded = UIGraphicsGetCurrentContext()
         
-        CGContextSaveGState(contextExtruded)
-        CGContextTranslateCTM(contextExtruded, 0, renderingRect.height)//+ shadowHeight + underwaterHeight)
-        CGContextScaleCTM(contextExtruded, 1, -1)
-        CGContextAddLines(contextExtruded, underwaterVertices, underwaterVertices.count)
+        contextExtruded!.saveGState()
+        contextExtruded!.translate(x: 0, y: renderingRect.height)//+ shadowHeight + underwaterHeight)
+        contextExtruded!.scale(x: 1, y: -1)
+        contextExtruded!.addLines(between: underwaterVertices, count: underwaterVertices.count)
         
-        CGContextSetRGBFillColor(contextExtruded, 0.88, 0.93, 0.96, 1)
-        CGContextFillPath(contextExtruded)
+        contextExtruded!.setFillColor(red: 0.88, green: 0.93, blue: 0.96, alpha: 1)
+        contextExtruded!.fillPath()
         let shadowImage = UIGraphicsGetImageFromCurrentImageContext()
         let shadowMaskImage = UIGraphicsGetImageFromCurrentImageContext()
-        CGContextRestoreGState(contextExtruded)
+        contextExtruded!.restoreGState()
         
-        CGContextSaveGState(contextExtruded)
-        CGContextTranslateCTM(contextExtruded, 0, renderingRect.height)
-        CGContextScaleCTM(contextExtruded, 1, -1)
-        CGContextAddLines(contextExtruded, underwaterVertices, underwaterVertices.count)
+        contextExtruded!.saveGState()
+        contextExtruded!.translate(x: 0, y: renderingRect.height)
+        contextExtruded!.scale(x: 1, y: -1)
+        contextExtruded!.addLines(between: underwaterVertices, count: underwaterVertices.count)
         
-        CGContextSetRGBFillColor(contextExtruded, 0.25, 0.55, 0.8, 1)
-        CGContextFillPath(contextExtruded)
+        contextExtruded!.setFillColor(red: 0.25, green: 0.55, blue: 0.8, alpha: 1)
+        contextExtruded!.fillPath()
         let underwaterImage = UIGraphicsGetImageFromCurrentImageContext()
-        CGContextRestoreGState(contextExtruded)
+        contextExtruded!.restoreGState()
         UIGraphicsEndImageContext()
         
         // ***** Create Sprite Nodes *****
         // Create the textures
-        let bergTexture = SKTexture(image: bergImage)
-        let underwaterTexture = SKTexture(image: underwaterImage)
-        let shadowMaskTexture = SKTexture(image: shadowMaskImage)
-        let shadowTexture = SKTexture(image: shadowImage)
+        let bergTexture = SKTexture(image: bergImage!)
+        let underwaterTexture = SKTexture(image: underwaterImage!)
+        let shadowMaskTexture = SKTexture(image: shadowMaskImage!)
+        let shadowTexture = SKTexture(image: shadowImage!)
         
         // Instantiate nodes
         berg = SKSpriteNode(texture: bergTexture)
@@ -171,18 +171,18 @@ class Iceberg: SKSpriteNode {
         let physicsPoints:[CGPoint] = shiftPointsFromRenderingRect(vertices.reverse())
         
         /// The CGPath used for the berg's physics body shape.
-        let bergPhysicsPath = CGPathCreateMutable()
-        CGPathMoveToPoint(bergPhysicsPath, nil, physicsPoints[0].x, physicsPoints[0].y)
+        let bergPhysicsPath = CGMutablePath()
+        bergPhysicsPath.moveTo(nil, x: physicsPoints[0].x, y: physicsPoints[0].y)
         for point in 1..<physicsPoints.count {
-            CGPathAddLineToPoint(bergPhysicsPath, nil, physicsPoints[point].x, physicsPoints[point].y)
+            bergPhysicsPath.addLineTo(nil, x: physicsPoints[point].x, y: physicsPoints[point].y)
         }
-        CGPathCloseSubpath(bergPhysicsPath)
+        bergPhysicsPath.closeSubpath()
         
         let bergBody = SKPhysicsBody(polygonFromPath: bergPhysicsPath)
         bergBody.allowsRotation = false
         bergBody.friction = 0
         bergBody.affectedByGravity = false
-        bergBody.dynamic = false
+        bergBody.isDynamic = false
         bergBody.categoryBitMask = IcebergCategory
         
         berg.physicsBody = bergBody
@@ -223,7 +223,7 @@ class Iceberg: SKSpriteNode {
      */
     func shiftPointsFromRenderingRect(points: [CGPoint]) -> [CGPoint] {
         let renderingRect = CGRect(x: 0, y: 0, width: size.width, height: size.width)
-        let renderingRectCenter = CGPoint(x: CGRectGetMidX(renderingRect), y: CGRectGetMidY(renderingRect))
+        let renderingRectCenter = CGPoint(x: renderingRect.midX, y: renderingRect.midY)
         
         var newPoints = [CGPoint]()
         for point in points {
@@ -242,16 +242,16 @@ class Iceberg: SKSpriteNode {
         let moveDuration = maxDuration - ((maxDuration - minDuration) * (scene as! GameScene).difficulty)
         let moveDistance = 100
         
-        let forthFirst = SKAction.moveBy(CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
-        let forthSecond = SKAction.moveBy(CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
-        let back = SKAction.moveBy(CGVector(dx: -moveDistance, dy: 0), duration: moveDuration)
-        forthFirst.timingMode = .EaseOut
-        back.timingMode = .EaseInEaseOut
-        forthSecond.timingMode = .EaseIn
+        let forthFirst = SKAction.move(by: CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
+        let forthSecond = SKAction.move(by: CGVector(dx: moveDistance / 2, dy: 0), duration: moveDuration / 2)
+        let back = SKAction.move(by: CGVector(dx: -moveDistance, dy: 0), duration: moveDuration)
+        forthFirst.timingMode = .easeOut
+        back.timingMode = .easeInEaseOut
+        forthSecond.timingMode = .easeIn
         
-        let backAndForth = SKAction.repeatActionForever(SKAction.sequence([forthFirst, back, forthSecond]))
+        let backAndForth = SKAction.repeatForever(SKAction.sequence([forthFirst, back, forthSecond]))
         
-        runAction(backAndForth)
+        run(backAndForth)
     }
     
     /// Wave ripple effect on Iceberg landing.
@@ -260,33 +260,33 @@ class Iceberg: SKSpriteNode {
         wave.yScale = 1.0
         wave.alpha = 1.0
         
-        let pulse = SKAction.scaleTo(1.1, duration: 1)
-        let fade = SKAction.fadeAlphaTo(0.0, duration: 1)
-        pulse.timingMode = .EaseOut
-        fade.timingMode = .EaseIn
+        let pulse = SKAction.scale(to: 1.1, duration: 1)
+        let fade = SKAction.fadeAlpha(to: 0.0, duration: 1)
+        pulse.timingMode = .easeOut
+        fade.timingMode = .easeIn
         
-        wave.runAction(pulse)
-        wave.runAction(fade)
+        wave.run(pulse)
+        wave.run(fade)
     }
     
     /// Begins the sinking and subsequent removal of the Iceberg.
     func sink(duration: Double, completion block: (() -> Void)?) {
         
-        let sink = SKAction.moveBy(CGVector(dx: 0.0, dy: -shadowHeight), duration: duration)
-        let fade = SKAction.fadeOutWithDuration(0.5)
-        let pullOut = SKAction.moveBy(CGVector(dx: 0, dy: -self.berg.size.height * 2), duration: 0.5)
-        let bergDelay = SKAction.waitForDuration(0.2)
+        let sink = SKAction.move(by: CGVector(dx: 0.0, dy: -shadowHeight), duration: duration)
+        let fade = SKAction.fadeOut(withDuration: 0.5)
+        let pullOut = SKAction.move(by: CGVector(dx: 0, dy: -self.berg.size.height * 2), duration: 0.5)
+        let bergDelay = SKAction.wait(forDuration: 0.2)
         
-        underwater!.runAction(sink)
-        shadowMask!.runAction(sink)
+        underwater!.run(sink)
+        shadowMask!.run(sink)
         
-        berg!.runAction(sink, completion: {
+        berg!.run(sink, completion: {
             self.berg.alpha = 0
             self.zPosition = -500
             self.alpha = 0.5
             
-            self.berg.runAction(SKAction.sequence([bergDelay, pullOut]))
-            self.runAction(fade, completion: {
+            self.berg.run(SKAction.sequence([bergDelay, pullOut]))
+            self.run(fade, completion: {
                 self.removeFromParent()
                 
                 block?()
@@ -300,36 +300,36 @@ class Iceberg: SKSpriteNode {
         if !landed {
             let bobActionKey = "bob_action"
             
-            berg.removeActionForKey(bobActionKey)
-            underwater.removeActionForKey(bobActionKey)
-            shadowMask.removeActionForKey(bobActionKey)
+            berg.removeAction(forKey: bobActionKey)
+            underwater.removeAction(forKey: bobActionKey)
+            shadowMask.removeAction(forKey: bobActionKey)
             
             let bobDepth = (stormMode == true) ? 5.0 : 2.0
             let bobDuration = (stormMode == true) ? 0.8 : 2.0
             
-            let down = SKAction.moveBy(CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
-            let up = SKAction.moveBy(CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
-            down.timingMode = .EaseInEaseOut
-            up.timingMode = .EaseInEaseOut
+            let down = SKAction.move(by: CGVector(dx: 0.0, dy: -bobDepth), duration: bobDuration)
+            let up = SKAction.move(by: CGVector(dx: 0.0, dy: bobDepth), duration: bobDuration)
+            down.timingMode = .easeInEaseOut
+            up.timingMode = .easeInEaseOut
             let bobSequence = SKAction.sequence([down, up])
-            let bob = SKAction.repeatActionForever(bobSequence)
+            let bob = SKAction.repeatForever(bobSequence)
             
             // Actions for resetting the position before running the new bobbing actions for a smooth transition.
-            let bergReset = SKAction.moveTo(CGPointZero, duration: 2.0)
-            let underwaterReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
-            let shadowMaskReset = SKAction.moveTo(CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
-            bergReset.timingMode = .EaseInEaseOut
-            underwaterReset.timingMode = .EaseInEaseOut
-            shadowMaskReset.timingMode = .EaseInEaseOut
+            let bergReset = SKAction.move(to: CGPointZero, duration: 2.0)
+            let underwaterReset = SKAction.move(to: CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
+            let shadowMaskReset = SKAction.move(to: CGPoint(x: CGPointZero.x, y: CGPointZero.y - shadowHeight), duration: 2.0)
+            bergReset.timingMode = .easeInEaseOut
+            underwaterReset.timingMode = .easeInEaseOut
+            shadowMaskReset.timingMode = .easeInEaseOut
             
-            berg.runAction(bergReset, completion: {
-                self.berg.runAction(bob, withKey: bobActionKey)
+            berg.run(bergReset, completion: {
+                self.berg.run(bob, withKey: bobActionKey)
             })
-            underwater.runAction(underwaterReset, completion: {
-                self.underwater.runAction(bob, withKey: bobActionKey)
+            underwater.run(underwaterReset, completion: {
+                self.underwater.run(bob, withKey: bobActionKey)
             })
-            shadowMask.runAction(shadowMaskReset, completion: {
-                self.shadowMask.runAction(bob, withKey: bobActionKey)
+            shadowMask.run(shadowMaskReset, completion: {
+                self.shadowMask.run(bob, withKey: bobActionKey)
             })
         }
     }
@@ -344,26 +344,26 @@ class Iceberg: SKSpriteNode {
             underwater.removeAllActions()
             shadowMask.removeAllActions()
             
-            let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
-            let reduce = SKAction.scaleTo(1.0, duration: 0.06)
-            enlarge.timingMode = .EaseOut
-            reduce.timingMode = .EaseIn
+            let enlarge = SKAction.scale(to: 1.06, duration: 0.06)
+            let reduce = SKAction.scale(to: 1.0, duration: 0.06)
+            enlarge.timingMode = .easeOut
+            reduce.timingMode = .easeIn
             
             let bumpSequence = SKAction.sequence([enlarge, reduce])
-            runAction(bumpSequence)
+            run(bumpSequence)
             ripple()
         }
     }
     
     func bump() {
         
-        let enlarge = SKAction.scaleTo(1.06, duration: 0.06)
-        let reduce = SKAction.scaleTo(1.0, duration: 0.06)
-        enlarge.timingMode = .EaseOut
-        reduce.timingMode = .EaseIn
+        let enlarge = SKAction.scale(to: 1.06, duration: 0.06)
+        let reduce = SKAction.scale(to: 1.0, duration: 0.06)
+        enlarge.timingMode = .easeOut
+        reduce.timingMode = .easeIn
         
         let bumpSequence = SKAction.sequence([enlarge, reduce])
-        runAction(bumpSequence)
+        run(bumpSequence)
         ripple()
     }
 }

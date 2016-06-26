@@ -18,7 +18,7 @@ extension GameScene {
         difficulty = -1.0 * pow(0.9995, Double(penguin.position.y)) + 1.0
     }
     
-    override func update(currentTime: NSTimeInterval) {
+    override func update(currentTime: TimeInterval) {
         
         updateGameTime(currentTime)
         
@@ -28,7 +28,7 @@ extension GameScene {
         coinLabel.text = "\(totalCoins) coins"
         
         if gameRunning {
-            penguin.userInteractionEnabled = true
+            penguin.isUserInteractionEnabled = true
             
             scoreLabel.text = "Score: " + String(intScore)
             
@@ -49,7 +49,7 @@ extension GameScene {
             
             centerCamera()
         } else {
-            penguin.userInteractionEnabled = false
+            penguin.isUserInteractionEnabled = false
             penguin.removeAllActions()
             for child in penguin.children {
                 child.removeAllActions()
@@ -59,7 +59,7 @@ extension GameScene {
     }
     
     /// Corrects game time upon exiting a pause state.
-    func updateGameTime(currentTime: NSTimeInterval) {
+    func updateGameTime(currentTime: TimeInterval) {
         if shouldCorrectAfterPause {
             timeSinceLastUpdate = 0.0
             shouldCorrectAfterPause = false
@@ -211,7 +211,7 @@ extension GameScene {
         for child in stage.children {
             let berg = child as! Iceberg
             
-            if  penguin.shadow.intersectsNode(berg)
+            if  penguin.shadow.intersects(berg)
                 &&  penguin.onBerg
                 && !penguin.inAir
                 && !berg.landed
@@ -230,9 +230,9 @@ extension GameScene {
                     
                     intScore += 1
                     
-                    let scoreBumpUp = SKAction.scaleTo(1.2, duration: 0.1)
-                    let scoreBumpDown = SKAction.scaleTo(1.0, duration: 0.1)
-                    scoreLabel.runAction(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
+                    let scoreBumpUp = SKAction.scale(to: 1.2, duration: 0.1)
+                    let scoreBumpDown = SKAction.scale(to: 1.0, duration: 0.1)
+                    scoreLabel.run(SKAction.sequence([scoreBumpUp, scoreBumpDown]))
             }
         }
         
@@ -241,13 +241,13 @@ extension GameScene {
             for child in lightningLayer!.children {
                 
                 let lightning = child as! Lightning
-                if lightning.activated && lightning.shadow.intersectsNode(penguin.shadow) {
+                if lightning.activated && lightning.shadow.intersects(penguin.shadow) {
                     // Penguin hit by lightning strike.
                     penguin.hitByLightning = true
                     
-                    let shadowPositionInLayer = lightningLayer!.convertPoint(lightning.shadow.position, fromNode: lightning)
-                    let lightningShadowPositionInScene = convertPoint(shadowPositionInLayer, fromNode: lightningLayer!)
-                    let penguinShadowPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
+                    let shadowPositionInLayer = lightningLayer!.convert(lightning.shadow.position, from: lightning)
+                    let lightningShadowPositionInScene = convert(shadowPositionInLayer, from: lightningLayer!)
+                    let penguinShadowPositionInScene = convert(penguin.shadow.position, from: penguin)
                     
                     let deltaX = penguinShadowPositionInScene.x - lightningShadowPositionInScene.x
                     let deltaY = penguinShadowPositionInScene.y - lightningShadowPositionInScene.y
@@ -257,10 +257,10 @@ extension GameScene {
                     let pushX = (deltaX / maxDelta) * maxPushDistance
                     let pushY = (deltaY / maxDelta) * maxPushDistance
                     
-                    let push = SKAction.moveBy(CGVector(dx: pushX, dy: pushY), duration: 1.0)
-                    push.timingMode = .EaseOut
+                    let push = SKAction.move(by: CGVector(dx: pushX, dy: pushY), duration: 1.0)
+                    push.timingMode = .easeOut
                     penguin.removeAllActions()
-                    penguin.runAction(push, completion:  {
+                    penguin.run(push, completion:  {
                         self.penguin.hitByLightning = false
                     })
                 }
@@ -306,9 +306,9 @@ extension GameScene {
                 
                 let coin = child as! Coin
                 
-                let coinShadowPositionInLayer = coinLayer.convertPoint(coin.shadow.position, fromNode: coin)
-                let coinPositionInScene = convertPoint(coinShadowPositionInLayer, fromNode: coinLayer)
-                let penguinPositionInScene = convertPoint(penguin.shadow.position, fromNode: penguin)
+                let coinShadowPositionInLayer = coinLayer.convert(coin.shadow.position, from: coin)
+                let coinPositionInScene = convert(coinShadowPositionInLayer, from: coinLayer)
+                let penguinPositionInScene = convert(penguin.shadow.position, from: penguin)
                 
                 if penguinPositionInScene.y > coinPositionInScene.y {
                     coin.body.zPosition = 90000
@@ -319,29 +319,29 @@ extension GameScene {
     
     func incrementBarWithCoinParticles(coin: Coin) {
         for particle in coin.particles {
-            let chargeBarPositionInCam = cam.convertPoint(chargeBar.position, fromNode: scoreLabel)
+            let chargeBarPositionInCam = cam.convert(chargeBar.position, from: scoreLabel)
             
             let randomX = CGFloat(random()) % (chargeBar.bar.position.x + 1)
             
-            let move = SKAction.moveTo(CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
-            move.timingMode = .EaseOut
+            let move = SKAction.move(to: CGPoint(x: chargeBarPositionInCam.x + randomX, y: chargeBarPositionInCam.y), duration: 1.0)
+            move.timingMode = .easeOut
             
-            let wait = SKAction.waitForDuration(0.2 * Double(coin.particles.indexOf(particle)!))
+            let wait = SKAction.wait(forDuration: 0.2 * Double(coin.particles.index(of: particle)!))
             
-            particle.runAction(wait, completion: {
-                particle.runAction(move, completion: {
+            particle.run(wait, completion: {
+                particle.run(move, completion: {
                     particle.removeFromParent()
                     if self.gameData.soundEffectsOn as Bool {
                         let charge = SKAction.playSoundFileNamed("charge.wav", waitForCompletion: false)
-                        self.runAction(charge)
+                        self.run(charge)
                     }
                     
                     self.chargeBar.flashOnce()
                     
                     if !self.stormMode {
-                        let incrementAction = SKAction.moveBy(CGVector(dx: self.chargeBar.increment, dy: 0), duration: 0.5)
-                        incrementAction.timingMode = .EaseOut
-                        self.chargeBar.bar.runAction(incrementAction)
+                        let incrementAction = SKAction.move(by: CGVector(dx: self.chargeBar.increment, dy: 0), duration: 0.5)
+                        incrementAction.timingMode = .easeOut
+                        self.chargeBar.bar.run(incrementAction)
                     } else {
                         // Coin collected during storm mode.
                         // Increment bar but add to time elapsed too.

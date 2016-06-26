@@ -22,7 +22,7 @@ struct ColorValues {
 class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // Framework Objects
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+    let managedObjectContext = (UIApplication.shared().delegate as! AppDelegate).managedObjectContext
     let fetchRequest = NSFetchRequest(entityName: "GameData")
     var gameData : GameData!
     
@@ -105,9 +105,9 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     /// Difficulty modifier that ranges from `0.0` to `1.0`.
     var difficulty = 0.0
     
-    var previousTime: NSTimeInterval?
-    var timeSinceLastUpdate: NSTimeInterval = 0.0
-    var stormTimeElapsed: NSTimeInterval = 0.0
+    var previousTime: TimeInterval?
+    var timeSinceLastUpdate: TimeInterval = 0.0
+    var stormTimeElapsed: TimeInterval = 0.0
     var stormIntensity = 0.0
     var stormMode = false
     var windSpeed = 0.0
@@ -116,7 +116,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     // MARK: - Scene setup
     
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         // Set up audio files
         if musicInitialized == false {
             musicInitialized = true
@@ -185,20 +185,20 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         
         // Start Menu Setup
         startMenu = StartMenuNode(frame: view.frame)
-        startMenu.userInteractionEnabled = true //change to true once menu interaction properly enabled
+        startMenu.isUserInteractionEnabled = true //change to true once menu interaction properly enabled
         cam.addChild(startMenu)
         
         // Camera Setup
         cam.position = penguin.position
         cam.position.y += view.frame.height * 0.06
-        let zoomedIn = SKAction.scaleTo(0.4, duration: 0.0)
-        cam.runAction(zoomedIn)
+        let zoomedIn = SKAction.scale(to: 0.4, duration: 0.0)
+        cam.run(zoomedIn)
         
         let startX = penguin.position.x
         let startY = penguin.position.y
-        let pan = SKAction.moveTo(CGPoint(x: startX, y: startY), duration: 0.0)
-        pan.timingMode = .EaseInEaseOut
-        cam.runAction(pan)
+        let pan = SKAction.move(to: CGPoint(x: startX, y: startY), duration: 0.0)
+        pan.timingMode = .easeInEaseOut
+        cam.run(pan)
         
         // Set up Debugging buttons
 //        setupDebugButtons()
@@ -207,7 +207,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         pauseButton.fontName = "Helvetica Neue Condensed Black"
         pauseButton.fontSize = 24
         pauseButton.zPosition = 200000
-        pauseButton.fontColor = UIColor.blackColor()
+        pauseButton.fontColor = UIColor.black()
         pauseButton.position = CGPoint(x: view.frame.width * 0.5, y: view.frame.height * 0.47)
         pauseButton.position.x -= pauseButton.frame.width * 1.5
         pauseButton.position.y -= pauseButton.frame.height * 2
@@ -215,8 +215,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         cam.addChild(pauseButton)
         
         // Register for application state notifications.
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "enterPause", name: UIApplicationWillResignActiveNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "becomeActive", name: UIApplicationDidBecomeActiveNotification, object: nil)
+        NotificationCenter.default().addObserver(self, selector: "enterPause", name: NSNotification.Name.UIApplicationWillResignActive, object: nil)
+        NotificationCenter.default().addObserver(self, selector: "becomeActive", name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
     
     func setupScene() {
@@ -224,7 +224,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         gameOver = false
         
         cam = SKCameraNode()
-        cam.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame))
+        cam.position = CGPoint(x: frame.midX, y: frame.midY)
         camera = cam
         addChild(cam)        
         
@@ -254,10 +254,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         scoreLabel = SKLabelNode(text: "Score: " + String(intScore))
         scoreLabel.fontName = "Helvetica Neue Condensed Black"
         scoreLabel.fontSize = 24
-        scoreLabel.fontColor = SKColor.blackColor()
+        scoreLabel.fontColor = SKColor.black()
         scoreLabel.position = CGPoint(x: -view!.frame.width * 0.45, y: view!.frame.height * 0.45)
         scoreLabel.zPosition = 30000
-        scoreLabel.horizontalAlignmentMode = .Left
+        scoreLabel.horizontalAlignmentMode = .left
         
         chargeBar = ChargeBar(size: scoreLabel.frame.size)
         chargeBar.position = CGPoint(x: 0 /* - scoreLabel.frame.width / 2 */, y: 0 - scoreLabel.frame.height * 0.5)
@@ -267,10 +267,10 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         coinLabel = SKLabelNode(text: "\(totalCoins) coins")
         coinLabel.fontName = "Helvetica Neue Condensed Black"
         coinLabel.fontSize = 24
-        coinLabel.fontColor = SKColor.blackColor()
+        coinLabel.fontColor = SKColor.black()
         coinLabel.position = CGPoint(x: view!.frame.width * 0.45, y: view!.frame.height * 0.45)
         coinLabel.zPosition = 30000
-        coinLabel.horizontalAlignmentMode = .Right
+        coinLabel.horizontalAlignmentMode = .right
         cam.addChild(coinLabel)
         
         // Fetch penguin type
@@ -331,7 +331,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
 
         penguin.position = penguinPositionInScene
         penguin.zPosition = 2100
-        penguin.userInteractionEnabled = true
+        penguin.isUserInteractionEnabled = true
         addChild(penguin)
         
         stage.newGame(convertPoint(penguinPositionInScene, toNode: stage))
@@ -388,19 +388,19 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         viewOutlineButton.name = "viewOutlineButton"
         viewOutlineButton.position = CGPoint(x: 0, y: view!.frame.height / 2 - debugButton.frame.height * 8)
         
-        zoomButton.hidden = true
-        rainButton.hidden = true
-        lightningButton.hidden = true
-        sharkButton.hidden = true
-        stormButton.hidden = true
-        moneyButton.hidden = true
-        viewOutlineButton.hidden = true
+        zoomButton.isHidden = true
+        rainButton.isHidden = true
+        lightningButton.isHidden = true
+        sharkButton.isHidden = true
+        stormButton.isHidden = true
+        moneyButton.isHidden = true
+        viewOutlineButton.isHidden = true
         
         viewFrame = SKShapeNode(rectOfSize: view!.frame.size)
         viewFrame.position = cam.position
-        viewFrame.strokeColor = SKColor.redColor()
-        viewFrame.fillColor = SKColor.clearColor()
-        viewFrame.hidden = viewOutlineOn ? false : true
+        viewFrame.strokeColor = SKColor.red()
+        viewFrame.fillColor = SKColor.clear()
+        viewFrame.isHidden = viewOutlineOn ? false : true
         addChild(viewFrame)
     }
     
@@ -409,7 +409,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         button.fontSize = 24
         button.alpha = 0.5
         button.zPosition = 2000000
-        button.fontColor = UIColor.blackColor()
+        button.fontColor = UIColor.black()
         
         cam.addChild(button)
     }
@@ -418,37 +418,37 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
-            let positionInScene = touch.locationInNode(self)
-            let touchedNodes = self.nodesAtPoint(positionInScene)
+            let positionInScene = touch.location(in: self)
+            let touchedNodes = self.nodes(at: positionInScene)
             for touchedNode in touchedNodes {
                 if let name = touchedNode.name {
                     
                     // Debug Functionality
                     if name == "debugButton" {
-                        debugButton.hidden = true
-                        zoomButton.hidden = false
-                        rainButton.hidden = false
-                        lightningButton.hidden = false
-                        sharkButton.hidden = false
-                        stormButton.hidden = false
-                        moneyButton.hidden = false
-                        viewOutlineButton.hidden = false
+                        debugButton.isHidden = true
+                        zoomButton.isHidden = false
+                        rainButton.isHidden = false
+                        lightningButton.isHidden = false
+                        sharkButton.isHidden = false
+                        stormButton.isHidden = false
+                        moneyButton.isHidden = false
+                        viewOutlineButton.isHidden = false
                     } else {
-                        debugButton.hidden = false
-                        zoomButton.hidden = true
-                        rainButton.hidden = true
-                        lightningButton.hidden = true
-                        sharkButton.hidden = true
-                        stormButton.hidden = true
-                        moneyButton.hidden = true
-                        viewOutlineButton.hidden = true
+                        debugButton.isHidden = false
+                        zoomButton.isHidden = true
+                        rainButton.isHidden = true
+                        lightningButton.isHidden = true
+                        sharkButton.isHidden = true
+                        stormButton.isHidden = true
+                        moneyButton.isHidden = true
+                        viewOutlineButton.isHidden = true
                         
                         switch name {
                         case "testZoom":
-                            let zoomOut = SKAction.scaleTo(3.0, duration: 0.5)
-                            let zoomIn = SKAction.scaleTo(1.0, duration: 0.5)
+                            let zoomOut = SKAction.scale(to: 3.0, duration: 0.5)
+                            let zoomIn = SKAction.scale(to: 1.0, duration: 0.5)
                             
-                            testZoomed ? cam.runAction(zoomIn) : cam.runAction(zoomOut)
+                            testZoomed ? cam.run(zoomIn) : cam.run(zoomOut)
                             testZoomed = testZoomed ? false : true
                             
                         case "rainButton":
@@ -510,7 +510,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         for touch in touches {
-            let positionInScene = touch.locationInNode(self)
+            let positionInScene = touch.location(in: self)
             // Doublejump Functionality
             if penguin.inAir && !penguin.doubleJumped {
                 penguin.doubleJump(positionInScene, time: touch.timestamp)
@@ -541,16 +541,16 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
         if gameRunning {
             shouldCorrectAfterPause = true
             gamePaused = true
-            penguin.userInteractionEnabled = false
-            paused = true
+            penguin.isUserInteractionEnabled = false
+            isPaused = true
             
             var needsPauseCover = true
-            if let _ = childNodeWithName("pauseCover") {
+            if let _ = childNode(withName: "pauseCover") {
                 needsPauseCover = false
             }
             
             if needsPauseCover {
-                let cover = SKSpriteNode(color: SKColor.blackColor(), size: view!.frame.size)
+                let cover = SKSpriteNode(color: SKColor.black(), size: view!.frame.size)
                 cover.name = "pauseCover"
                 cover.position = cam.position
                 cover.alpha = 0.5
@@ -560,7 +560,7 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
                 let unPause = SKLabelNode(text: "Tap to Play")
                 unPause.name = "pauseCover"
                 unPause.position = cam.position
-                unPause.fontColor = SKColor.whiteColor()
+                unPause.fontColor = SKColor.white()
                 unPause.fontName = "Helvetica Neue Condensed Black"
                 unPause.zPosition = 1000001
                 addChild(unPause)
@@ -575,8 +575,8 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             }
         }
         gamePaused = false
-        penguin.userInteractionEnabled = true
-        paused = false
+        penguin.isUserInteractionEnabled = true
+        isPaused = false
     }
     
     // MARK: - Game Events
@@ -585,24 +585,24 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
 
         penguin.beginGame()
 
-        let zoomOut = SKAction.scaleTo(1.0, duration: 2.0)
+        let zoomOut = SKAction.scale(to: 1.0, duration: 2.0)
         
         let cameraFinalDestX = penguin.position.x
         let cameraFinalDestY = penguin.position.y + frame.height / 6
         
-        let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 2.0)
-        pan.timingMode = .EaseInEaseOut
-        zoomOut.timingMode = .EaseInEaseOut
+        let pan = SKAction.move(to: CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 2.0)
+        pan.timingMode = .easeInEaseOut
+        zoomOut.timingMode = .easeInEaseOut
         
-        cam.runAction(zoomOut)
-        cam.runAction(pan, completion: {
+        cam.run(zoomOut)
+        cam.run(pan, completion: {
             self.cam.addChild(self.scoreLabel)
             
             self.scoreLabel.position.y += 300
             
-            let scoreLabelDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
-            scoreLabelDown.timingMode = .EaseOut
-            self.scoreLabel.runAction(scoreLabelDown)
+            let scoreLabelDown = SKAction.move(by: CGVector(dx: 0, dy: -300), duration: 1.0)
+            scoreLabelDown.timingMode = .easeOut
+            self.scoreLabel.run(scoreLabelDown)
             
             self.pauseButton.alpha = 1
             
@@ -610,15 +610,15 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             self.gameRunning = true
         })
         
-        let playButtonDown = SKAction.moveBy(CGVector(dx: 0, dy: -300), duration: 1.0)
-        playButtonDown.timingMode = .EaseIn
-        startMenu.playButton.runAction(playButtonDown, completion: {
+        let playButtonDown = SKAction.move(by: CGVector(dx: 0, dy: -300), duration: 1.0)
+        playButtonDown.timingMode = .easeIn
+        startMenu.playButton.run(playButtonDown, completion: {
             self.startMenu.playButton.removeFromParent()
         })
         
-        let titleUp = SKAction.moveBy(CGVector(dx: 0, dy: 400), duration: 1.0)
-        titleUp.timingMode = .EaseIn
-        startMenu.title.runAction(titleUp, completion: {
+        let titleUp = SKAction.move(by: CGVector(dx: 0, dy: 400), duration: 1.0)
+        titleUp.timingMode = .easeIn
+        startMenu.title.run(titleUp, completion: {
             self.startMenu.title.removeFromParent()
         })
 
@@ -658,13 +658,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             berg.bob()
         }
         
-        let flashUp = SKAction.fadeAlphaTo(1.0, duration: 0.5)
-        let flashDown = SKAction.fadeAlphaTo(0.0, duration: 0.5)
-        flashUp.timingMode = .EaseInEaseOut
-        flashDown.timingMode = .EaseInEaseOut
+        let flashUp = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
+        let flashDown = SKAction.fadeAlpha(to: 0.0, duration: 0.5)
+        flashUp.timingMode = .easeInEaseOut
+        flashDown.timingMode = .easeInEaseOut
         
         let flash = SKAction.sequence([flashUp, flashDown])
-        chargeBar.barFlash.runAction(SKAction.repeatActionForever(flash))
+        chargeBar.barFlash.run(SKAction.repeatForever(flash))
     }
     
     func runGameOver() {
@@ -679,13 +679,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             
             penguin.shadow.removeFromParent()
             
-            let fall = SKAction.moveBy(CGVector(dx: 0, dy: -20), duration: 0.2)
-            fall.timingMode = .EaseOut
-            let slideUp = SKAction.moveBy(CGVector(dx: 0, dy: 25), duration: 0.2)
-            slideUp.timingMode = .EaseOut
+            let fall = SKAction.move(by: CGVector(dx: 0, dy: -20), duration: 0.2)
+            fall.timingMode = .easeOut
+            let slideUp = SKAction.move(by: CGVector(dx: 0, dy: 25), duration: 0.2)
+            slideUp.timingMode = .easeOut
             
-            penguin.runAction(slideUp)
-            penguin.body.runAction(fall)
+            penguin.run(slideUp)
+            penguin.body.run(fall)
             
             if gameData.soundEffectsOn == true { splashSound?.play() }
             
@@ -702,13 +702,13 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             lurkingSound?.stop()
             fadeMusic()
             
-            let wait = SKAction.waitForDuration(2.0)
-            self.runAction(wait, completion:  {
+            let wait = SKAction.wait(forDuration: 2.0)
+            self.run(wait, completion:  {
                 let scoreScene = ScoreScene(size: self.size)
                 scoreScene.score = self.intScore
                 
-                let transition = SKTransition.moveInWithDirection(.Up, duration: 0.5)
-                scoreScene.scaleMode = SKSceneScaleMode.AspectFill
+                let transition = SKTransition.moveIn(with: .up, duration: 0.5)
+                scoreScene.scaleMode = SKSceneScaleMode.aspectFill
                 self.scene!.view?.presentScene(scoreScene, transition: transition)
             })
         }
@@ -767,17 +767,17 @@ class GameScene: SKScene, IcebergGeneratorDelegate {
             let cameraFinalDestX = penguin.position.x
             let cameraFinalDestY = penguin.position.y + frame.height / 6
             
-            let pan = SKAction.moveTo(CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.125)
-            pan.timingMode = .EaseInEaseOut
+            let pan = SKAction.move(to: CGPoint(x: cameraFinalDestX, y: cameraFinalDestY), duration: 0.125)
+            pan.timingMode = .easeInEaseOut
             
-            cam.runAction(pan)
+            cam.run(pan)
             
             if let viewFrame = viewFrame {
                 if viewOutlineOn {
-                    viewFrame.hidden = false
+                    viewFrame.isHidden = false
                     viewFrame.position = cam.position
                 } else {
-                    viewFrame.hidden = true
+                    viewFrame.isHidden = true
                 }
             }
             

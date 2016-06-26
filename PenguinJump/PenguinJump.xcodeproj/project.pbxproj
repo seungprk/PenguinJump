@@ -299,6 +299,7 @@
 					7F7FB3791CE5B80C0067FC9B = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = 2NKLZJVG9L;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -504,6 +505,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = edu.deanza.mtso.PenguinJump;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -518,6 +520,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = edu.deanza.mtso.PenguinJump;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

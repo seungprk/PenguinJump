@@ -25,7 +25,7 @@ extension SKNode {
         body.allowsRotation = false
         body.friction = 0
         body.affectedByGravity = false
-        body.dynamic = false
+        body.isDynamic = false
         body.categoryBitMask = category
         
         return body

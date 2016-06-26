@@ -31,13 +31,13 @@ class SimpleButton: SKNode {
         let boxSize = CGSize(width: label.frame.width * 1.1, height: label.frame.height * 1.3)
         mainBox = SKShapeNode(rectOfSize: boxSize, cornerRadius: 10)
         mainBox.fillColor = UIColor(red: 250/255, green: 240/255, blue: 225/255, alpha: 1.0)
-        mainBox.strokeColor = UIColor.clearColor()
+        mainBox.strokeColor = UIColor.clear()
         mainBox.position.y += label.frame.height * 0.5
         
         // Init Shadow
         shadow = SKShapeNode(rectOfSize: mainBox.frame.size, cornerRadius: 10)
         shadow.fillColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
-        mainBox.strokeColor = UIColor.clearColor()
+        mainBox.strokeColor = UIColor.clear()
         shadow.position.y = mainBox.position.y - 10
         
         // Add
@@ -48,7 +48,7 @@ class SimpleButton: SKNode {
 
     func buttonPress(soundOn: NSNumber) {
         if soundOn == true {
-            runAction(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
+            run(SKAction.playSoundFileNamed("button_press.m4a", waitForCompletion: false))
         }
         mainBox.position.y -= 7
         label.position.y -= 7
